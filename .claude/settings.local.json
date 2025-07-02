@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx create-expo-app:*)",
+      "Bash(rm:*)",
+      "Bash(pnpm install:*)",
+      "Bash(mkdir:*)",
+      "Bash(ls:*)",
+      "Bash(mv:*)",
+      "Bash(true)",
+      "Bash(cp:*)",
+      "Bash(pnpm add:*)",
+      "Bash(pnpm start:*)",
+      "Bash(npx expo install:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm run web:*)",
+      "Bash(curl:*)",
+      "Bash(pkill:*)",
+      "Bash(pnpm run:*)",
+      "Bash(npm start)",
+      "Bash(npm install:*)",
+      "Bash(yarn add:*)",
+      "WebFetch(domain:docs.swmansion.com)",
+      "Bash(find:*)"
+    ],
+    "deny": []
+  }
+}
