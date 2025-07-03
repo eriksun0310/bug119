@@ -37,10 +37,9 @@ import {
   PrioritySelector,
   BudgetSelector,
   BudgetRange,
-  GenderSelector,
-  Gender
+  GenderSelector
 } from '@/shared/ui'
-import { PestType, TaskPriority, RootStackParamList } from '@/shared/types'
+import { PestType, TaskPriority, RootStackParamList, Gender } from '@/shared/types'
 
 type CreateTaskNavigationProp = NativeStackNavigationProp<RootStackParamList>
 

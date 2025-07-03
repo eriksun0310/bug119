@@ -1,1 +1,1 @@
-export { GenderSelector, Gender } from './GenderSelector'
+export { GenderSelector } from './GenderSelector'
