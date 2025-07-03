@@ -8,7 +8,7 @@ import { TerminatorTabParamList } from '@/shared/types'
 
 // 導入畫面組件
 import { TaskWallScreen } from '@/screens/task-wall/TaskWallScreen'
-import { MyTasksScreen } from '@/screens/my-tasks/MyTasksScreen'
+import { TasksScreen } from '@/screens/tasks/TasksScreen'
 import { ProfileScreen } from '@/screens/profile/ProfileScreen'
 
 const Tab = createBottomTabNavigator<TerminatorTabParamList>()
@@ -60,7 +60,7 @@ export const TerminatorNavigator = () => {
       />
       <Tab.Screen 
         name="MyTasks" 
-        component={MyTasksScreen}
+        component={TasksScreen}
         options={{ title: '我的任務' }}
       />
       <Tab.Screen 
