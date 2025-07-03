@@ -284,7 +284,7 @@ export const getTaskStatusDisplayName = (status: TaskStatus): string => {
     case TaskStatus.ASSIGNED:
       return '已接案'
     case TaskStatus.IN_PROGRESS:
-      return '進行中'
+      return '進行中0'
     case TaskStatus.COMPLETED:
       return '已完成'
     case TaskStatus.CANCELLED:
