@@ -61,7 +61,7 @@ export const TerminatorNavigator = () => {
       <Tab.Screen 
         name="MyTasks" 
         component={TasksScreen}
-        options={{ title: '我的任務' }}
+        options={{ title: '任務' }}
       />
       <Tab.Screen 
         name="Profile" 
