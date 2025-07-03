@@ -1,6 +1,6 @@
 // 任務假資料
 
-import { Task, TaskStatus, TaskPriority, PestType } from '@/shared/types'
+import { Task, TaskStatus, TaskPriority, PestType, TaskAssignment } from '@/shared/types'
 
 export const mockTasks: Task[] = [
   {
@@ -69,7 +69,7 @@ export const mockTasks: Task[] = [
       city: '台北市',
       district: '松山區',
     },
-    status: TaskStatus.ASSIGNED,
+    status: TaskStatus.IN_PROGRESS,
     priority: TaskPriority.NORMAL,
     budget: {
       min: 600,
@@ -161,6 +161,60 @@ export const mockTasks: Task[] = [
     createdAt: new Date('2024-07-02T14:10:00'),
     updatedAt: new Date('2024-07-02T14:10:00'),
   },
+  {
+    id: '7',
+    title: '車庫白蟻防治',
+    description: '發現車庫木頭被白蟻蛀蝕，需要專業防治服務。',
+    pestType: PestType.OTHER,
+    location: {
+      address: '桃園市中壢區中央路 100 號',
+      latitude: 24.9537,
+      longitude: 121.2274,
+      city: '桃園市',
+      district: '中壢區',
+    },
+    status: TaskStatus.COMPLETED,
+    priority: TaskPriority.URGENT,
+    budget: {
+      min: 2000,
+      max: 4000,
+    },
+    isImmediate: false,
+    scheduledTime: new Date('2024-07-01T14:00:00'),
+    images: [],
+    createdBy: '3',
+    assignedTo: '2', // 終結者已完成，等待小怕星確認
+    createdAt: new Date('2024-06-30T10:00:00'),
+    updatedAt: new Date('2024-07-01T16:00:00'),
+    completedAt: new Date('2024-07-01T16:00:00'),
+  },
+  {
+    id: '8',
+    title: '客廳果蠅清除',
+    description: '客廳和廚房有很多果蠅，影響居住品質。',
+    pestType: PestType.OTHER,
+    location: {
+      address: '台中市西屯區台灣大道三段 200 號',
+      latitude: 24.1611,
+      longitude: 120.6447,
+      city: '台中市',
+      district: '西屯區',
+    },
+    status: TaskStatus.REVIEWED,
+    priority: TaskPriority.NORMAL,
+    budget: {
+      min: 800,
+      max: 1500,
+    },
+    isImmediate: false,
+    scheduledTime: new Date('2024-06-28T10:00:00'),
+    images: [],
+    createdBy: '4',
+    assignedTo: '2', // 終結者已完成並已被評價
+    createdAt: new Date('2024-06-27T09:00:00'),
+    updatedAt: new Date('2024-06-28T15:00:00'),
+    completedAt: new Date('2024-06-28T14:30:00'),
+  },
 ]
 
 // 依據狀態篩選任務
@@ -240,4 +294,79 @@ export const getTaskStatusDisplayName = (status: TaskStatus): string => {
     default:
       return '未知狀態'
   }
+}
+
+// 任務申請假資料
+export const mockTaskAssignments: TaskAssignment[] = [
+  {
+    taskId: '1', // 客廳蟑螂問題急需處理
+    terminatorId: '2',
+    proposedPrice: 1500,
+    estimatedDuration: 120,
+    message: '我有5年蟑螂防治經驗，保證徹底解決問題！',
+    status: 'pending',
+    createdAt: new Date('2024-07-02T11:00:00'),
+  },
+  {
+    taskId: '1',
+    terminatorId: '3',
+    proposedPrice: 1800,
+    estimatedDuration: 90,
+    message: '專業級設備，快速有效處理，無毒環保',
+    status: 'pending',
+    createdAt: new Date('2024-07-02T11:15:00'),
+  },
+  {
+    taskId: '1',
+    terminatorId: '4',
+    proposedPrice: 1200,
+    estimatedDuration: 150,
+    message: '經濟實惠，效果保證，提供一個月保固',
+    status: 'pending',
+    createdAt: new Date('2024-07-02T11:30:00'),
+  },
+  {
+    taskId: '2', // 廚房螞蟻入侵
+    terminatorId: '2',
+    proposedPrice: 1000,
+    estimatedDuration: 60,
+    message: '螞蟻防治專家，使用天然無害藥劑',
+    status: 'pending',
+    createdAt: new Date('2024-07-02T08:30:00'),
+  },
+  {
+    taskId: '4', // 陽台蜘蛛網清理
+    terminatorId: '3',
+    proposedPrice: 800,
+    estimatedDuration: 45,
+    message: '專業清潔蜘蛛網，並做預防處理',
+    status: 'pending',
+    createdAt: new Date('2024-07-02T12:00:00'),
+  },
+  {
+    taskId: '4',
+    terminatorId: '4',
+    proposedPrice: 600,
+    estimatedDuration: 60,
+    message: '仔細清理，價格實惠',
+    status: 'pending',
+    createdAt: new Date('2024-07-02T12:20:00'),
+  },
+]
+
+// 依據任務ID取得所有申請
+export const getAssignmentsByTaskId = (taskId: string) => {
+  return mockTaskAssignments.filter(assignment => assignment.taskId === taskId)
+}
+
+// 依據終結者ID取得所有申請
+export const getAssignmentsByTerminatorId = (terminatorId: string) => {
+  return mockTaskAssignments.filter(assignment => assignment.terminatorId === terminatorId)
+}
+
+// 取得特定任務的申請數量
+export const getTaskAssignmentCount = (taskId: string) => {
+  return mockTaskAssignments.filter(assignment => 
+    assignment.taskId === taskId && assignment.status === 'pending'
+  ).length
 }
