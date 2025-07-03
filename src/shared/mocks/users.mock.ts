@@ -1,6 +1,6 @@
 // 測試用戶假資料
 
-import { User, UserRole, PestType } from '@/shared/types'
+import { User, UserRole, PestType, ContactMethod } from '@/shared/types'
 
 export const mockUsers: User[] = [
   // 小怕星測試帳號
@@ -12,6 +12,12 @@ export const mockUsers: User[] = [
     avatar: 'https://images.unsplash.com/photo-1494790108755-2616c9c99ee3?w=150',
     role: UserRole.FEAR_STAR,
     isVerified: true,
+    contactInfo: {
+      phone: '0912345678',
+      line: 'fearstar_line',
+      wechat: 'fearstar_wechat',
+      preferredMethod: ContactMethod.LINE
+    },
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date('2024-07-01'),
   },
@@ -24,6 +30,12 @@ export const mockUsers: User[] = [
     avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150',
     role: UserRole.TERMINATOR,
     isVerified: true,
+    contactInfo: {
+      phone: '0987654321',
+      line: 'master_lee_pest',
+      telegram: '@masterlee_pest',
+      preferredMethod: ContactMethod.PHONE
+    },
     createdAt: new Date('2023-06-01'),
     updatedAt: new Date('2024-07-01'),
   }

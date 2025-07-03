@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import { Bug, List, MessageSquare, User } from 'lucide-react-native'
+import { Bug, List, User } from 'lucide-react-native'
 import { useTheme } from '@/shared/theme'
 import { FearStarTabParamList, TerminatorTabParamList } from '@/shared/types'
 
@@ -12,7 +12,6 @@ type MainTabParamList = FearStarTabParamList
 // 導入畫面組件
 import { CreateTaskScreen } from '@/screens/create-task/CreateTaskScreen'
 import { TasksScreen } from '@/screens/tasks/TasksScreen'
-import { MessagesScreen } from '@/screens/messages/MessagesScreen'
 import { ProfileScreen } from '@/screens/profile/ProfileScreen'
 
 const Tab = createBottomTabNavigator<MainTabParamList>()
@@ -35,8 +34,6 @@ export const MainNavigator = () => {
               return <Bug {...iconProps} />
             case 'TaskList':
               return <List {...iconProps} />
-            case 'Messages':
-              return <MessageSquare {...iconProps} />
             case 'Profile':
               return <User {...iconProps} />
             default:
@@ -68,11 +65,6 @@ export const MainNavigator = () => {
         name="TaskList" 
         component={TasksScreen}
         options={{ title: '任務' }}
-      />
-      <Tab.Screen 
-        name="Messages" 
-        component={MessagesScreen}
-        options={{ title: '聊天室' }}
       />
       <Tab.Screen 
         name="Profile" 

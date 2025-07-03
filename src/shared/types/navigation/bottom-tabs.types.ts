@@ -3,7 +3,6 @@
 export type MainTabParamList = {
   Home: undefined
   Tasks: undefined
-  Messages: undefined
   Profile: undefined
 }
 
@@ -11,7 +10,6 @@ export type MainTabParamList = {
 export type FearStarTabParamList = {
   PublishTask: undefined    // 發任務
   TaskList: undefined      // 任務
-  Messages: undefined      // 訊息
   Profile: undefined       // 我的
 }
 
@@ -19,6 +17,5 @@ export type FearStarTabParamList = {
 export type TerminatorTabParamList = {
   TaskWall: undefined      // 任務牆
   MyTasks: undefined       // 我的任務
-  Messages: undefined      // 訊息
   Profile: undefined       // 我的
 }

@@ -370,6 +370,7 @@ export const MyTasksScreen = () => {
                 task={task}
                 onPress={handleTaskPress}
                 variant="default"
+                showContactInfo={activeTab === 'ongoing' || activeTab === 'completed'}
               />
             ))
           ) : (

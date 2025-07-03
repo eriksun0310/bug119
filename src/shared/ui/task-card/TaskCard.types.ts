@@ -8,6 +8,7 @@ export interface TaskCardProps extends Omit<TouchableOpacityProps, 'onPress'> {
   variant?: 'default' | 'compact'
   showDistance?: boolean
   distance?: number
+  showContactInfo?: boolean
   onPress?: (task: Task) => void
   onAccept?: (task: Task) => void
 }

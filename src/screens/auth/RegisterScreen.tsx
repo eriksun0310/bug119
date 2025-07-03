@@ -5,6 +5,7 @@ import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { useTheme } from '@/shared/theme'
 import { Button, Input, Card } from '@/shared/ui'
+import { ContactMethod } from '@/shared/types'
 
 export const RegisterScreen = () => {
   const { theme } = useTheme()
@@ -13,11 +14,16 @@ export const RegisterScreen = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [phone, setPhone] = useState('')
+  const [line, setLine] = useState('')
+  const [wechat, setWechat] = useState('')
+  const [telegram, setTelegram] = useState('')
+  const [preferredMethod, setPreferredMethod] = useState<ContactMethod>(ContactMethod.PHONE)
   const [loading, setLoading] = useState(false)
   
   const handleRegister = async () => {
-    if (!name || !email || !password || !confirmPassword) {
-      Alert.alert('錯誤', '請填寫所有欄位')
+    if (!name || !email || !password || !confirmPassword || !phone) {
+      Alert.alert('錯誤', '請填寫所有必填欄位')
       return
     }
     
@@ -63,6 +69,18 @@ export const RegisterScreen = () => {
     form: {
       gap: theme.spacing.md,
     },
+    sectionTitle: {
+      fontSize: theme.fontSize.lg,
+      fontWeight: '600',
+      color: theme.colors.text,
+      marginTop: theme.spacing.lg,
+      marginBottom: theme.spacing.sm,
+    },
+    optionalLabel: {
+      fontSize: theme.fontSize.sm,
+      color: theme.colors.textSecondary,
+      marginLeft: theme.spacing.xs,
+    },
   })
   
   return (
@@ -103,6 +121,37 @@ export const RegisterScreen = () => {
               onChangeText={setConfirmPassword}
               placeholder="請再次輸入密碼"
               secureTextEntry
+            />
+            
+            <Text style={styles.sectionTitle}>通訊方式</Text>
+            
+            <Input
+              label="電話號碼"
+              value={phone}
+              onChangeText={setPhone}
+              placeholder="請輸入電話號碼（必填）"
+              keyboardType="phone-pad"
+            />
+            
+            <Input
+              label="LINE ID"
+              value={line}
+              onChangeText={setLine}
+              placeholder="請輸入 LINE ID（選填）"
+            />
+            
+            <Input
+              label="WeChat ID"
+              value={wechat}
+              onChangeText={setWechat}
+              placeholder="請輸入 WeChat ID（選填）"
+            />
+            
+            <Input
+              label="Telegram"
+              value={telegram}
+              onChangeText={setTelegram}
+              placeholder="請輸入 Telegram（選填）"
             />
             
             <Button

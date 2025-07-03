@@ -8,7 +8,10 @@ import {
   DollarSign, 
   Bug, 
   Calendar,
-  Timer 
+  Timer,
+  Phone,
+  MessageSquare,
+  User as UserIcon
 } from 'lucide-react-native'
 import { useTheme } from '@/shared/theme'
 import { TaskCardProps } from './TaskCard.types'
@@ -18,6 +21,8 @@ import {
   getPriorityDisplayInfo,
   getTaskStatusDisplayName 
 } from '@/shared/mocks'
+import { mockUsers } from '@/shared/mocks/users.mock'
+import { ContactMethod } from '@/shared/types'
 
 /**
  * 任務卡片元件
@@ -28,6 +33,7 @@ export const TaskCard: FC<TaskCardProps> = ({
   variant = 'default',
   showDistance = false,
   distance,
+  showContactInfo = false,
   onPress,
   onAccept,
   style,
@@ -67,6 +73,25 @@ export const TaskCard: FC<TaskCardProps> = ({
       return `$${task.budget.min}`
     }
     return `$${task.budget.min} - $${task.budget.max}`
+  }
+  
+  // 獲取客戶資訊
+  const customer = mockUsers.find(u => u.id === task.createdBy)
+  
+  // 獲取聯絡方式顯示名稱
+  const getContactMethodName = (method: ContactMethod): string => {
+    switch (method) {
+      case ContactMethod.PHONE:
+        return '電話'
+      case ContactMethod.LINE:
+        return 'LINE'
+      case ContactMethod.WECHAT:
+        return 'WeChat'
+      case ContactMethod.TELEGRAM:
+        return 'Telegram'
+      default:
+        return '電話'
+    }
   }
   
   const containerStyle = variant === 'compact' 
@@ -113,7 +138,7 @@ export const TaskCard: FC<TaskCardProps> = ({
       <View style={styles.infoRow}>
         <MapPin size={16} color={theme.colors.textSecondary} style={styles.infoIcon} />
         <Text style={styles.infoText} numberOfLines={1}>
-          {task.location.district}, {task.location.city}
+          {showContactInfo ? task.location.address : `${task.location.district}, ${task.location.city}`}
         </Text>
         {showDistance && distance && (
           <Text style={[styles.infoText, { textAlign: 'right' }]}>
@@ -121,6 +146,37 @@ export const TaskCard: FC<TaskCardProps> = ({
           </Text>
         )}
       </View>
+      
+      {/* 客戶聯絡資訊 - 只在進行中和已完成任務顯示 */}
+      {showContactInfo && customer && (
+        <>
+          <View style={styles.infoRow}>
+            <UserIcon size={16} color={theme.colors.textSecondary} style={styles.infoIcon} />
+            <Text style={styles.infoText}>
+              客戶：{customer.name}
+            </Text>
+          </View>
+          
+          <View style={styles.infoRow}>
+            <Phone size={16} color={theme.colors.textSecondary} style={styles.infoIcon} />
+            <Text style={styles.infoText}>
+              {customer.contactInfo.phone}
+            </Text>
+          </View>
+          
+          {customer.contactInfo.preferredMethod !== ContactMethod.PHONE && (
+            <View style={styles.infoRow}>
+              <MessageSquare size={16} color={theme.colors.textSecondary} style={styles.infoIcon} />
+              <Text style={styles.infoText}>
+                偏好：{getContactMethodName(customer.contactInfo.preferredMethod)}
+                {customer.contactInfo.preferredMethod === ContactMethod.LINE && customer.contactInfo.line && ` (${customer.contactInfo.line})`}
+                {customer.contactInfo.preferredMethod === ContactMethod.WECHAT && customer.contactInfo.wechat && ` (${customer.contactInfo.wechat})`}
+                {customer.contactInfo.preferredMethod === ContactMethod.TELEGRAM && customer.contactInfo.telegram && ` (${customer.contactInfo.telegram})`}
+              </Text>
+            </View>
+          )}
+        </>
+      )}
       
       {/* 時間 */}
       <View style={styles.infoRow}>

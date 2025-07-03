@@ -14,6 +14,7 @@ export interface User {
   avatar?: string
   role: UserRole
   isVerified: boolean
+  contactInfo: ContactInfo       // 通訊方式
   createdAt: Date
   updatedAt: Date
 }
@@ -52,4 +53,20 @@ export enum PestType {
   MOSQUITO = 'mosquito',        // 蚊子
   SPIDER = 'spider',            // 蜘蛛
   OTHER = 'other'               // 其他
+}
+
+// 通訊方式
+export interface ContactInfo {
+  phone: string                  // 電話號碼（必填）
+  line?: string                  // LINE ID
+  wechat?: string               // WeChat ID
+  telegram?: string             // Telegram
+  preferredMethod: ContactMethod // 偏好的聯絡方式
+}
+
+export enum ContactMethod {
+  PHONE = 'phone',
+  LINE = 'line',
+  WECHAT = 'wechat',
+  TELEGRAM = 'telegram'
 }

@@ -67,15 +67,15 @@ export const TaskDetailScreen: React.FC = () => {
       
       Alert.alert(
         '接案成功！',
-        '您已成功接受此任務，請盡快與客戶聯繫確認服務時間和詳細需求。',
+        '您已成功接受此任務。請在「我的任務」中查看任務進度，進行中和已完成的任務才會顯示客戶聯絡資訊。',
         [
           { 
-            text: '查看聯絡資訊', 
-            onPress: () => console.log('查看聯絡資訊') 
-          },
-          { 
-            text: '稍後處理', 
-            style: 'cancel' 
+            text: '確定', 
+            onPress: () => {
+              // 更新任務狀態為已指派
+              // 這裡實際會呼叫 API 更新狀態
+              console.log('任務狀態更新為已指派')
+            }
           }
         ]
       )
@@ -86,24 +86,13 @@ export const TaskDetailScreen: React.FC = () => {
     }
   }
   
-  // 處理聯絡客戶
-  const handleContactCustomer = () => {
-    Alert.alert(
-      '聯絡客戶',
-      '選擇聯絡方式',
-      [
-        { text: '撥打電話', onPress: () => console.log('撥打電話') },
-        { text: '發送訊息', onPress: () => console.log('發送訊息') },
-        { text: '取消', style: 'cancel' }
-      ]
-    )
-  }
   
   // 格式化時間
   const formatDateTime = (dateString: string) => {
     const date = new Date(dateString)
     return `${date.getMonth() + 1}/${date.getDate()} ${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`
   }
+  
   
   const styles = StyleSheet.create({
     container: {
@@ -266,6 +255,34 @@ export const TaskDetailScreen: React.FC = () => {
       marginTop: theme.spacing.sm,
       fontStyle: 'italic',
     },
+    contactInfoContainer: {
+      backgroundColor: theme.colors.background,
+      borderRadius: theme.borderRadius.lg,
+      padding: theme.spacing.md,
+      marginTop: theme.spacing.md,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+    },
+    contactInfoTitle: {
+      fontSize: theme.fontSize.md,
+      fontWeight: '600',
+      color: theme.colors.text,
+      marginBottom: theme.spacing.sm,
+    },
+    contactInfoRow: {
+      flexDirection: 'row',
+      marginBottom: theme.spacing.xs,
+    },
+    contactInfoLabel: {
+      fontSize: theme.fontSize.sm,
+      color: theme.colors.textSecondary,
+      width: 80,
+    },
+    contactInfoValue: {
+      fontSize: theme.fontSize.sm,
+      color: theme.colors.text,
+      flex: 1,
+    },
     imageGrid: {
       flexDirection: 'row',
       flexWrap: 'wrap',
@@ -287,14 +304,6 @@ export const TaskDetailScreen: React.FC = () => {
       backgroundColor: theme.colors.surface,
       borderTopWidth: 1,
       borderTopColor: theme.colors.border,
-    },
-    acceptButton: {
-      marginBottom: theme.spacing.sm,
-    },
-    contactButtonFull: {
-      backgroundColor: theme.colors.background,
-      borderWidth: 1,
-      borderColor: theme.colors.border,
     },
   })
   
@@ -357,7 +366,9 @@ export const TaskDetailScreen: React.FC = () => {
           
           <View style={styles.infoRow}>
             <MapPin size={20} color={theme.colors.textSecondary} />
-            <Text style={styles.infoText}>{task.location.address}</Text>
+            <Text style={styles.infoText}>
+              {task.location.district}, {task.location.city}
+            </Text>
           </View>
           
           <View style={styles.infoRow}>
@@ -410,8 +421,47 @@ export const TaskDetailScreen: React.FC = () => {
               </View>
             </View>
           </View>
+          
+          {/* 進行中的任務顯示聯絡資訊 */}
+          {task.status === TaskStatus.IN_PROGRESS && customer?.contactInfo && (
+            <View style={styles.contactInfoContainer}>
+              <Text style={styles.contactInfoTitle}>聯絡資訊</Text>
+              <View style={styles.contactInfoRow}>
+                <Text style={styles.contactInfoLabel}>電話：</Text>
+                <Text style={styles.contactInfoValue}>{customer.contactInfo.phone}</Text>
+              </View>
+              {customer.contactInfo.line && (
+                <View style={styles.contactInfoRow}>
+                  <Text style={styles.contactInfoLabel}>LINE：</Text>
+                  <Text style={styles.contactInfoValue}>{customer.contactInfo.line}</Text>
+                </View>
+              )}
+              {customer.contactInfo.wechat && (
+                <View style={styles.contactInfoRow}>
+                  <Text style={styles.contactInfoLabel}>WeChat：</Text>
+                  <Text style={styles.contactInfoValue}>{customer.contactInfo.wechat}</Text>
+                </View>
+              )}
+              {customer.contactInfo.telegram && (
+                <View style={styles.contactInfoRow}>
+                  <Text style={styles.contactInfoLabel}>Telegram：</Text>
+                  <Text style={styles.contactInfoValue}>{customer.contactInfo.telegram}</Text>
+                </View>
+              )}
+              <View style={styles.contactInfoRow}>
+                <Text style={styles.contactInfoLabel}>偏好方式：</Text>
+                <Text style={styles.contactInfoValue}>
+                  {customer.contactInfo.preferredMethod === 'phone' && '電話'}
+                  {customer.contactInfo.preferredMethod === 'line' && 'LINE'}
+                  {customer.contactInfo.preferredMethod === 'wechat' && 'WeChat'}
+                  {customer.contactInfo.preferredMethod === 'telegram' && 'Telegram'}
+                </Text>
+              </View>
+            </View>
+          )}
+          
           {task.status === TaskStatus.PENDING && (
-            <Text style={styles.contactHint}>接案後可查看聯絡方式</Text>
+            <Text style={styles.contactHint}>接案後請在「我的任務」中查看進度，進行中的任務才會顯示客戶詳細資訊</Text>
           )}
         </View>
         
@@ -449,30 +499,6 @@ export const TaskDetailScreen: React.FC = () => {
         </View>
       )}
       
-      {/* 已接案的聯絡按鈕 */}
-      {(task.status === TaskStatus.ASSIGNED || task.status === TaskStatus.IN_PROGRESS) && (
-        <View style={styles.actionButtons}>
-          <Button
-            variant="primary"
-            onPress={() => handleContactCustomer()}
-            style={styles.acceptButton}
-            fullWidth
-          >
-            <Phone size={16} color={theme.colors.primary} />
-            <Text> 聯絡客戶</Text>
-          </Button>
-          
-          <Button
-            variant="secondary"
-            onPress={() => console.log('發送訊息')}
-            style={styles.contactButtonFull}
-            fullWidth
-          >
-            <MessageCircle size={16} color={theme.colors.text} />
-            <Text> 發送訊息</Text>
-          </Button>
-        </View>
-      )}
     </View>
   )
 }

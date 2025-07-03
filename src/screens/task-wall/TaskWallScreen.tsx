@@ -58,7 +58,8 @@ export const TaskWallScreen = () => {
       const matchesSearch = 
         task.title.toLowerCase().includes(query) ||
         task.description.toLowerCase().includes(query) ||
-        task.location.address.toLowerCase().includes(query) ||
+        task.location.city.toLowerCase().includes(query) ||
+        task.location.district.toLowerCase().includes(query) ||
         getPestTypeDisplayName(task.pestType).includes(query)
       if (!matchesSearch) return false
     }

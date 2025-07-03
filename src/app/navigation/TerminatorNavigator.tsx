@@ -2,14 +2,13 @@
 
 import React from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import { Search, CheckSquare, MessageSquare, User } from 'lucide-react-native'
+import { Search, CheckSquare, User } from 'lucide-react-native'
 import { useTheme } from '@/shared/theme'
 import { TerminatorTabParamList } from '@/shared/types'
 
 // 導入畫面組件
 import { TaskWallScreen } from '@/screens/task-wall/TaskWallScreen'
 import { MyTasksScreen } from '@/screens/my-tasks/MyTasksScreen'
-import { MessagesScreen } from '@/screens/messages/MessagesScreen'
 import { ProfileScreen } from '@/screens/profile/ProfileScreen'
 
 const Tab = createBottomTabNavigator<TerminatorTabParamList>()
@@ -32,8 +31,6 @@ export const TerminatorNavigator = () => {
               return <Search {...iconProps} />
             case 'MyTasks':
               return <CheckSquare {...iconProps} />
-            case 'Messages':
-              return <MessageSquare {...iconProps} />
             case 'Profile':
               return <User {...iconProps} />
             default:
@@ -65,11 +62,6 @@ export const TerminatorNavigator = () => {
         name="MyTasks" 
         component={MyTasksScreen}
         options={{ title: '我的任務' }}
-      />
-      <Tab.Screen 
-        name="Messages" 
-        component={MessagesScreen}
-        options={{ title: '聊天室' }}
       />
       <Tab.Screen 
         name="Profile" 
