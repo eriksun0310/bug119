@@ -13,6 +13,7 @@ import { AuthNavigator } from './AuthNavigator'
 import { MainNavigator } from './MainNavigator'
 import { TerminatorNavigator } from './TerminatorNavigator'
 import { TaskDetailScreen } from '@/screens/task-detail'
+import { TaskApplicantsScreen } from '@/screens/task-applicants'
 import { EditProfileScreen } from '@/screens/edit-profile'
 import { MessageDetailScreen } from '@/screens/message-detail'
 import { NotificationsScreen } from '@/screens/notifications'
@@ -120,6 +121,14 @@ export const RootNavigator = () => {
         <Stack.Screen 
           name="TaskDetail" 
           component={TaskDetailScreen}
+          options={{
+            headerShown: false,
+            presentation: 'card',
+          }}
+        />
+        <Stack.Screen 
+          name="TaskApplicants" 
+          component={TaskApplicantsScreen}
           options={{
             headerShown: false,
             presentation: 'card',

@@ -5,6 +5,7 @@ export type RootStackParamList = {
   Auth: undefined
   Main: undefined
   TaskDetail: { taskId: string }
+  TaskApplicants: { taskId: string }
   EditProfile: undefined
   MessageDetail: { conversationId: string }
   Chat: { conversationId: string }
