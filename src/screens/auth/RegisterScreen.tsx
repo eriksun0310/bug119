@@ -4,42 +4,99 @@ import React, { useState } from 'react'
 import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { useTheme } from '@/shared/theme'
-import { Button, Input, Card } from '@/shared/ui'
+import { Button, Input, Card, SegmentedControl } from '@/shared/ui'
 import { ContactMethod } from '@/shared/types'
+import { CONTACT_METHOD_OPTIONS } from '@/shared/config/options.config'
 
 export const RegisterScreen = () => {
   const { theme } = useTheme()
   const navigation = useNavigation<any>()
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [phone, setPhone] = useState('')
-  const [line, setLine] = useState('')
-  const [wechat, setWechat] = useState('')
-  const [telegram, setTelegram] = useState('')
-  const [preferredMethod, setPreferredMethod] = useState<ContactMethod>(ContactMethod.PHONE)
+  
+  // 表單狀態統一管理
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    phone: '',
+    line: '',
+    telegram: '',
+    preferredMethod: ContactMethod.PHONE
+  })
+  
+  const [errors, setErrors] = useState<Partial<typeof form>>({})
   const [loading, setLoading] = useState(false)
   
-  const handleRegister = async () => {
-    if (!name || !email || !password || !confirmPassword || !phone) {
-      Alert.alert('錯誤', '請填寫所有必填欄位')
-      return
+  // 統一的表單更新函數
+  const handleInputChange = (field: keyof typeof form) => (value: string | ContactMethod) => {
+    setForm(prev => ({ ...prev, [field]: value }))
+    // 清除該欄位的錯誤
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: undefined }))
+    }
+  }
+  
+  // 表單驗證函數
+  const validateForm = (): boolean => {
+    const newErrors: Partial<typeof form> = {}
+    
+    if (!form.name.trim()) {
+      newErrors.name = '請輸入姓名'
     }
     
-    if (password !== confirmPassword) {
-      Alert.alert('錯誤', '密碼確認不符')
+    if (!form.email.trim()) {
+      newErrors.email = '請輸入電子郵件'
+    } else if (!/\S+@\S+\.\S+/.test(form.email)) {
+      newErrors.email = '請輸入有效的電子郵件格式'
+    }
+    
+    if (!form.password) {
+      newErrors.password = '請輸入密碼'
+    } else if (form.password.length < 6) {
+      newErrors.password = '密碼至少需要6個字元'
+    }
+    
+    if (!form.confirmPassword) {
+      newErrors.confirmPassword = '請確認密碼'
+    } else if (form.password !== form.confirmPassword) {
+      newErrors.confirmPassword = '密碼確認不符'
+    }
+    
+    // 根據偏好聯絡方式驗證對應欄位
+    if (form.preferredMethod === ContactMethod.PHONE) {
+      if (!form.phone.trim()) {
+        newErrors.phone = '請輸入手機號碼'
+      } else if (!/^09\d{8}$/.test(form.phone)) {
+        newErrors.phone = '請輸入有效的手機號碼格式'
+      }
+    } else if (form.preferredMethod === ContactMethod.LINE) {
+      if (!form.line.trim()) {
+        newErrors.line = '請輸入 LINE ID'
+      }
+    }
+    
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+  
+  const handleRegister = async () => {
+    if (!validateForm()) {
       return
     }
     
     setLoading(true)
-    // 模擬註冊過程
-    setTimeout(() => {
-      setLoading(false)
+    try {
+      // 模擬註冊 API 呼叫
+      await new Promise(resolve => setTimeout(resolve, 1500))
+      
       Alert.alert('成功', '註冊完成！', [
         { text: '確定', onPress: () => navigation.goBack() }
       ])
-    }, 1500)
+    } catch (error) {
+      Alert.alert('錯誤', '註冊失敗，請稍後再試')
+    } finally {
+      setLoading(false)
+    }
   }
   
   const styles = StyleSheet.create({
@@ -81,6 +138,12 @@ export const RegisterScreen = () => {
       color: theme.colors.textSecondary,
       marginLeft: theme.spacing.xs,
     },
+    fieldLabel: {
+      fontSize: theme.fontSize.md,
+      fontWeight: '500',
+      color: theme.colors.text,
+      marginBottom: theme.spacing.sm,
+    },
   })
   
   return (
@@ -93,66 +156,72 @@ export const RegisterScreen = () => {
           <View style={styles.form}>
             <Input
               label="姓名"
-              value={name}
-              onChangeText={setName}
+              value={form.name}
+              onChangeText={handleInputChange('name')}
               placeholder="請輸入姓名"
+              error={errors.name}
             />
             
             <Input
               label="電子信箱"
-              value={email}
-              onChangeText={setEmail}
+              value={form.email}
+              onChangeText={handleInputChange('email')}
               placeholder="請輸入電子信箱"
               keyboardType="email-address"
               autoCapitalize="none"
+              error={errors.email}
             />
             
             <Input
               label="密碼"
-              value={password}
-              onChangeText={setPassword}
+              value={form.password}
+              onChangeText={handleInputChange('password')}
               placeholder="請輸入密碼"
               secureTextEntry
+              error={errors.password}
             />
             
             <Input
               label="確認密碼"
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
+              value={form.confirmPassword}
+              onChangeText={handleInputChange('confirmPassword')}
               placeholder="請再次輸入密碼"
               secureTextEntry
+              error={errors.confirmPassword}
             />
             
-            <Text style={styles.sectionTitle}>通訊方式</Text>
+            <Text style={styles.sectionTitle}>聯絡方式</Text>
             
-            <Input
-              label="電話號碼"
-              value={phone}
-              onChangeText={setPhone}
-              placeholder="請輸入電話號碼（必填）"
-              keyboardType="phone-pad"
-            />
+            <View style={{ marginBottom: theme.spacing.md }}>
+              <Text style={styles.fieldLabel}>偏好聯絡方式</Text>
+              <SegmentedControl
+                options={CONTACT_METHOD_OPTIONS}
+                value={form.preferredMethod}
+                onValueChange={handleInputChange('preferredMethod')}
+              />
+            </View>
             
-            <Input
-              label="LINE ID"
-              value={line}
-              onChangeText={setLine}
-              placeholder="請輸入 LINE ID（選填）"
-            />
+            {/* 根據選擇的聯絡方式顯示對應輸入框 */}
+            {form.preferredMethod === ContactMethod.PHONE && (
+              <Input
+                label="手機號碼"
+                value={form.phone}
+                onChangeText={handleInputChange('phone')}
+                placeholder="請輸入手機號碼"
+                keyboardType="phone-pad"
+                error={errors.phone}
+              />
+            )}
             
-            <Input
-              label="WeChat ID"
-              value={wechat}
-              onChangeText={setWechat}
-              placeholder="請輸入 WeChat ID（選填）"
-            />
-            
-            <Input
-              label="Telegram"
-              value={telegram}
-              onChangeText={setTelegram}
-              placeholder="請輸入 Telegram（選填）"
-            />
+            {form.preferredMethod === ContactMethod.LINE && (
+              <Input
+                label="LINE ID"
+                value={form.line}
+                onChangeText={handleInputChange('line')}
+                placeholder="請輸入 LINE ID"
+                error={errors.line}
+              />
+            )}
             
             <Button
               variant="primary"

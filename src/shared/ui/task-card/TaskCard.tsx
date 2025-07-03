@@ -85,8 +85,6 @@ export const TaskCard: FC<TaskCardProps> = ({
         return '電話'
       case ContactMethod.LINE:
         return 'LINE'
-      case ContactMethod.WECHAT:
-        return 'WeChat'
       case ContactMethod.TELEGRAM:
         return 'Telegram'
       default:
@@ -170,7 +168,6 @@ export const TaskCard: FC<TaskCardProps> = ({
               <Text style={styles.infoText}>
                 偏好：{getContactMethodName(customer.contactInfo.preferredMethod)}
                 {customer.contactInfo.preferredMethod === ContactMethod.LINE && customer.contactInfo.line && ` (${customer.contactInfo.line})`}
-                {customer.contactInfo.preferredMethod === ContactMethod.WECHAT && customer.contactInfo.wechat && ` (${customer.contactInfo.wechat})`}
                 {customer.contactInfo.preferredMethod === ContactMethod.TELEGRAM && customer.contactInfo.telegram && ` (${customer.contactInfo.telegram})`}
               </Text>
             </View>

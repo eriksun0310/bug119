@@ -6,6 +6,7 @@ import { DollarSign } from 'lucide-react-native'
 import { useTheme } from '@/shared/theme'
 import { Input } from '@/shared/ui'
 import { BudgetSelectorProps, BudgetRange } from './BudgetSelector.types'
+import { BUDGET_PRESET_OPTIONS } from '@/shared/config/options.config'
 
 /**
  * 預算範圍選擇器
@@ -20,12 +21,6 @@ export const BudgetSelector: FC<BudgetSelectorProps> = ({
   const { theme } = useTheme()
   const [customMode, setCustomMode] = useState(false)
   
-  const presetBudgets = [
-    { min: 500, max: 1000, label: '$500 - $1,000' },
-    { min: 1000, max: 2000, label: '$1,000 - $2,000' },
-    { min: 2000, max: 3000, label: '$2,000 - $3,000' },
-    { min: 3000, max: 5000, label: '$3,000 - $5,000' },
-  ]
   
   const handlePresetSelect = (budget: BudgetRange) => {
     setCustomMode(false)
@@ -130,7 +125,7 @@ export const BudgetSelector: FC<BudgetSelectorProps> = ({
       
       {/* 預設範圍選項 */}
       <View style={styles.presetsContainer}>
-        {presetBudgets.map((preset, index) => (
+        {BUDGET_PRESET_OPTIONS.map((preset, index) => (
           <TouchableOpacity
             key={index}
             style={[

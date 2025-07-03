@@ -19,16 +19,19 @@ import {
   Phone,
   MapPin,
   Info,
-  Save
+  Save,
+  MessageCircle
 } from 'lucide-react-native'
 import { useTheme } from '@/shared/theme'
 import { useAuth } from '@/shared/hooks'
-import { Button, Input, Card } from '@/shared/ui'
+import { Button, Input, SegmentedControl } from '@/shared/ui'
 import { showAlert } from '@/shared/utils'
+import { ContactMethod } from '@/shared/types'
+import { CONTACT_METHOD_OPTIONS } from '@/shared/config/options.config'
 
 export const EditProfileScreen = () => {
   const { theme } = useTheme()
-  const { user, logout } = useAuth()
+  const { user } = useAuth()
   const navigation = useNavigation()
   const insets = useSafeAreaInsets()
   const [loading, setLoading] = useState(false)
@@ -37,9 +40,11 @@ export const EditProfileScreen = () => {
   const [form, setForm] = useState({
     name: user?.name || '',
     email: user?.email || '',
-    phone: user?.phone || '',
+    phone: user?.contactInfo?.phone || '',
+    line: user?.contactInfo?.line || '',
     location: '',
     bio: '',
+    preferredMethod: user?.contactInfo?.preferredMethod || ContactMethod.PHONE,
   })
   
   const [errors, setErrors] = useState<Partial<typeof form>>({})
@@ -58,8 +63,19 @@ export const EditProfileScreen = () => {
       newErrors.email = '請輸入有效的電子郵件'
     }
     
-    if (form.phone && !/^09\d{8}$/.test(form.phone)) {
-      newErrors.phone = '請輸入有效的手機號碼'
+    // 根據選擇的聯絡方式驗證對應欄位
+    if (form.preferredMethod === ContactMethod.PHONE) {
+      if (!form.phone.trim()) {
+        newErrors.phone = '請輸入手機號碼'
+      } else if (!/^09\d{8}$/.test(form.phone)) {
+        newErrors.phone = '請輸入有效的手機號碼'
+      }
+    }
+    
+    if (form.preferredMethod === ContactMethod.LINE) {
+      if (!form.line.trim()) {
+        newErrors.line = '請輸入 LINE ID'
+      }
     }
     
     setErrors(newErrors)
@@ -209,6 +225,21 @@ export const EditProfileScreen = () => {
       fontWeight: '600',
       color: theme.colors.secondary,
     },
+    contactHint: {
+      fontSize: theme.fontSize.sm,
+      color: theme.colors.textSecondary,
+      marginBottom: theme.spacing.md,
+      fontStyle: 'italic',
+    },
+    preferredMethodContainer: {
+      marginTop: theme.spacing.md,
+    },
+    preferredMethodLabel: {
+      fontSize: theme.fontSize.md,
+      fontWeight: '500',
+      color: theme.colors.text,
+      marginBottom: theme.spacing.sm,
+    },
   })
   
   return (
@@ -288,22 +319,51 @@ export const EditProfileScreen = () => {
             />
             
             <Input
-              label="手機號碼"
-              value={form.phone}
-              onChangeText={(phone) => setForm({ ...form, phone })}
-              placeholder="請輸入手機號碼"
-              keyboardType="phone-pad"
-              error={errors.phone}
-              leftIcon={<Phone size={16} color={theme.colors.textSecondary} />}
-            />
-            
-            <Input
               label="居住地區"
               value={form.location}
               onChangeText={(location) => setForm({ ...form, location })}
               placeholder="例：台北市大安區"
               leftIcon={<MapPin size={16} color={theme.colors.textSecondary} />}
             />
+          </View>
+          
+          {/* 聯絡方式 */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>聯絡方式</Text>
+            <Text style={styles.contactHint}>選擇您偏好的聯絡方式</Text>
+            
+            <View style={styles.preferredMethodContainer}>
+              <Text style={styles.preferredMethodLabel}>聯絡方式：</Text>
+              <SegmentedControl
+                options={CONTACT_METHOD_OPTIONS}
+                value={form.preferredMethod}
+                onValueChange={(value: ContactMethod) => setForm({ ...form, preferredMethod: value })}
+              />
+            </View>
+            
+            {/* 根據選擇的聯絡方式顯示對應輸入框 */}
+            {form.preferredMethod === ContactMethod.PHONE && (
+              <Input
+                label="手機號碼"
+                value={form.phone}
+                onChangeText={(phone) => setForm({ ...form, phone })}
+                placeholder="請輸入手機號碼"
+                keyboardType="phone-pad"
+                error={errors.phone}
+                leftIcon={<Phone size={16} color={theme.colors.textSecondary} />}
+              />
+            )}
+            
+            {form.preferredMethod === ContactMethod.LINE && (
+              <Input
+                label="LINE ID"
+                value={form.line}
+                onChangeText={(line) => setForm({ ...form, line })}
+                placeholder="請輸入 LINE ID"
+                error={errors.line}
+                leftIcon={<MessageCircle size={16} color="#00B900" />}
+              />
+            )}
           </View>
           
           {/* 個人簡介 */}

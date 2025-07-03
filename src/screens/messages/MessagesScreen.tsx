@@ -5,7 +5,7 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, Platform, Alert } f
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
-import { Bell, Trash2, X, Check } from 'lucide-react-native'
+import { Bell, Trash2, X } from 'lucide-react-native'
 import { useTheme } from '@/shared/theme'
 import { MessageItem } from '@/shared/ui/message-item'
 import { RootStackParamList } from '@/shared/types'

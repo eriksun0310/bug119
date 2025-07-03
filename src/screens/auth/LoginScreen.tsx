@@ -11,19 +11,51 @@ export const LoginScreen = () => {
   const { theme } = useTheme()
   const { login } = useAuth()
   const navigation = useNavigation<any>()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  
+  // 表單狀態統一管理
+  const [form, setForm] = useState({
+    email: '',
+    password: ''
+  })
+  
+  const [errors, setErrors] = useState<Partial<typeof form>>({})
   const [loading, setLoading] = useState(false)
   
+  // 統一的表單更新函數
+  const handleInputChange = (field: keyof typeof form) => (value: string) => {
+    setForm(prev => ({ ...prev, [field]: value }))
+    // 清除該欄位的錯誤
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: undefined }))
+    }
+  }
+  
+  // 表單驗證函數
+  const validateForm = (): boolean => {
+    const newErrors: Partial<typeof form> = {}
+    
+    if (!form.email.trim()) {
+      newErrors.email = '請輸入電子郵件'
+    } else if (!/\S+@\S+\.\S+/.test(form.email)) {
+      newErrors.email = '請輸入有效的電子郵件格式'
+    }
+    
+    if (!form.password) {
+      newErrors.password = '請輸入密碼'
+    }
+    
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+  
   const handleLogin = async () => {
-    if (!email || !password) {
-      Alert.alert('錯誤', '請填寫所有欄位')
+    if (!validateForm()) {
       return
     }
     
     setLoading(true)
     try {
-      const success = await login(email, password)
+      const success = await login(form.email, form.password)
       if (success) {
         navigation.replace('Main')
       } else {
@@ -39,12 +71,20 @@ export const LoginScreen = () => {
   // 快速填入測試帳號
   const fillTestAccount = (type: 'fearStar' | 'terminator') => {
     if (type === 'fearStar') {
-      setEmail('fearstar@test.com')
-      setPassword('123456')
+      setForm(prev => ({
+        ...prev,
+        email: 'fearstar@test.com',
+        password: '123456'
+      }))
     } else {
-      setEmail('terminator@test.com')
-      setPassword('123456')
+      setForm(prev => ({
+        ...prev,
+        email: 'terminator@test.com',
+        password: '123456'
+      }))
     }
+    // 清除錯誤
+    setErrors({})
   }
   
   const styles = StyleSheet.create({
@@ -119,19 +159,21 @@ export const LoginScreen = () => {
           <View style={styles.form}>
             <Input
               label="電子信箱"
-              value={email}
-              onChangeText={setEmail}
+              value={form.email}
+              onChangeText={handleInputChange('email')}
               placeholder="請輸入電子信箱"
               keyboardType="email-address"
               autoCapitalize="none"
+              error={errors.email}
             />
             
             <Input
               label="密碼"
-              value={password}
-              onChangeText={setPassword}
+              value={form.password}
+              onChangeText={handleInputChange('password')}
               placeholder="請輸入密碼"
               secureTextEntry
+              error={errors.password}
             />
             
             <Button

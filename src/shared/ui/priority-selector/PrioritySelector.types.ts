@@ -1,6 +1,6 @@
 // 優先程度選擇器型別定義
 
-import { TaskPriority } from '@/shared/types'
+import { TaskPriority } from '../../types'
 
 export interface PrioritySelectorProps {
   value?: TaskPriority

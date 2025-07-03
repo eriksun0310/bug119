@@ -8,11 +8,11 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useTheme } from '@/shared/theme'
 import { useAuth } from '@/shared/hooks'
+import { Button, Card } from '@/shared/ui'
+import { showAlert } from '@/shared/utils'
 import { UserRole, RootStackParamList } from '@/shared/types'
 
 type ProfileNavigationProp = NativeStackNavigationProp<RootStackParamList, 'EditProfile'>
-import { Button, Card } from '@/shared/ui'
-import { showAlert } from '@/shared/utils'
 
 export const ProfileScreen = () => {
   const { theme, toggleTheme, themeMode } = useTheme()

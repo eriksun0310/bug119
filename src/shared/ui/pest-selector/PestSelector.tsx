@@ -2,11 +2,9 @@
 
 import React, { FC } from 'react'
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native'
-import { Bug } from 'lucide-react-native'
 import { useTheme } from '@/shared/theme'
-import { PestType } from '@/shared/types'
-import { getPestTypeDisplayName } from '@/shared/mocks'
 import { PestSelectorProps } from './PestSelector.types'
+import { PEST_TYPE_OPTIONS } from '@/shared/config/options.config'
 
 /**
  * 害蟲類型選擇器
@@ -20,38 +18,6 @@ export const PestSelector: FC<PestSelectorProps> = ({
 }) => {
   const { theme } = useTheme()
   
-  const pestTypes = [
-    {
-      type: PestType.COCKROACH,
-      name: '蟑螂',
-      icon: Bug,
-      description: '常見於廚房、浴室等潮濕環境'
-    },
-    {
-      type: PestType.ANT,
-      name: '螞蟻',
-      icon: Bug,
-      description: '成群出現，喜歡甜食和食物殘渣'
-    },
-    {
-      type: PestType.MOSQUITO,
-      name: '蚊子',
-      icon: Bug,
-      description: '吸血昆蟲，傳播疾病風險'
-    },
-    {
-      type: PestType.SPIDER,
-      name: '蜘蛛',
-      icon: Bug,
-      description: '結網捕食，角落常見'
-    },
-    {
-      type: PestType.OTHER,
-      name: '其他',
-      icon: Bug,
-      description: '其他類型害蟲或不確定種類'
-    }
-  ]
   
   const styles = {
     container: {
@@ -116,7 +82,7 @@ export const PestSelector: FC<PestSelectorProps> = ({
       <Text style={styles.label}>{label}</Text>
       
       <View style={styles.grid}>
-        {pestTypes.map(pest => {
+        {PEST_TYPE_OPTIONS.map(pest => {
           const IconComponent = pest.icon
           const isSelected = value === pest.type
           

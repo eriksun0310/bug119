@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { View, Text, StyleSheet } from 'react-native'
-import { Plus, Bug, Shield, Star } from 'lucide-react-native'
+import { Plus } from 'lucide-react-native'
 import { useTheme } from '@/shared/theme'
 import { Button, Card } from '@/shared/ui'
 

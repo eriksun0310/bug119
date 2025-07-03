@@ -2,11 +2,10 @@
 
 import React, { FC } from 'react'
 import { View, Text, TouchableOpacity } from 'react-native'
-import { Clock, AlertTriangle, Zap } from 'lucide-react-native'
 import { useTheme } from '@/shared/theme'
 import { TaskPriority } from '@/shared/types'
-import { getPriorityDisplayInfo } from '@/shared/mocks'
 import { PrioritySelectorProps } from './PrioritySelector.types'
+import { PRIORITY_OPTIONS } from '@/shared/config/options.config'
 
 /**
  * 優先程度選擇器
@@ -20,29 +19,6 @@ export const PrioritySelector: FC<PrioritySelectorProps> = ({
 }) => {
   const { theme } = useTheme()
   
-  const priorities = [
-    {
-      type: TaskPriority.NORMAL,
-      name: '一般',
-      icon: Clock,
-      description: '可安排時間處理',
-      color: '#666666'
-    },
-    {
-      type: TaskPriority.URGENT,
-      name: '緊急',
-      icon: AlertTriangle,
-      description: '需要盡快處理',
-      color: '#FF9500'
-    },
-    {
-      type: TaskPriority.VERY_URGENT,
-      name: '非常緊急',
-      icon: Zap,
-      description: '立即需要處理',
-      color: '#FF3B30'
-    }
-  ]
   
   const styles = {
     container: {
@@ -103,7 +79,7 @@ export const PrioritySelector: FC<PrioritySelectorProps> = ({
       <Text style={styles.label}>{label}</Text>
       
       <View style={styles.optionsContainer}>
-        {priorities.map(priority => {
+        {PRIORITY_OPTIONS.map(priority => {
           const IconComponent = priority.icon
           const isSelected = value === priority.type
           

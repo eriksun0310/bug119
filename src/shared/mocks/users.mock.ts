@@ -15,7 +15,6 @@ export const mockUsers: User[] = [
     contactInfo: {
       phone: '0912345678',
       line: 'fearstar_line',
-      wechat: 'fearstar_wechat',
       preferredMethod: ContactMethod.LINE
     },
     createdAt: new Date('2024-01-01'),

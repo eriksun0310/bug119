@@ -59,7 +59,6 @@ export enum PestType {
 export interface ContactInfo {
   phone: string                  // 電話號碼（必填）
   line?: string                  // LINE ID
-  wechat?: string               // WeChat ID
   telegram?: string             // Telegram
   preferredMethod: ContactMethod // 偏好的聯絡方式
 }
@@ -67,6 +66,5 @@ export interface ContactInfo {
 export enum ContactMethod {
   PHONE = 'phone',
   LINE = 'line',
-  WECHAT = 'wechat',
   TELEGRAM = 'telegram'
 }

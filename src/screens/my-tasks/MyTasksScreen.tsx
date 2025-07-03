@@ -25,6 +25,7 @@ import { useAuth } from '@/shared/hooks'
 import { TaskCard } from '@/shared/ui'
 import { getAssignedTasks, mockTasks } from '@/shared/mocks'
 import { Task, TaskStatus, RootStackParamList } from '@/shared/types'
+import { TASK_TAB_OPTIONS } from '@/shared/config/options.config'
 
 type MyTasksNavigationProp = NativeStackNavigationProp<RootStackParamList>
 
@@ -135,26 +136,11 @@ export const MyTasksScreen = () => {
     navigation.navigate('Notifications')
   }
   
-  const tabs = [
-    {
-      key: 'ongoing' as TaskTab,
-      title: '進行中',
-      icon: Clock,
-      count: getTasksByTab('ongoing').length,
-    },
-    {
-      key: 'pending' as TaskTab,
-      title: '待確認',
-      icon: AlertCircle,
-      count: getTasksByTab('pending').length,
-    },
-    {
-      key: 'completed' as TaskTab,
-      title: '已完成',
-      icon: CheckCircle,
-      count: getTasksByTab('completed').length,
-    },
-  ]
+  const tabs = TASK_TAB_OPTIONS.map(tab => ({
+    ...tab,
+    key: tab.key as TaskTab,
+    count: getTasksByTab(tab.key as TaskTab).length,
+  }))
   
   const styles = StyleSheet.create({
     container: {

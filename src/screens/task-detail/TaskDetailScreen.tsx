@@ -25,7 +25,9 @@ import {
   MessageCircle,
   Bug,
   Timer,
-  Star
+  Star,
+  MessageSquare,
+  Send
 } from 'lucide-react-native'
 import { useTheme } from '@/shared/theme'
 import { useAuth } from '@/shared/hooks'
@@ -37,6 +39,7 @@ import {
 } from '@/shared/mocks'
 import { mockUsers, mockUserProfiles } from '@/shared/mocks/users.mock'
 import { Task, TaskStatus, RootStackParamList } from '@/shared/types'
+import { getContactMethodDisplayName } from '@/shared/config/options.config'
 
 type TaskDetailRouteProp = RouteProp<RootStackParamList, 'TaskDetail'>
 type TaskDetailNavigationProp = NativeStackNavigationProp<RootStackParamList, 'TaskDetail'>
@@ -271,7 +274,11 @@ export const TaskDetailScreen: React.FC = () => {
     },
     contactInfoRow: {
       flexDirection: 'row',
+      alignItems: 'center',
       marginBottom: theme.spacing.xs,
+    },
+    contactIcon: {
+      marginRight: theme.spacing.xs,
     },
     contactInfoLabel: {
       fontSize: theme.fontSize.sm,
@@ -422,28 +429,25 @@ export const TaskDetailScreen: React.FC = () => {
             </View>
           </View>
           
-          {/* 進行中的任務顯示聯絡資訊 */}
-          {task.status === TaskStatus.IN_PROGRESS && customer?.contactInfo && (
+          {/* 已媒合、進行中和已完成的任務顯示聯絡資訊 */}
+          {(task.status === TaskStatus.ASSIGNED || task.status === TaskStatus.IN_PROGRESS || task.status === TaskStatus.COMPLETED) && customer?.contactInfo && (
             <View style={styles.contactInfoContainer}>
               <Text style={styles.contactInfoTitle}>聯絡資訊</Text>
               <View style={styles.contactInfoRow}>
+                <Phone size={16} color={theme.colors.textSecondary} style={styles.contactIcon} />
                 <Text style={styles.contactInfoLabel}>電話：</Text>
                 <Text style={styles.contactInfoValue}>{customer.contactInfo.phone}</Text>
               </View>
               {customer.contactInfo.line && (
                 <View style={styles.contactInfoRow}>
+                  <MessageCircle size={16} color="#00B900" style={styles.contactIcon} />
                   <Text style={styles.contactInfoLabel}>LINE：</Text>
                   <Text style={styles.contactInfoValue}>{customer.contactInfo.line}</Text>
                 </View>
               )}
-              {customer.contactInfo.wechat && (
-                <View style={styles.contactInfoRow}>
-                  <Text style={styles.contactInfoLabel}>WeChat：</Text>
-                  <Text style={styles.contactInfoValue}>{customer.contactInfo.wechat}</Text>
-                </View>
-              )}
               {customer.contactInfo.telegram && (
                 <View style={styles.contactInfoRow}>
+                  <Send size={16} color="#0088CC" style={styles.contactIcon} />
                   <Text style={styles.contactInfoLabel}>Telegram：</Text>
                   <Text style={styles.contactInfoValue}>{customer.contactInfo.telegram}</Text>
                 </View>
@@ -451,17 +455,14 @@ export const TaskDetailScreen: React.FC = () => {
               <View style={styles.contactInfoRow}>
                 <Text style={styles.contactInfoLabel}>偏好方式：</Text>
                 <Text style={styles.contactInfoValue}>
-                  {customer.contactInfo.preferredMethod === 'phone' && '電話'}
-                  {customer.contactInfo.preferredMethod === 'line' && 'LINE'}
-                  {customer.contactInfo.preferredMethod === 'wechat' && 'WeChat'}
-                  {customer.contactInfo.preferredMethod === 'telegram' && 'Telegram'}
+                  {getContactMethodDisplayName(customer.contactInfo.preferredMethod)}
                 </Text>
               </View>
             </View>
           )}
           
           {task.status === TaskStatus.PENDING && (
-            <Text style={styles.contactHint}>接案後請在「我的任務」中查看進度，進行中的任務才會顯示客戶詳細資訊</Text>
+            <Text style={styles.contactHint}>接案後即可查看客戶聯絡資訊</Text>
           )}
         </View>
         

@@ -31,3 +31,10 @@ export interface AsyncState<T = any> {
   loading: LoadingState
   error: string | null
 }
+
+// 性別選項enum
+export enum Gender {
+  MALE = 'male',
+  FEMALE = 'female',
+  ANY = 'any'
+}

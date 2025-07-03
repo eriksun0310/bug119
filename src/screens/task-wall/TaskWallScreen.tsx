@@ -30,6 +30,10 @@ import {
   mockTasks
 } from '@/shared/mocks'
 import { Task, PestType, TaskPriority, RootStackParamList } from '@/shared/types'
+import { 
+  TASK_WALL_PEST_FILTER_OPTIONS, 
+  TASK_WALL_PRIORITY_FILTER_OPTIONS 
+} from '@/shared/config/options.config'
 
 type TaskWallNavigationProp = NativeStackNavigationProp<RootStackParamList, 'TaskDetail'>
 
@@ -326,21 +330,6 @@ const FilterModal = ({
 }) => {
   const [tempFilters, setTempFilters] = useState(filters)
   
-  const pestTypes = [
-    { key: 'cockroach', label: '蟑螂' },
-    { key: 'ant', label: '螞蟻' },
-    { key: 'termite', label: '白蟻' },
-    { key: 'mosquito', label: '蚊子' },
-    { key: 'fly', label: '蒼蠅' },
-    { key: 'other', label: '其他' },
-  ]
-  
-  const priorities = [
-    { key: 'urgent', label: '緊急' },
-    { key: 'high', label: '高' },
-    { key: 'normal', label: '一般' },
-    { key: 'low', label: '低' },
-  ]
   
   const styles = StyleSheet.create({
     modalOverlay: {
@@ -470,7 +459,7 @@ const FilterModal = ({
             <View style={styles.filterSection}>
               <Text style={styles.filterSectionTitle}>害蟲類型</Text>
               <View style={styles.filterOptions}>
-                {pestTypes.map(pest => (
+                {TASK_WALL_PEST_FILTER_OPTIONS.map(pest => (
                   <TouchableOpacity
                     key={pest.key}
                     style={[
@@ -497,7 +486,7 @@ const FilterModal = ({
             <View style={styles.filterSection}>
               <Text style={styles.filterSectionTitle}>優先程度</Text>
               <View style={styles.filterOptions}>
-                {priorities.map(priority => (
+                {TASK_WALL_PRIORITY_FILTER_OPTIONS.map(priority => (
                   <TouchableOpacity
                     key={priority.key}
                     style={[

@@ -20,85 +20,85 @@ Bug 119 是一個幫助怕蟲人士（小怕星）媒合附近除蟲專家（蟲
 - API 呼叫邏輯集中管理
 
 #### 前端架構 - Feature-Sliced Design (FSD) for React Native
+**重要：只建立實際需要的資料夾，避免空資料夾**
+
+目前專案實際結構：
 ```
 src/
 ├── app/                 # 應用程式層級配置
-│   ├── navigation/     # React Navigation 設定
-│   ├── providers/      # 全域 Provider
-│   ├── store/         # Redux store 設定
-│   └── App.tsx        # 應用程式入口
+│   └── navigation/     # React Navigation 設定
 │
-├── screens/            # 畫面層（原 pages）
-│   ├── home/
-│   ├── tasks/
-│   ├── chat/
-│   └── profile/
+├── screens/            # 畫面層
+│   ├── auth/          # 認證相關畫面
+│   ├── create-task/   # 建立任務
+│   ├── edit-profile/  # 編輯個人資料
+│   ├── home/          # 首頁
+│   ├── loading/       # 載入頁面
+│   ├── message-detail/# 訊息詳細
+│   ├── messages/      # 訊息列表
+│   ├── my-tasks/      # 我的任務
+│   ├── notifications/ # 通知
+│   ├── profile/       # 個人資料
+│   ├── splash/        # 啟動畫面
+│   ├── task-detail/   # 任務詳細
+│   ├── task-wall/     # 任務牆
+│   └── tasks/         # 任務列表
 │
-├── widgets/            # 組合元件層（畫面區塊）
-│   ├── task-list/
-│   ├── task-map/
-│   ├── chat-room/
-│   └── user-profile/
-│
-├── features/           # 功能層（業務邏輯）
-│   ├── auth/
-│   ├── create-task/
-│   ├── accept-task/
-│   ├── send-message/
-│   └── submit-review/
-│
-├── entities/           # 實體層（業務實體）
-│   ├── user/
-│   ├── task/
-│   ├── message/
-│   ├── review/
-│   └── transaction/
-│
-├── shared/             # 共用層
-│   ├── api/           # API 客戶端
-│   ├── ui/            # 基礎 UI 元件
-│   ├── lib/           # 工具函式
-│   ├── hooks/         # 自定義 hooks
-│   ├── config/        # 設定檔
-│   ├── mocks/         # 假資料
-│   ├── theme/         # 主題系統（顏色、字體、間距）
-│   └── types/         # TypeScript 型別定義
+└── shared/             # 共用層
+    ├── config/        # 統一配置檔案
+    ├── hooks/         # 自定義 hooks
+    ├── mocks/         # 假資料
+    ├── theme/         # 主題系統
+    ├── types/         # TypeScript 型別定義
+    │   ├── common/    # 共用型別
+    │   ├── entities/  # 實體型別
+    │   └── navigation/# 導航型別
+    ├── ui/            # 基礎 UI 元件
+    │   ├── budget-selector/
+    │   ├── button/
+    │   ├── card/
+    │   ├── gender-selector/
+    │   ├── input/
+    │   ├── message-item/
+    │   ├── pest-selector/
+    │   ├── priority-selector/
+    │   ├── segmented-control/
+    │   └── task-card/
+    └── utils/         # 工具函式
 ```
+
+**未來擴展原則**：
+- 只有在實際需要功能時才建立 `features/`、`entities/`、`widgets/` 等資料夾
+- 每個新資料夾必須包含實際檔案，不允許空資料夾
+- 遵循「有功能才建資料夾」的原則
 
 ### 3. TypeScript 型別定義管理
 
 #### 型別定義分類結構
+目前實際結構（只建立有實際檔案的資料夾）：
 ```
 src/shared/types/
-├── api/                # API 相關型別
-│   ├── auth.types.ts
-│   ├── task.types.ts
-│   ├── user.types.ts
-│   ├── message.types.ts
-│   └── index.ts
+├── common/             # 共用基礎型別
+│   └── index.ts       # 包含 Gender、LoadingState、AsyncState 等
 │
 ├── entities/           # 實體型別
-│   ├── user.types.ts
-│   ├── task.types.ts
-│   ├── message.types.ts
-│   └── index.ts
+│   ├── task.types.ts  # 任務相關型別
+│   ├── user.types.ts  # 用戶相關型別
+│   └── index.ts       # 統一導出
 │
 ├── navigation/         # React Navigation 型別
-│   ├── root-stack.types.ts
-│   ├── bottom-tabs.types.ts
-│   └── index.ts
+│   ├── index.ts       # 導航型別定義
+│   └── stack.types.ts # Stack 導航型別
 │
-├── ui/                 # UI 元件型別
-│   ├── form.types.ts
-│   ├── layout.types.ts
-│   └── index.ts
-│
-├── common/             # 共用基礎型別
-│   ├── pagination.types.ts
-│   ├── response.types.ts
-│   └── index.ts
-│
-└── index.ts            # 統一導出
+└── index.ts            # 統一導出所有型別
+```
+
+**未來擴展型別結構**（僅在需要時建立）：
+```
+src/shared/types/
+├── api/                # API 相關型別（未來需要時建立）
+├── ui/                 # UI 元件型別（未來需要時建立）
+└── ...                 # 其他型別（按需建立）
 ```
 
 #### React Navigation 型別定義範例
@@ -128,45 +128,68 @@ export type MainTabParamList = {
 - **功能特定元件**：放在各自的 feature 或 widget 目錄下
 - **所有在 `src/shared/ui/` 下的元件都視為全域共用元件**
 
-#### 共用元件結構
+#### 目前共用元件結構
+實際存在的元件（按功能建立）：
 ```
 src/shared/ui/
-├── button/             # 按鈕元件（全域共用）
+├── budget-selector/    # 預算選擇器
+│   ├── BudgetSelector.tsx
+│   ├── BudgetSelector.types.ts
+│   └── index.ts
+│
+├── button/             # 按鈕元件
 │   ├── Button.tsx
 │   ├── Button.types.ts
-│   ├── Button.styles.ts
 │   └── index.ts
 │
-├── input/              # 輸入框元件（全域共用）
-│   ├── Input.tsx
-│   ├── Input.types.ts
-│   ├── Input.styles.ts
-│   └── index.ts
-│
-├── modal/              # 彈窗元件（全域共用）
-│   ├── Modal.tsx
-│   ├── Modal.types.ts
-│   └── index.ts
-│
-├── card/               # 卡片元件（全域共用）
+├── card/               # 卡片元件
 │   ├── Card.tsx
 │   ├── Card.types.ts
 │   └── index.ts
 │
-├── form/               # 表單相關元件（全域共用）
-│   ├── FormField/
-│   ├── FormLabel/
-│   ├── FormError/
+├── gender-selector/    # 性別選擇器
+│   ├── GenderSelector.tsx
 │   └── index.ts
 │
-├── layout/             # 布局元件（全域共用）
-│   ├── Container/
-│   ├── Row/
-│   ├── Column/
+├── input/              # 輸入框元件
+│   ├── Input.tsx
+│   ├── Input.types.ts
 │   └── index.ts
+│
+├── message-item/       # 訊息項目元件
+│   ├── MessageItem.tsx
+│   ├── MessageItem.types.ts
+│   └── index.ts
+│
+├── pest-selector/      # 害蟲類型選擇器
+│   ├── PestSelector.tsx
+│   ├── PestSelector.types.ts
+│   └── index.ts
+│
+├── priority-selector/  # 優先程度選擇器
+│   ├── PrioritySelector.tsx
+│   ├── PrioritySelector.types.ts
+│   └── index.ts
+│
+├── segmented-control/  # 分段控制器
+│   ├── SegmentedControl.tsx
+│   ├── SegmentedControl.types.ts
+│   └── index.ts
+│
+├── task-card/          # 任務卡片元件
+│   ├── TaskCard.tsx
+│   ├── TaskCard.types.ts
+│   └── index.ts
+│
+├── SwipeableRow.tsx    # 滑動行元件
 │
 └── index.ts            # 統一導出所有全域共用元件
 ```
+
+**新增元件原則**：
+- 只有在實際需要該元件時才建立對應資料夾
+- 避免建立空的 form/、layout/ 等預設資料夾
+- 每個元件資料夾必須包含實際的元件檔案
 
 #### React Native 共用元件範例
 ```tsx
@@ -567,11 +590,13 @@ export const mockUsers: User[] = [
 ]
 ```
 
-### 7. API 整合規範
+### 7. API 整合規範（未來實作）
 
-#### API 客戶端配置
+**注意：目前專案使用假資料，API 客戶端待後端開發完成後建立**
+
+#### 未來 API 客戶端配置範例
 ```typescript
-// src/shared/api/base.ts
+// 未來建立：src/shared/api/base.ts
 import axios from 'axios'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
@@ -619,6 +644,77 @@ export const RootNavigator = () => {
 - 使用 React Query (TanStack Query) 進行伺服器狀態管理
 - 本地狀態優先使用 React hooks
 - 持久化儲存使用 AsyncStorage
+
+#### 表單狀態管理原則
+**重要：絕對不允許分開定義多個 useState**
+
+❌ **錯誤寫法**：
+```typescript
+const [name, setName] = useState('')
+const [email, setEmail] = useState('')
+const [password, setPassword] = useState('')
+const [confirmPassword, setConfirmPassword] = useState('')
+const [phone, setPhone] = useState('')
+// ... 更多個別狀態
+```
+
+✅ **正確寫法**：
+```typescript
+// 表單狀態必須用物件統一管理
+const [form, setForm] = useState({
+  name: '',
+  email: '',
+  password: '',
+  confirmPassword: '',
+  phone: '',
+  line: '',
+  telegram: '',
+  preferredMethod: ContactMethod.PHONE
+})
+
+// 錯誤狀態也用物件管理
+const [errors, setErrors] = useState<Partial<typeof form>>({})
+
+// 統一的更新函數
+const updateForm = (field: keyof typeof form, value: any) => {
+  setForm(prev => ({ ...prev, [field]: value }))
+}
+
+// 或使用解構更新
+const handleInputChange = (field: keyof typeof form) => (value: string) => {
+  setForm(prev => ({ ...prev, [field]: value }))
+}
+```
+
+**表單驗證範例**：
+```typescript
+const validateForm = (): boolean => {
+  const newErrors: Partial<typeof form> = {}
+  
+  if (!form.name.trim()) {
+    newErrors.name = '請輸入姓名'
+  }
+  
+  if (!form.email.trim()) {
+    newErrors.email = '請輸入電子郵件'
+  } else if (!/\S+@\S+\.\S+/.test(form.email)) {
+    newErrors.email = '請輸入有效的電子郵件'
+  }
+  
+  setErrors(newErrors)
+  return Object.keys(newErrors).length === 0
+}
+```
+
+**使用方式**：
+```typescript
+<Input
+  label="姓名"
+  value={form.name}
+  onChangeText={handleInputChange('name')}
+  error={errors.name}
+/>
+```
 
 ### 10. 套件管理器
 本專案使用 **pnpm** 作為套件管理器：
@@ -668,15 +764,83 @@ pnpm type-check  # TypeScript 型別檢查
 }
 ```
 
-### 13. 開發流程
-1. 先設計元件結構，遵循 FSD 架構
-2. 定義 TypeScript 型別，並按功能分類
-3. 撰寫全域共用元件（src/shared/ui/）
-4. 設定導航結構
-5. 實作業務邏輯（features）
-6. 組合成畫面（screens）
-7. 加入測試
-8. 執行 lint 和 type-check
+### 13. 程式碼整潔原則
+
+#### 資料夾管理
+**重要：基於實際功能需求建立資料夾，避免空資料夾**
+
+✅ **正確做法**：
+- 只有在實際需要該功能時才建立對應資料夾
+- 定期清理未使用的空資料夾
+- 遵循 Feature-Sliced Design，但僅建立有實際功能的層級
+
+❌ **錯誤做法**：
+- 預先建立一堆空的功能資料夾
+- 保留沒有檔案的空資料夾
+- 建立過度複雜的資料夾結構
+
+#### Import 語句管理
+**重要：保持 import 語句整潔，移除未使用的 import**
+
+✅ **正確做法**：
+```typescript
+// 只導入實際使用的項目
+import { Plus } from 'lucide-react-native'
+import { useTheme } from '@/shared/theme'
+import { Button, Input } from '@/shared/ui'
+
+// 合併同來源的 import
+import { User, Bell, Settings } from 'lucide-react-native'
+```
+
+❌ **錯誤做法**：
+```typescript
+// 導入未使用的項目
+import { Plus, Bug, Shield, Star } from 'lucide-react-native' // Bug, Shield, Star 未使用
+import { useTheme } from '@/shared/theme'
+import { Button, Input } from '@/shared/ui'
+
+// 分開寫同來源的 import
+import { User } from 'lucide-react-native'
+import { Bell } from 'lucide-react-native'
+import { Settings } from 'lucide-react-native'
+```
+
+#### Import 順序規範
+```typescript
+// 1. React 相關
+import React, { useState, useEffect } from 'react'
+
+// 2. 第三方套件 (React Native)
+import { View, Text, StyleSheet } from 'react-native'
+
+// 3. 第三方套件 (其他)
+import { useNavigation } from '@react-navigation/native'
+
+// 4. 內部套件 (hooks, utils, ui)
+import { useTheme } from '@/shared/theme'
+import { useAuth } from '@/shared/hooks'
+import { Button, Input } from '@/shared/ui'
+
+// 5. 類型定義
+import { UserRole, RootStackParamList } from '@/shared/types'
+
+// 6. 類型定義 (僅限於此檔案)
+type LocalType = ...
+```
+
+### 14. 開發流程
+1. **需求分析** - 確認實際需要的功能
+2. **設計元件結構** - 遵循 FSD 架構，按需建立資料夾
+3. **定義 TypeScript 型別** - 按功能分類管理
+4. **撰寫共用元件** - 放在 src/shared/ui/（僅建立實際需要的）
+5. **設定導航結構** - 配置實際使用的畫面
+6. **實作畫面功能** - 在 screens/ 中實作具體功能
+7. **統一配置管理** - 所有選項配置放在 options.config.ts
+8. **表單狀態管理** - 使用統一的物件管理表單狀態
+9. **加入測試** - 確保功能正確性
+10. **執行 lint 和 type-check** - 確保程式碼品質
+11. **清理未使用的 import 和空資料夾** - 保持程式碼整潔
 
 ## 技術棧
 - **前端框架**: React Native + Expo SDK 50+
@@ -693,14 +857,18 @@ pnpm type-check  # TypeScript 型別檢查
 - **即時通訊**: SignalR
 
 ## 重要提醒
-1. 所有回覆必須使用繁體中文
-2. 避免重複程式碼，抽取共用元件
-3. 遵循 Feature-Sliced Design 架構
-4. TypeScript 型別按功能分類管理
-5. `src/shared/ui/` 下的所有元件都是全域共用元件
-6. 假資料集中在 `src/shared/mocks/` 管理
-7. 樣式使用 StyleSheet.create 並遵循主題系統
-8. 支援亮暗主題切換，所有元件必須使用主題系統的顏色
+1. **語言要求** - 所有回覆必須使用繁體中文
+2. **程式碼整潔** - 避免重複程式碼，抽取共用元件
+3. **架構原則** - 遵循 Feature-Sliced Design，但只建立實際需要的資料夾
+4. **型別管理** - TypeScript 型別按功能分類管理
+5. **元件管理** - `src/shared/ui/` 下的所有元件都是全域共用元件
+6. **配置統一** - 所有選項配置集中在 `src/shared/config/options.config.ts`
+7. **表單狀態** - 絕對不允許分開定義多個 useState，必須用物件統一管理
+8. **假資料管理** - 集中在 `src/shared/mocks/` 管理
+9. **樣式系統** - 使用 StyleSheet.create 並遵循主題系統
+10. **主題支援** - 支援亮暗主題切換，所有元件必須使用主題系統的顏色
+11. **Import 管理** - 保持 import 語句整潔，移除未使用的 import，遵循標準順序
+12. **資料夾管理** - 基於實際功能需求建立資料夾，定期清理空資料夾
 
 ## 聯絡資訊
 如有任何問題，請參考專案文件或聯繫技術負責人。

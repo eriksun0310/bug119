@@ -21,7 +21,9 @@
       "Bash(npm install:*)",
       "Bash(yarn add:*)",
       "WebFetch(domain:docs.swmansion.com)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(git add:*)"
     ],
     "deny": []
   }
