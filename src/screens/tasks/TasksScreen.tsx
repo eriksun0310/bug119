@@ -11,7 +11,6 @@ import { Card, SegmentedControl } from '@/shared/ui'
 import { 
   mockTasks, 
   getAssignedTasks, 
-  getTaskAssignmentCount,
   getPestTypeDisplayName,
   getTaskStatusDisplayName,
   getPriorityDisplayInfo
@@ -93,9 +92,6 @@ export const TasksScreen = () => {
   
   const renderTaskCard = (task: any) => {
     const priorityInfo = getPriorityDisplayInfo(task.priority)
-    const assignmentCount = user?.role === UserRole.FEAR_STAR && task.status === TaskStatus.PENDING 
-      ? getTaskAssignmentCount(task.id) 
-      : 0
     
     return (
       <TouchableOpacity 
@@ -130,15 +126,6 @@ export const TasksScreen = () => {
             <Text style={styles.budgetText}>
               預算：${task.budget.min} - ${task.budget.max}
             </Text>
-            
-            {/* 小怕星在待確認狀態顯示申請人數 */}
-            {user?.role === UserRole.FEAR_STAR && task.status === TaskStatus.PENDING && assignmentCount > 0 && (
-              <View style={styles.applicantsBadge}>
-                <Text style={styles.applicantsText}>
-                  {assignmentCount} 位申請
-                </Text>
-              </View>
-            )}
           </View>
         </Card>
       </TouchableOpacity>
@@ -214,17 +201,6 @@ export const TasksScreen = () => {
       fontSize: theme.fontSize.sm,
       fontWeight: '600',
       color: theme.colors.text,
-    },
-    applicantsBadge: {
-      backgroundColor: theme.colors.secondary + '20',
-      paddingHorizontal: theme.spacing.sm,
-      paddingVertical: theme.spacing.xs,
-      borderRadius: theme.borderRadius.md,
-    },
-    applicantsText: {
-      fontSize: theme.fontSize.xs,
-      fontWeight: '600',
-      color: theme.colors.secondary,
     },
     emptyContainer: {
       flex: 1,
