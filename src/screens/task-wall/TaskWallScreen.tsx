@@ -17,17 +17,15 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { 
   Search, 
   Filter, 
-  SortAsc,
   Bell,
   X
 } from 'lucide-react-native'
 import { useTheme } from '@/shared/theme'
 import { useAuth } from '@/shared/hooks'
-import { TaskCard, Button, Input } from '@/shared/ui'
+import { TaskCard, Input } from '@/shared/ui'
 import { 
   getAvailableTasks, 
-  getPestTypeDisplayName,
-  mockTasks
+  getPestTypeDisplayName
 } from '@/shared/mocks'
 import { Task, PestType, TaskPriority, RootStackParamList } from '@/shared/types'
 import { 

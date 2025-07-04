@@ -402,7 +402,7 @@ export const TaskApplicantsScreen = () => {
         </Card>
         
         <Text style={styles.sectionTitle}>
-          申請者列表 ({assignments.length}位)
+          申請者列表 ({assignments.length}位§)
         </Text>
         
         {assignments.length > 0 ? (

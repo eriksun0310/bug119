@@ -32,7 +32,8 @@
       "mcp__ide__getDiagnostics",
       "Bash(sed:*)",
       "Bash(pnpm remove:*)",
-      "Bash(timeout:*)"
+      "Bash(timeout:*)",
+      "Bash(tree:*)"
     ],
     "deny": []
   }
