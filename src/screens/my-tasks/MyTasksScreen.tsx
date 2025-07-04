@@ -357,6 +357,7 @@ export const MyTasksScreen = () => {
                 onPress={handleTaskPress}
                 variant="default"
                 showContactInfo={activeTab === 'ongoing' || activeTab === 'completed'}
+                currentUserRole={user?.role}
               />
             ))
           ) : (

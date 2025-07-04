@@ -4,11 +4,8 @@ import React, { FC } from 'react'
 import { View, Text, TouchableOpacity } from 'react-native'
 import { 
   MapPin, 
-  Clock, 
   DollarSign, 
   Bug, 
-  Calendar,
-  Timer,
   Phone,
   MessageSquare,
   User as UserIcon
@@ -22,7 +19,7 @@ import {
   getTaskStatusDisplayName 
 } from '@/shared/mocks'
 import { mockUsers } from '@/shared/mocks/users.mock'
-import { ContactMethod } from '@/shared/types'
+import { UserRole } from '@/shared/types'
 
 /**
  * 任務卡片元件
@@ -34,6 +31,7 @@ export const TaskCard: FC<TaskCardProps> = ({
   showDistance = false,
   distance,
   showContactInfo = false,
+  currentUserRole,
   onPress,
   onAccept,
   style,
@@ -59,14 +57,6 @@ export const TaskCard: FC<TaskCardProps> = ({
     }
   }
   
-  const formatTime = (date: Date) => {
-    return new Intl.DateTimeFormat('zh-TW', {
-      month: 'numeric',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    }).format(date)
-  }
   
   const formatBudget = () => {
     if (task.budget.min === task.budget.max) {
@@ -78,19 +68,12 @@ export const TaskCard: FC<TaskCardProps> = ({
   // 獲取客戶資訊
   const customer = mockUsers.find(u => u.id === task.createdBy)
   
-  // 獲取聯絡方式顯示名稱
-  const getContactMethodName = (method: ContactMethod): string => {
-    switch (method) {
-      case ContactMethod.PHONE:
-        return '電話'
-      case ContactMethod.LINE:
-        return 'LINE'
-      case ContactMethod.TELEGRAM:
-        return 'Telegram'
-      default:
-        return '電話'
-    }
-  }
+  // 獲取終結者資訊
+  const terminator = task.assignedTo ? mockUsers.find(u => u.id === task.assignedTo) : null
+  
+  // 根據當前用戶身份決定顯示哪個聯絡資訊
+  const contactPerson = currentUserRole === UserRole.FEAR_STAR ? terminator : customer
+  const contactLabel = currentUserRole === UserRole.FEAR_STAR ? '終結者' : '客戶'
   
   const containerStyle = variant === 'compact' 
     ? [styles.container, styles.compactContainer] 
@@ -136,7 +119,7 @@ export const TaskCard: FC<TaskCardProps> = ({
       <View style={styles.infoRow}>
         <MapPin size={16} color={theme.colors.textSecondary} style={styles.infoIcon} />
         <Text style={styles.infoText} numberOfLines={1}>
-          {showContactInfo ? task.location.address : `${task.location.district}, ${task.location.city}`}
+          {task.location.district}, {task.location.city}
         </Text>
         {showDistance && distance && (
           <Text style={[styles.infoText, { textAlign: 'right' }]}>
@@ -145,61 +128,46 @@ export const TaskCard: FC<TaskCardProps> = ({
         )}
       </View>
       
-      {/* 客戶聯絡資訊 - 只在進行中和已完成任務顯示 */}
-      {showContactInfo && customer && (
+      {/* 聯絡資訊 - 只在進行中和已完成任務顯示 */}
+      {showContactInfo && contactPerson && (
         <>
           <View style={styles.infoRow}>
             <UserIcon size={16} color={theme.colors.textSecondary} style={styles.infoIcon} />
             <Text style={styles.infoText}>
-              客戶：{customer.name}
+              {contactLabel}：{contactPerson.name}
             </Text>
           </View>
           
-          <View style={styles.infoRow}>
-            <Phone size={16} color={theme.colors.textSecondary} style={styles.infoIcon} />
-            <Text style={styles.infoText}>
-              {customer.contactInfo.phone}
-            </Text>
-          </View>
+          {/* 根據偏好方式只顯示一種聯絡資訊 */}
+          {contactPerson.contactInfo.preferredMethod === 'phone' && (
+            <View style={styles.infoRow}>
+              <Phone size={16} color={theme.colors.textSecondary} style={styles.infoIcon} />
+              <Text style={styles.infoText}>
+                電話：{contactPerson.contactInfo.phone}
+              </Text>
+            </View>
+          )}
           
-          {customer.contactInfo.preferredMethod !== ContactMethod.PHONE && (
+          {contactPerson.contactInfo.preferredMethod === 'line' && contactPerson.contactInfo.line && (
             <View style={styles.infoRow}>
               <MessageSquare size={16} color={theme.colors.textSecondary} style={styles.infoIcon} />
               <Text style={styles.infoText}>
-                偏好：{getContactMethodName(customer.contactInfo.preferredMethod)}
-                {customer.contactInfo.preferredMethod === ContactMethod.LINE && customer.contactInfo.line && ` (${customer.contactInfo.line})`}
-                {customer.contactInfo.preferredMethod === ContactMethod.TELEGRAM && customer.contactInfo.telegram && ` (${customer.contactInfo.telegram})`}
+                LINE：{contactPerson.contactInfo.line}
+              </Text>
+            </View>
+          )}
+          
+          {contactPerson.contactInfo.preferredMethod === 'telegram' && contactPerson.contactInfo.telegram && (
+            <View style={styles.infoRow}>
+              <MessageSquare size={16} color={theme.colors.textSecondary} style={styles.infoIcon} />
+              <Text style={styles.infoText}>
+                Telegram：{contactPerson.contactInfo.telegram}
               </Text>
             </View>
           )}
         </>
       )}
       
-      {/* 時間 */}
-      <View style={styles.infoRow}>
-        {task.isImmediate ? (
-          <>
-            <Timer size={16} color={theme.colors.error} style={styles.infoIcon} />
-            <Text style={[styles.infoText, { color: theme.colors.error }]}>
-              立即處理
-            </Text>
-          </>
-        ) : task.scheduledTime ? (
-          <>
-            <Calendar size={16} color={theme.colors.textSecondary} style={styles.infoIcon} />
-            <Text style={styles.infoText}>
-              預約時間：{formatTime(task.scheduledTime)}
-            </Text>
-          </>
-        ) : (
-          <>
-            <Clock size={16} color={theme.colors.textSecondary} style={styles.infoIcon} />
-            <Text style={styles.infoText}>
-              彈性時間
-            </Text>
-          </>
-        )}
-      </View>
       
       {/* 描述 */}
       <Text 

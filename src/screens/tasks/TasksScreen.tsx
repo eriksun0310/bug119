@@ -13,11 +13,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { 
-  CheckSquare, 
   Clock, 
   CheckCircle,
   AlertCircle,
-  Calendar,
   Bell
 } from 'lucide-react-native'
 import { useTheme } from '@/shared/theme'
@@ -63,7 +61,6 @@ export const TasksScreen = () => {
           description: '24小時營業咖啡廳，需要在營業時間進行蟑螂防治，不能影響客人用餐。',
           pestType: 'cockroach' as any,
           location: {
-            address: '台北市中山區南京東路二段 100 號',
             latitude: 25.0525,
             longitude: 121.5319,
             city: '台北市',
@@ -86,7 +83,6 @@ export const TasksScreen = () => {
           description: '成功清除廚房和陽台的螞蟻問題，已完成防治工作。',
           pestType: 'ant' as any,
           location: {
-            address: '新北市淡水區中正路 88 號',
             latitude: 25.1677,
             longitude: 121.4406,
             city: '新北市',
@@ -394,7 +390,8 @@ export const TasksScreen = () => {
                 task={task}
                 onPress={handleTaskPress}
                 variant="default"
-                showContactInfo={activeTab === 'ongoing' || activeTab === 'completed'}
+                showContactInfo={user?.role === UserRole.TERMINATOR}
+                currentUserRole={user?.role}
               />
             ))
           ) : (

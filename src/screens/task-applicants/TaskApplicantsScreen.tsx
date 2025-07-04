@@ -397,7 +397,7 @@ export const TaskApplicantsScreen = () => {
             預算範圍：${task.budget.min} - ${task.budget.max}
           </Text>
           <Text style={styles.taskMeta}>
-            地點：{task.location.address}
+            地點：{task.location.district}, {task.location.city}
           </Text>
         </Card>
         

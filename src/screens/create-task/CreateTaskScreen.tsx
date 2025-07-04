@@ -40,6 +40,7 @@ import {
   GenderSelector
 } from '@/shared/ui'
 import { PestType, TaskPriority, RootStackParamList, Gender } from '@/shared/types'
+import { CITY_OPTIONS, getCityOptionByName } from '@/shared/config/options.config'
 
 type CreateTaskNavigationProp = NativeStackNavigationProp<RootStackParamList>
 
@@ -49,7 +50,8 @@ interface CreateTaskForm {
   pestType?: PestType
   priority: TaskPriority
   budget?: BudgetRange
-  location: string
+  city: string
+  district: string
   preferredGender?: Gender
   isImmediate: boolean
   scheduledDate?: string
@@ -68,7 +70,8 @@ export const CreateTaskScreen = () => {
     title: '',
     description: '',
     priority: TaskPriority.NORMAL,
-    location: '',
+    city: '',
+    district: '',
     preferredGender: Gender.ANY,
     isImmediate: true,
     images: [],
@@ -92,8 +95,12 @@ export const CreateTaskScreen = () => {
       newErrors.pestType = '請選擇害蟲類型'
     }
     
-    if (!form.location.trim()) {
-      newErrors.location = '請輸入地點'
+    if (!form.city.trim()) {
+      newErrors.city = '請選擇縣市'
+    }
+    
+    if (!form.district.trim()) {
+      newErrors.district = '請選擇區域'
     }
     
     if (!form.budget || form.budget.min <= 0 || form.budget.max <= 0) {
@@ -138,7 +145,8 @@ export const CreateTaskScreen = () => {
                 title: '',
                 description: '',
                 priority: TaskPriority.NORMAL,
-                location: '',
+                city: '',
+                district: '',
                 preferredGender: Gender.ANY,
                 isImmediate: true,
                 images: [],
@@ -155,41 +163,6 @@ export const CreateTaskScreen = () => {
   }
   
   // 獲取當前位置
-  const getCurrentLocation = async () => {
-    if (Platform.OS === 'web') {
-      // 網頁環境使用瀏覽器的地理位置API
-      try {
-        const address = await getCurrentLocationAddress()
-        setForm({ ...form, location: address })
-        showAlert('定位成功', '已自動填入地址')
-      } catch (error: any) {
-        showAlert('定位失敗', error.message || '請允許瀏覽器存取您的位置或手動輸入地址')
-      }
-    } else {
-      // 原生環境使用 expo-location
-      try {
-        const { status } = await Location.requestForegroundPermissionsAsync()
-        if (status !== 'granted') {
-          showAlert('需要位置權限', '請允許應用程式存取您的位置以自動填入地址')
-          return
-        }
-
-        const location = await Location.getCurrentPositionAsync({})
-        const address = await Location.reverseGeocodeAsync({
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
-        })
-
-        if (address.length > 0) {
-          const firstAddress = address[0]
-          const fullAddress = `${firstAddress.city || ''}${firstAddress.district || ''}${firstAddress.street || ''}${firstAddress.streetNumber || ''}`
-          setForm({ ...form, location: fullAddress })
-        }
-      } catch (error) {
-        showAlert('定位失敗', '無法獲取當前位置，請手動輸入地址')
-      }
-    }
-  }
 
   // 添加照片
   const handleAddPhoto = () => {
@@ -373,18 +346,65 @@ export const CreateTaskScreen = () => {
     scheduledInput: {
       flex: 1,
     },
-    locationContainer: {
+    locationRow: {
       flexDirection: 'row',
-      alignItems: 'center',
-      gap: theme.spacing.sm,
+      gap: theme.spacing.md,
     },
-    locationInput: {
+    citySelect: {
       flex: 1,
     },
-    locationButton: {
-      backgroundColor: theme.colors.secondary,
-      padding: theme.spacing.sm,
+    districtSelect: {
+      flex: 1,
+    },
+    inputLabel: {
+      fontSize: theme.fontSize.sm,
+      fontWeight: '600',
+      color: theme.colors.text,
+      marginBottom: theme.spacing.xs,
+    },
+    selectButton: {
+      borderWidth: 1,
+      borderColor: theme.colors.border,
       borderRadius: theme.borderRadius.md,
+      backgroundColor: theme.colors.background,
+      paddingHorizontal: theme.spacing.md,
+      paddingVertical: theme.spacing.md,
+      height: 48,
+      justifyContent: 'center',
+    },
+    selectButtonText: {
+      fontSize: theme.fontSize.md,
+      color: theme.colors.text,
+    },
+    disabledButton: {
+      opacity: 0.5,
+    },
+    disabledText: {
+      color: theme.colors.textSecondary,
+    },
+    errorText: {
+      fontSize: theme.fontSize.xs,
+      color: theme.colors.error,
+      marginTop: theme.spacing.xs,
+    },
+    quickSetRow: {
+      flexDirection: 'row',
+      gap: theme.spacing.sm,
+      marginTop: theme.spacing.sm,
+    },
+    quickSetButton: {
+      flex: 1,
+      backgroundColor: theme.colors.surface,
+      borderRadius: theme.borderRadius.md,
+      paddingVertical: theme.spacing.sm,
+      paddingHorizontal: theme.spacing.md,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+    },
+    quickSetText: {
+      fontSize: theme.fontSize.sm,
+      color: theme.colors.text,
+      textAlign: 'center',
     },
     photoSection: {
       gap: theme.spacing.sm,
@@ -509,22 +529,55 @@ export const CreateTaskScreen = () => {
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>地點資訊</Text>
             
-            <View style={styles.locationContainer}>
-              <View style={styles.locationInput}>
-                <Input
-                  label="詳細地址"
-                  value={form.location}
-                  onChangeText={(location) => setForm({ ...form, location })}
-                  placeholder="請輸入完整地址"
-                  error={errors.location}
-                  leftIcon={<MapPin size={16} color={theme.colors.textSecondary} />}
-                />
+            <View style={styles.locationRow}>
+              <View style={styles.citySelect}>
+                <Text style={styles.inputLabel}>縣市</Text>
+                <TouchableOpacity 
+                  style={styles.selectButton}
+                  onPress={() => {
+                    // 這裡可以開啟一個模態視窗選擇縣市，或使用簡單的 Alert
+                    showAlert('選擇縣市', '請在這裡實作縣市選擇器')
+                  }}
+                >
+                  <Text style={styles.selectButtonText}>
+                    {form.city || '請選擇縣市'}
+                  </Text>
+                </TouchableOpacity>
+                {errors.city && <Text style={styles.errorText}>{errors.city}</Text>}
               </View>
+              
+              <View style={styles.districtSelect}>
+                <Text style={styles.inputLabel}>區域</Text>
+                <TouchableOpacity 
+                  style={[styles.selectButton, !form.city && styles.disabledButton]}
+                  disabled={!form.city}
+                  onPress={() => {
+                    if (form.city) {
+                      showAlert('選擇區域', '請在這裡實作區域選擇器')
+                    }
+                  }}
+                >
+                  <Text style={[styles.selectButtonText, !form.city && styles.disabledText]}>
+                    {form.district || '請選擇區域'}
+                  </Text>
+                </TouchableOpacity>
+                {errors.district && <Text style={styles.errorText}>{errors.district}</Text>}
+              </View>
+            </View>
+            
+            {/* 暫時手動設定預設值供測試 */}
+            <View style={styles.quickSetRow}>
               <TouchableOpacity 
-                style={styles.locationButton}
-                onPress={getCurrentLocation}
+                style={styles.quickSetButton}
+                onPress={() => setForm({ ...form, city: '台北市', district: '大安區' })}
               >
-                <MapPin size={20} color={theme.colors.primary} />
+                <Text style={styles.quickSetText}>台北市 大安區</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={styles.quickSetButton}
+                onPress={() => setForm({ ...form, city: '新北市', district: '板橋區' })}
+              >
+                <Text style={styles.quickSetText}>新北市 板橋區</Text>
               </TouchableOpacity>
             </View>
           </View>

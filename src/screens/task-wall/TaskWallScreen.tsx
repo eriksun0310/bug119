@@ -279,6 +279,7 @@ export const TaskWallScreen = () => {
                 task={task}
                 onPress={handleTaskPress}
                 onAccept={handleAcceptTask}
+                currentUserRole={user?.role}
               />
             ))
           ) : (

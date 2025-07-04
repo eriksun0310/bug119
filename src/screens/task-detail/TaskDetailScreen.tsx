@@ -38,7 +38,7 @@ import {
   mockTasks 
 } from '@/shared/mocks'
 import { mockUsers, mockUserProfiles } from '@/shared/mocks/users.mock'
-import { Task, TaskStatus, RootStackParamList } from '@/shared/types'
+import { Task, TaskStatus, UserRole, RootStackParamList } from '@/shared/types'
 import { getContactMethodDisplayName } from '@/shared/config/options.config'
 
 type TaskDetailRouteProp = RouteProp<RootStackParamList, 'TaskDetail'>
@@ -59,6 +59,16 @@ export const TaskDetailScreen: React.FC = () => {
   // 獲取客戶資料
   const customer = mockUsers.find(u => u.id === task.createdBy)
   const customerProfile = mockUserProfiles[task.createdBy as keyof typeof mockUserProfiles]
+  
+  // 獲取終結者資訊
+  const terminator = task.assignedTo ? mockUsers.find(u => u.id === task.assignedTo) : null
+  const terminatorProfile = task.assignedTo ? mockUserProfiles[task.assignedTo as keyof typeof mockUserProfiles] : null
+  
+  // 根據當前用戶身份決定顯示哪個聯絡資訊
+  const contactPerson = user?.role === UserRole.FEAR_STAR ? terminator : customer
+  const contactProfile = user?.role === UserRole.FEAR_STAR ? terminatorProfile : customerProfile
+  const contactTitle = user?.role === UserRole.FEAR_STAR ? '終結者資訊' : '客戶資訊'
+  const contactLabel = user?.role === UserRole.FEAR_STAR ? '終結者' : '客戶'
   
   // 處理接案
   const handleAcceptTask = async () => {
@@ -371,26 +381,26 @@ export const TaskDetailScreen: React.FC = () => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>服務資訊</Text>
           
+          {/* 地點資訊 */}
           <View style={styles.infoRow}>
             <MapPin size={20} color={theme.colors.textSecondary} />
             <Text style={styles.infoText}>
-              {task.location.district}, {task.location.city}
+              {user?.role === UserRole.FEAR_STAR && terminatorProfile?.location 
+                ? `終結者地區：${terminatorProfile.location}`
+                : `${task.location.district}, ${task.location.city}`
+              }
             </Text>
           </View>
           
-          <View style={styles.infoRow}>
-            <Calendar size={20} color={theme.colors.textSecondary} />
-            <View style={{ flex: 1 }}>
+          {/* 委託時間：只有小怕星且任務已分配時顯示 */}
+          {user?.role === UserRole.FEAR_STAR && task.assignedTo && (
+            <View style={styles.infoRow}>
+              <Calendar size={20} color={theme.colors.textSecondary} />
               <Text style={styles.infoText}>
-                {task.isImmediate ? '立即處理' : '預約時間'}
+                委託時間：{formatDateTime(task.updatedAt.toISOString())}
               </Text>
-              {!task.isImmediate && task.scheduledTime && (
-                <Text style={styles.infoSubText}>
-                  {formatDateTime(task.scheduledTime.toISOString())}
-                </Text>
-              )}
             </View>
-          </View>
+          )}
           
           <View style={styles.infoRow}>
             <Clock size={20} color={theme.colors.textSecondary} />
@@ -411,58 +421,58 @@ export const TaskDetailScreen: React.FC = () => {
           </View>
         </View>
         
-        {/* 客戶資訊 */}
+        {/* 聯絡人資訊 */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>客戶資訊</Text>
+          <Text style={styles.sectionTitle}>{contactTitle}</Text>
           <View style={styles.customerContainer}>
             <View style={styles.avatar}>
               <User size={24} color={theme.colors.textSecondary} />
             </View>
             <View style={styles.customerInfo}>
-              <Text style={styles.customerName}>{customer?.name || '用戶'}</Text>
+              <Text style={styles.customerName}>{contactPerson?.name || '用戶'}</Text>
               <View style={styles.customerRating}>
                 <Star size={14} color="#FFD700" fill="#FFD700" />
                 <Text style={styles.ratingText}>
-                  {customerProfile?.rating || 0} ({customerProfile?.totalReviews || 0} 評價)
+                  {contactProfile?.rating || 0} ({contactProfile?.totalReviews || 0} 評價)
                 </Text>
               </View>
             </View>
           </View>
           
           {/* 已媒合、進行中和已完成的任務顯示聯絡資訊 */}
-          {(task.status === TaskStatus.ASSIGNED || task.status === TaskStatus.IN_PROGRESS || task.status === TaskStatus.COMPLETED) && customer?.contactInfo && (
+          {(task.status === TaskStatus.ASSIGNED || task.status === TaskStatus.IN_PROGRESS || task.status === TaskStatus.COMPLETED) && contactPerson?.contactInfo && (
             <View style={styles.contactInfoContainer}>
               <Text style={styles.contactInfoTitle}>聯絡資訊</Text>
-              <View style={styles.contactInfoRow}>
-                <Phone size={16} color={theme.colors.textSecondary} style={styles.contactIcon} />
-                <Text style={styles.contactInfoLabel}>電話：</Text>
-                <Text style={styles.contactInfoValue}>{customer.contactInfo.phone}</Text>
-              </View>
-              {customer.contactInfo.line && (
+              
+              {/* 根據偏好方式只顯示一種聯絡資訊 */}
+              {contactPerson.contactInfo.preferredMethod === 'phone' && (
+                <View style={styles.contactInfoRow}>
+                  <Phone size={16} color={theme.colors.textSecondary} style={styles.contactIcon} />
+                  <Text style={styles.contactInfoLabel}>電話：</Text>
+                  <Text style={styles.contactInfoValue}>{contactPerson.contactInfo.phone}</Text>
+                </View>
+              )}
+              
+              {contactPerson.contactInfo.preferredMethod === 'line' && contactPerson.contactInfo.line && (
                 <View style={styles.contactInfoRow}>
                   <MessageCircle size={16} color="#00B900" style={styles.contactIcon} />
                   <Text style={styles.contactInfoLabel}>LINE：</Text>
-                  <Text style={styles.contactInfoValue}>{customer.contactInfo.line}</Text>
+                  <Text style={styles.contactInfoValue}>{contactPerson.contactInfo.line}</Text>
                 </View>
               )}
-              {customer.contactInfo.telegram && (
+              
+              {contactPerson.contactInfo.preferredMethod === 'telegram' && contactPerson.contactInfo.telegram && (
                 <View style={styles.contactInfoRow}>
                   <Send size={16} color="#0088CC" style={styles.contactIcon} />
                   <Text style={styles.contactInfoLabel}>Telegram：</Text>
-                  <Text style={styles.contactInfoValue}>{customer.contactInfo.telegram}</Text>
+                  <Text style={styles.contactInfoValue}>{contactPerson.contactInfo.telegram}</Text>
                 </View>
               )}
-              <View style={styles.contactInfoRow}>
-                <Text style={styles.contactInfoLabel}>偏好方式：</Text>
-                <Text style={styles.contactInfoValue}>
-                  {getContactMethodDisplayName(customer.contactInfo.preferredMethod)}
-                </Text>
-              </View>
             </View>
           )}
           
           {task.status === TaskStatus.PENDING && (
-            <Text style={styles.contactHint}>接案後即可查看客戶聯絡資訊</Text>
+            <Text style={styles.contactHint}>接案後即可查看{contactLabel}聯絡資訊</Text>
           )}
         </View>
         

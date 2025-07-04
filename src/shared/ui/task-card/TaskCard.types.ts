@@ -1,6 +1,6 @@
 // 任務卡片元件型別定義
 
-import { Task } from '../../types'
+import { Task, UserRole } from '../../types'
 import { TouchableOpacityProps } from 'react-native'
 
 export interface TaskCardProps extends Omit<TouchableOpacityProps, 'onPress'> {
@@ -9,6 +9,7 @@ export interface TaskCardProps extends Omit<TouchableOpacityProps, 'onPress'> {
   showDistance?: boolean
   distance?: number
   showContactInfo?: boolean
+  currentUserRole?: UserRole
   onPress?: (task: Task) => void
   onAccept?: (task: Task) => void
 }

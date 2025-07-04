@@ -18,7 +18,6 @@ export enum TaskPriority {
 }
 
 export interface TaskLocation {
-  address: string
   latitude: number
   longitude: number
   city: string

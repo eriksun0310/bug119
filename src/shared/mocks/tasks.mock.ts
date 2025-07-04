@@ -9,7 +9,6 @@ export const mockTasks: Task[] = [
     description: '家中客廳發現大量蟑螂，特別是晚上時間，需要專業除蟲服務。已嘗試市售殺蟲劑但效果不佳。',
     pestType: PestType.COCKROACH,
     location: {
-      address: '台北市大安區信義路四段 10 號',
       latitude: 25.0330,
       longitude: 121.5654,
       city: '台北市',
@@ -36,7 +35,6 @@ export const mockTasks: Task[] = [
     description: '廚房地板和牆角出現螞蟻行軍，影響食物衛生，希望能徹底清除。',
     pestType: PestType.ANT,
     location: {
-      address: '新北市板橋區中山路二段 25 號',
       latitude: 25.0078,
       longitude: 121.4626,
       city: '新北市',
@@ -63,7 +61,6 @@ export const mockTasks: Task[] = [
     description: '每晚都有蚊子嗡嗡叫，嚴重影響睡眠品質，需要專業處理。',
     pestType: PestType.MOSQUITO,
     location: {
-      address: '台北市松山區民生東路四段 88 號',
       latitude: 25.0571,
       longitude: 121.5550,
       city: '台北市',
@@ -89,7 +86,6 @@ export const mockTasks: Task[] = [
     description: '陽台角落有多個大型蜘蛛網，需要清理並預防再次出現。',
     pestType: PestType.SPIDER,
     location: {
-      address: '台北市中正區羅斯福路一段 15 號',
       latitude: 25.0415,
       longitude: 121.5187,
       city: '台北市',
@@ -116,7 +112,6 @@ export const mockTasks: Task[] = [
     description: '小型辦公室發現蟑螂，需要在不影響工作的情況下進行防治。',
     pestType: PestType.COCKROACH,
     location: {
-      address: '台北市信義區基隆路一段 200 號',
       latitude: 25.0370,
       longitude: 121.5638,
       city: '台北市',
@@ -140,7 +135,6 @@ export const mockTasks: Task[] = [
     description: '浴室排水孔附近發現不明小蟲，需要專業判斷蟲種並處理。',
     pestType: PestType.OTHER,
     location: {
-      address: '新北市新店區中興路三段 50 號',
       latitude: 24.9677,
       longitude: 121.5430,
       city: '新北市',
@@ -167,7 +161,6 @@ export const mockTasks: Task[] = [
     description: '發現車庫木頭被白蟻蛀蝕，需要專業防治服務。',
     pestType: PestType.OTHER,
     location: {
-      address: '桃園市中壢區中央路 100 號',
       latitude: 24.9537,
       longitude: 121.2274,
       city: '桃園市',
@@ -194,7 +187,6 @@ export const mockTasks: Task[] = [
     description: '客廳和廚房有很多果蠅，影響居住品質。',
     pestType: PestType.OTHER,
     location: {
-      address: '台中市西屯區台灣大道三段 200 號',
       latitude: 24.1611,
       longitude: 120.6447,
       city: '台中市',

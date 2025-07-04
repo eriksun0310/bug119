@@ -240,6 +240,27 @@ export const EditProfileScreen = () => {
       color: theme.colors.text,
       marginBottom: theme.spacing.sm,
     },
+    inputLabel: {
+      fontSize: theme.fontSize.sm,
+      fontWeight: '600',
+      color: theme.colors.text,
+      marginBottom: theme.spacing.xs,
+    },
+    selectButton: {
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+      borderRadius: theme.borderRadius.md,
+      backgroundColor: theme.colors.background,
+      paddingHorizontal: theme.spacing.md,
+      paddingVertical: theme.spacing.md,
+      height: 48,
+      justifyContent: 'center',
+      marginBottom: theme.spacing.md,
+    },
+    selectButtonText: {
+      fontSize: theme.fontSize.md,
+      color: theme.colors.text,
+    },
   })
   
   return (
@@ -318,13 +339,24 @@ export const EditProfileScreen = () => {
               leftIcon={<Mail size={16} color={theme.colors.textSecondary} />}
             />
             
-            <Input
-              label="居住地區"
-              value={form.location}
-              onChangeText={(location) => setForm({ ...form, location })}
-              placeholder="例：台北市大安區"
-              leftIcon={<MapPin size={16} color={theme.colors.textSecondary} />}
-            />
+            <Text style={styles.inputLabel}>居住縣市</Text>
+            <TouchableOpacity 
+              style={styles.selectButton}
+              onPress={() => {
+                // 簡單的示範，實際上可以開啟一個選擇器
+                if (form.location === '台北市') {
+                  setForm({ ...form, location: '新北市' })
+                } else if (form.location === '新北市') {
+                  setForm({ ...form, location: '桃園市' })
+                } else {
+                  setForm({ ...form, location: '台北市' })
+                }
+              }}
+            >
+              <Text style={styles.selectButtonText}>
+                {form.location || '請選擇居住縣市'}
+              </Text>
+            </TouchableOpacity>
           </View>
           
           {/* 聯絡方式 */}
