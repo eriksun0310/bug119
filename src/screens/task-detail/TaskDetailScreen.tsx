@@ -54,8 +54,12 @@ export const TaskDetailScreen: React.FC = () => {
   const insets = useSafeAreaInsets()
   
   // 根據 taskId 獲取任務資料
-  const { taskId } = route.params
+  const { taskId, fromTab } = route.params
   const task = mockTasks.find(t => t.id === taskId) || mockTasks[0]
+  
+  // 根據 fromTab 來調整顯示邏輯
+
+  console.log('fromTab', fromTab)
   
   // 獲取客戶資料
   const customer = mockUsers.find(u => u.id === task.createdBy)
@@ -668,8 +672,8 @@ export const TaskDetailScreen: React.FC = () => {
               </View>
             </View>
             
-            {/* 只有進行中的任務才顯示聯絡資訊 */}
-            {task.status === TaskStatus.IN_PROGRESS && contactPerson?.contactInfo && (
+            {/* 只有從 ongoing tab 進入才顯示聯絡資訊 */}
+            {fromTab === 'ongoing'  && contactPerson?.contactInfo && (
               <View style={styles.contactInfoContainer}>
                 <Text style={styles.contactInfoTitle}>聯絡資訊</Text>
                 

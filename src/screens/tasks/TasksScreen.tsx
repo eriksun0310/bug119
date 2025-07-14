@@ -1,6 +1,6 @@
 // 我的任務畫面 - 支援小怕星和終結者
 
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { 
   View, 
   Text, 
@@ -36,7 +36,12 @@ export const TasksScreen = () => {
   const navigation = useNavigation<TasksNavigationProp>()
   const [activeTab, setActiveTab] = useState<TaskTab>('ongoing')
   const [refreshing, setRefreshing] = useState(false)
+  const activeTabRef = useRef<TaskTab>('ongoing')
   
+  // 監聽 activeTab 變化並同步到 ref
+  useEffect(() => {
+    activeTabRef.current = activeTab
+  }, [activeTab])
   // 根據用戶角色獲取任務列表
   const getAllMyTasks = () => {
     if (!user) return []
@@ -148,12 +153,14 @@ export const TasksScreen = () => {
   
   // 處理任務詳情
   const handleTaskPress = (task: Task) => {
+    const currentTab = activeTabRef.current
+    
     // 小怕星在待確認頁面點擊任務時，跳轉到申請者列表
-    if (user?.role === UserRole.FEAR_STAR && activeTab === 'pending' && task.status === TaskStatus.PENDING) {
+    if (user?.role === UserRole.FEAR_STAR && currentTab === 'pending' && task.status === TaskStatus.PENDING) {
       navigation.navigate('TaskApplicants', { taskId: task.id })
     } else {
-      // 其他情況跳轉到任務詳情
-      navigation.navigate('TaskDetail', { taskId: task.id })
+      // 其他情況跳轉到任務詳情，並傳遞當前 tab 資訊
+      navigation.navigate('TaskDetail', { taskId: task.id, fromTab: currentTab })
     }
   }
   
@@ -341,34 +348,7 @@ export const TasksScreen = () => {
         </View>
       </View>
       
-      {/* 統計卡片 - 只有終結者顯示今日工作概況 */}
-      {activeTab === 'ongoing' && user?.role === UserRole.TERMINATOR && (
-        <View style={styles.summaryCard}>
-          <Text style={styles.summaryTitle}>今日工作概況</Text>
-          <View style={styles.summaryStats}>
-            <View style={styles.statItem}>
-              <Text style={styles.statNumber}>
-                {getTasksByTab('ongoing').length}
-              </Text>
-              <Text style={styles.statLabel}>進行中</Text>
-            </View>
-            <View style={styles.statItem}>
-              <Text style={styles.statNumber}>
-                {getTasksByTab('pending').length}
-              </Text>
-              <Text style={styles.statLabel}>待確認</Text>
-            </View>
-            <View style={styles.statItem}>
-              <Text style={styles.statNumber}>
-                {getTasksByTab('completed').filter(t => 
-                  t.completedAt && new Date(t.completedAt).toDateString() === new Date().toDateString()
-                ).length}
-              </Text>
-              <Text style={styles.statLabel}>今日完成</Text>
-            </View>
-          </View>
-        </View>
-      )}
+   
       
       {/* 任務列表 */}
       <View style={styles.content}>

@@ -4,7 +4,7 @@ export type RootStackParamList = {
   Splash: undefined
   Auth: undefined
   Main: undefined
-  TaskDetail: { taskId: string }
+  TaskDetail: { taskId: string; fromTab?: 'ongoing' | 'pending' | 'completed' }
   TaskApplicants: { taskId: string }
   EditProfile: undefined
   MessageDetail: { conversationId: string }

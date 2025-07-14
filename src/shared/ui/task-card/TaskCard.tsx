@@ -184,7 +184,7 @@ export const TaskCard: FC<TaskCardProps> = ({
           <Text style={styles.budgetText}>{formatBudget()}</Text>
         </View>
         
-        {task.status === 'pending' && !task.assignedTo && onAccept ? (
+        {/* {task.status === 'pending' && !task.assignedTo && onAccept ? (
           <TouchableOpacity 
             style={styles.acceptButton}
             onPress={handleAccept}
@@ -195,7 +195,7 @@ export const TaskCard: FC<TaskCardProps> = ({
           <View style={styles.statusBadge}>
             <Text style={styles.statusText}>{statusName}</Text>
           </View>
-        )}
+        )} */}
       </View>
     </TouchableOpacity>
   )
