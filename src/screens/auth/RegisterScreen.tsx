@@ -1,7 +1,7 @@
 // 註冊畫面
 
 import React, { useState } from 'react'
-import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native'
+import { View, Text, StyleSheet, ScrollView, Alert, Dimensions } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { useTheme } from '@/shared/theme'
 import { Button, Input, Card, SegmentedControl } from '@/shared/ui'
@@ -11,6 +11,10 @@ import { CONTACT_METHOD_OPTIONS } from '@/shared/config/options.config'
 export const RegisterScreen = () => {
   const { theme } = useTheme()
   const navigation = useNavigation<any>()
+  
+  // 取得螢幕寬度
+  const screenWidth = Dimensions.get('window').width
+  const isTablet = screenWidth >= 768 // 判斷是否為平板或電腦
   
   // 表單狀態統一管理
   const [form, setForm] = useState({
@@ -107,8 +111,13 @@ export const RegisterScreen = () => {
     scrollContent: {
       flexGrow: 1,
       justifyContent: 'center',
+      alignItems: 'center',
       padding: theme.spacing.lg,
       paddingTop: theme.spacing.xl,
+    },
+    formContainer: {
+      width: '100%',
+      maxWidth: isTablet ? 400 : undefined, // 電腦版最大寬度 400px
     },
     title: {
       fontSize: theme.fontSize.xxl,
@@ -149,8 +158,9 @@ export const RegisterScreen = () => {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Card>
-          <Text style={styles.title}>加入 Bug 119</Text>
+        <View style={styles.formContainer}>
+          <Card>
+            <Text style={styles.title}>加入 Bug 119</Text>
           <Text style={styles.subtitle}>建立您的帳號</Text>
           
           <View style={styles.form}>
@@ -232,7 +242,8 @@ export const RegisterScreen = () => {
               註冊
             </Button>
           </View>
-        </Card>
+          </Card>
+        </View>
       </ScrollView>
     </View>
   )

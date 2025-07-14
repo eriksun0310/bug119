@@ -29,7 +29,7 @@ import { showAlert } from '@/shared/utils'
 import { ContactMethod } from '@/shared/types'
 import { CONTACT_METHOD_OPTIONS } from '@/shared/config/options.config'
 
-export const EditProfileScreen = () => {
+const EditProfileScreen = () => {
   const { theme } = useTheme()
   const { user } = useAuth()
   const navigation = useNavigation()
@@ -437,3 +437,5 @@ export const EditProfileScreen = () => {
     </KeyboardAvoidingView>
   )
 }
+
+export { EditProfileScreen }

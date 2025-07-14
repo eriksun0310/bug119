@@ -131,7 +131,7 @@ export const TaskApplicantsScreen = () => {
         )}
         
         <View style={styles.actionContainer}>
-          <TouchableOpacity 
+          {/* <TouchableOpacity 
             style={styles.contactButton}
             onPress={() => {
               // TODO: 開啟聯絡功能
@@ -140,7 +140,7 @@ export const TaskApplicantsScreen = () => {
           >
             <Phone size={16} color={theme.colors.primary} />
             <Text style={styles.contactText}>聯絡</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           
           <Button
             variant="primary"

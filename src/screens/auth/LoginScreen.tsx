@@ -1,7 +1,7 @@
 // 登入畫面
 
 import React, { useState } from 'react'
-import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native'
+import { View, Text, StyleSheet, ScrollView, Alert, Dimensions } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { useTheme } from '@/shared/theme'
 import { useAuth } from '@/shared/hooks'
@@ -11,6 +11,10 @@ export const LoginScreen = () => {
   const { theme } = useTheme()
   const { login } = useAuth()
   const navigation = useNavigation<any>()
+  
+  // 取得螢幕寬度
+  const screenWidth = Dimensions.get('window').width
+  const isTablet = screenWidth >= 768 // 判斷是否為平板或電腦
   
   // 表單狀態統一管理
   const [form, setForm] = useState({
@@ -95,8 +99,13 @@ export const LoginScreen = () => {
     scrollContent: {
       flexGrow: 1,
       justifyContent: 'center',
+      alignItems: 'center',
       padding: theme.spacing.lg,
       paddingTop: theme.spacing.xl,
+    },
+    formContainer: {
+      width: '100%',
+      maxWidth: isTablet ? 400 : undefined, // 電腦版最大寬度 400px
     },
     title: {
       fontSize: theme.fontSize.xxl,
@@ -152,8 +161,9 @@ export const LoginScreen = () => {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Card>
-          <Text style={styles.title}>Bug 119</Text>
+        <View style={styles.formContainer}>
+          <Card>
+            <Text style={styles.title}>Bug 119</Text>
           <Text style={styles.subtitle}>歡迎回來！</Text>
           
           <View style={styles.form}>
@@ -207,9 +217,9 @@ export const LoginScreen = () => {
               </View>
             </View>
           </View>
-        </Card>
-        
-        <View style={styles.registerContainer}>
+          </Card>
+          
+          <View style={styles.registerContainer}>
           <Text style={styles.registerText}>還沒有帳號？</Text>
           <Text 
             style={styles.registerLink}
@@ -217,6 +227,7 @@ export const LoginScreen = () => {
           >
             立即註冊
           </Text>
+          </View>
         </View>
       </ScrollView>
     </View>

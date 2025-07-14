@@ -8,20 +8,16 @@ import {
   ScrollView, 
   TouchableOpacity,
   Switch,
-  Image
 } from 'react-native'
 import { 
   MapPin, 
   Clock, 
   Calendar,
-  Camera,
   Send,
   Timer,
-  X,
   Bell
 } from 'lucide-react-native'
 import * as Location from 'expo-location'
-import * as ImagePicker from 'expo-image-picker'
 import { Platform } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
@@ -56,7 +52,6 @@ interface CreateTaskForm {
   isImmediate: boolean
   scheduledDate?: string
   scheduledTime?: string
-  images: string[]
 }
 
 export const CreateTaskScreen = () => {
@@ -74,7 +69,6 @@ export const CreateTaskScreen = () => {
     district: '',
     preferredGender: Gender.ANY,
     isImmediate: true,
-    images: [],
   })
   
   const [errors, setErrors] = useState<Partial<Record<keyof CreateTaskForm, string>>>({})
@@ -149,8 +143,7 @@ export const CreateTaskScreen = () => {
                 district: '',
                 preferredGender: Gender.ANY,
                 isImmediate: true,
-                images: [],
-              })
+                          })
             }
           }
         ]
@@ -163,102 +156,6 @@ export const CreateTaskScreen = () => {
   }
   
   // 獲取當前位置
-
-  // 添加照片
-  const handleAddPhoto = () => {
-    if (Platform.OS === 'web') {
-      // 網頁環境直接打開文件選擇器
-      openWebImagePicker()
-    } else {
-      showAlert(
-        '新增照片',
-        '選擇照片來源',
-        [
-          { text: '相機', onPress: () => openCamera() },
-          { text: '相簿', onPress: () => openImagePicker() },
-          { text: '取消', style: 'cancel' }
-        ]
-      )
-    }
-  }
-
-  // 網頁環境的圖片選擇器
-  const openWebImagePicker = () => {
-    const input = document.createElement('input')
-    input.type = 'file'
-    input.accept = 'image/*'
-    input.multiple = true
-    input.onchange = (event: any) => {
-      const files = event.target.files
-      if (files && files.length > 0) {
-        Array.from(files).forEach((file: any) => {
-          const reader = new FileReader()
-          reader.onload = (e) => {
-            if (e.target?.result) {
-              setForm(prevForm => ({ 
-                ...prevForm, 
-                images: [...prevForm.images, e.target?.result as string] 
-              }))
-            }
-          }
-          reader.readAsDataURL(file)
-        })
-      }
-    }
-    input.click()
-  }
-
-  // 開啟相機
-  const openCamera = async () => {
-    const { status } = await ImagePicker.requestCameraPermissionsAsync()
-    if (status !== 'granted') {
-      showAlert('需要相機權限', '請允許應用程式存取相機')
-      return
-    }
-
-    const result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 0.8,
-    })
-
-    if (!result.canceled && result.assets[0]) {
-      setForm({ 
-        ...form, 
-        images: [...form.images, result.assets[0].uri] 
-      })
-    }
-  }
-
-  // 開啟相簿
-  const openImagePicker = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
-    if (status !== 'granted') {
-      showAlert('需要相簿權限', '請允許應用程式存取相簿')
-      return
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 0.8,
-    })
-
-    if (!result.canceled && result.assets[0]) {
-      setForm({ 
-        ...form, 
-        images: [...form.images, result.assets[0].uri] 
-      })
-    }
-  }
-
-  // 移除照片
-  const removeImage = (index: number) => {
-    const newImages = form.images.filter((_, i) => i !== index)
-    setForm({ ...form, images: newImages })
-  }
   
   // 處理通知按鈕點擊
   const handleNotificationPress = () => {
@@ -406,25 +303,6 @@ export const CreateTaskScreen = () => {
       color: theme.colors.text,
       textAlign: 'center',
     },
-    photoSection: {
-      gap: theme.spacing.sm,
-    },
-    addPhotoButton: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: theme.colors.surface,
-      borderRadius: theme.borderRadius.lg,
-      padding: theme.spacing.lg,
-      borderWidth: 2,
-      borderColor: theme.colors.border,
-      borderStyle: 'dashed',
-    },
-    addPhotoText: {
-      fontSize: theme.fontSize.md,
-      color: theme.colors.textSecondary,
-      marginLeft: theme.spacing.sm,
-    },
     submitSection: {
       padding: theme.spacing.md,
       borderTopWidth: 1,
@@ -439,33 +317,6 @@ export const CreateTaskScreen = () => {
       color: theme.colors.textSecondary,
       textAlign: 'center',
       lineHeight: 16,
-    },
-    imageGrid: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      gap: theme.spacing.sm,
-      marginTop: theme.spacing.sm,
-    },
-    imageContainer: {
-      position: 'relative',
-      width: 80,
-      height: 80,
-    },
-    image: {
-      width: 80,
-      height: 80,
-      borderRadius: theme.borderRadius.md,
-    },
-    removeImageButton: {
-      position: 'absolute',
-      top: -5,
-      right: -5,
-      backgroundColor: theme.colors.error,
-      borderRadius: 12,
-      width: 24,
-      height: 24,
-      alignItems: 'center',
-      justifyContent: 'center',
     },
   })
   
@@ -653,42 +504,6 @@ export const CreateTaskScreen = () => {
             />
           </View>
           
-          {/* 照片上傳 */}
-          <View style={styles.section}>
-            <View style={styles.photoSection}>
-              <Text style={styles.sectionTitle}>照片上傳（選擇性）</Text>
-              
-              <TouchableOpacity 
-                style={styles.addPhotoButton}
-                onPress={handleAddPhoto}
-              >
-                <Camera size={24} color={theme.colors.textSecondary} />
-                <Text style={styles.addPhotoText}>
-                  新增害蟲照片或現場照片
-                </Text>
-              </TouchableOpacity>
-
-              {form.images.length > 0 && (
-                <View style={styles.imageGrid}>
-                  {form.images.map((imageUri, index) => (
-                    <View key={index} style={styles.imageContainer}>
-                      <Image 
-                        source={{ uri: imageUri }} 
-                        style={styles.image}
-                        resizeMode="cover"
-                      />
-                      <TouchableOpacity 
-                        style={styles.removeImageButton}
-                        onPress={() => removeImage(index)}
-                      >
-                        <X size={12} color={theme.colors.primary} />
-                      </TouchableOpacity>
-                    </View>
-                  ))}
-                </View>
-              )}
-            </View>
-          </View>
         </View>
       </ScrollView>
       

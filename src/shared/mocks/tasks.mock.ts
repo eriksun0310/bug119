@@ -21,10 +21,6 @@ export const mockTasks: Task[] = [
       max: 2000,
     },
     isImmediate: true,
-    images: [
-      'https://images.unsplash.com/photo-1558618047-3c8c76d7d1b2?w=300',
-      'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=300',
-    ],
     createdBy: '1', // 小怕星 ID
     createdAt: new Date('2024-07-02T10:30:00'),
     updatedAt: new Date('2024-07-02T10:30:00'),
@@ -48,9 +44,6 @@ export const mockTasks: Task[] = [
     },
     scheduledTime: new Date('2024-07-03T14:00:00'),
     isImmediate: false,
-    images: [
-      'https://images.unsplash.com/photo-1609205807107-e5d2c18e9a7d?w=300',
-    ],
     createdBy: '1',
     createdAt: new Date('2024-07-02T08:15:00'),
     updatedAt: new Date('2024-07-02T08:15:00'),
@@ -74,7 +67,6 @@ export const mockTasks: Task[] = [
     },
     scheduledTime: new Date('2024-07-02T19:00:00'),
     isImmediate: false,
-    images: [],
     createdBy: '1',
     assignedTo: '2', // 已指派給蟲蟲終結者
     createdAt: new Date('2024-07-01T16:20:00'),
@@ -99,9 +91,6 @@ export const mockTasks: Task[] = [
     },
     scheduledTime: new Date('2024-07-04T10:00:00'),
     isImmediate: false,
-    images: [
-      'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300',
-    ],
     createdBy: '1',
     createdAt: new Date('2024-07-02T11:45:00'),
     updatedAt: new Date('2024-07-02T11:45:00'),
@@ -124,7 +113,6 @@ export const mockTasks: Task[] = [
       max: 3000,
     },
     isImmediate: true,
-    images: [],
     createdBy: '1',
     createdAt: new Date('2024-07-02T13:20:00'),
     updatedAt: new Date('2024-07-02T13:20:00'),
@@ -148,9 +136,6 @@ export const mockTasks: Task[] = [
     },
     scheduledTime: new Date('2024-07-05T16:00:00'),
     isImmediate: false,
-    images: [
-      'https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?w=300',
-    ],
     createdBy: '1',
     createdAt: new Date('2024-07-02T14:10:00'),
     updatedAt: new Date('2024-07-02T14:10:00'),
@@ -174,7 +159,6 @@ export const mockTasks: Task[] = [
     },
     isImmediate: false,
     scheduledTime: new Date('2024-07-01T14:00:00'),
-    images: [],
     createdBy: '3',
     assignedTo: '2', // 終結者已完成，等待小怕星確認
     createdAt: new Date('2024-06-30T10:00:00'),
@@ -200,7 +184,6 @@ export const mockTasks: Task[] = [
     },
     isImmediate: false,
     scheduledTime: new Date('2024-06-28T10:00:00'),
-    images: [],
     createdBy: '4',
     assignedTo: '2', // 終結者已完成並已被評價
     createdAt: new Date('2024-06-27T09:00:00'),

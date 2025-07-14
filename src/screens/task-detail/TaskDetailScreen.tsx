@@ -8,7 +8,6 @@ import {
   ScrollView, 
   TouchableOpacity,
   Alert,
-  Image
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native'
@@ -194,21 +193,10 @@ export const TaskDetailScreen: React.FC = () => {
         )}
         
         <View style={styles.applicantActionContainer}>
-          <TouchableOpacity 
-            style={styles.applicantContactButton}
-            onPress={() => {
-              // TODO: 開啟聯絡功能
-              showAlert('聯絡功能', '即將開啟聯絡功能')
-            }}
-          >
-            <Phone size={16} color={theme.colors.primary} />
-            <Text style={styles.applicantContactText}>聯絡</Text>
-          </TouchableOpacity>
-          
           <Button
             variant="primary"
             onPress={() => handleSelectTerminator(assignment)}
-            style={styles.selectButton}
+            fullWidth
           >
             選擇委託
           </Button>
@@ -411,22 +399,6 @@ export const TaskDetailScreen: React.FC = () => {
       color: theme.colors.text,
       flex: 1,
     },
-    imageGrid: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      gap: theme.spacing.sm,
-    },
-    taskImage: {
-      width: 100,
-      height: 100,
-      borderRadius: theme.borderRadius.md,
-      backgroundColor: theme.colors.border,
-    },
-    noImages: {
-      fontSize: theme.fontSize.sm,
-      color: theme.colors.textSecondary,
-      fontStyle: 'italic',
-    },
     actionButtons: {
       padding: theme.spacing.md,
       backgroundColor: theme.colors.surface,
@@ -564,24 +536,6 @@ export const TaskDetailScreen: React.FC = () => {
       justifyContent: 'space-between',
       alignItems: 'center',
     },
-    applicantContactButton: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      paddingVertical: theme.spacing.sm,
-      paddingHorizontal: theme.spacing.md,
-      borderWidth: 1,
-      borderColor: theme.colors.border,
-      borderRadius: theme.borderRadius.md,
-    },
-    applicantContactText: {
-      fontSize: theme.fontSize.sm,
-      color: theme.colors.text,
-      marginLeft: theme.spacing.xs,
-    },
-    selectButton: {
-      flex: 1,
-      marginLeft: theme.spacing.md,
-    },
     emptyApplicants: {
       textAlign: 'center',
       color: theme.colors.textSecondary,
@@ -714,8 +668,8 @@ export const TaskDetailScreen: React.FC = () => {
               </View>
             </View>
             
-            {/* 已媒合、進行中和已完成的任務顯示聯絡資訊 */}
-            {(task.status === TaskStatus.ASSIGNED || task.status === TaskStatus.IN_PROGRESS || task.status === TaskStatus.COMPLETED) && contactPerson?.contactInfo && (
+            {/* 只有進行中的任務才顯示聯絡資訊 */}
+            {task.status === TaskStatus.IN_PROGRESS && contactPerson?.contactInfo && (
               <View style={styles.contactInfoContainer}>
                 <Text style={styles.contactInfoTitle}>聯絡資訊</Text>
                 
@@ -757,24 +711,6 @@ export const TaskDetailScreen: React.FC = () => {
           </View>
         )}
         
-        {/* 現場照片 */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>現場照片</Text>
-          {task.images && task.images.length > 0 ? (
-            <View style={styles.imageGrid}>
-              {task.images.map((imageUri, index) => (
-                <Image 
-                  key={index}
-                  source={{ uri: imageUri }} 
-                  style={styles.taskImage}
-                  resizeMode="cover"
-                />
-              ))}
-            </View>
-          ) : (
-            <Text style={styles.noImages}>客戶未提供現場照片</Text>
-          )}
-        </View>
       </ScrollView>
       
       {/* 行動按鈕 */}

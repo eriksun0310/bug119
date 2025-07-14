@@ -38,7 +38,6 @@ export interface Task {
   }
   scheduledTime?: Date          // 預約時間
   isImmediate: boolean         // 是否立即處理
-  images: string[]             // 害蟲照片
   createdBy: string            // 小怕星 ID
   assignedTo?: string          // 終結者 ID
   createdAt: Date
@@ -61,7 +60,6 @@ export interface TaskProgress {
   status: TaskStatus
   currentStep: string
   completionPercentage: number
-  photos: string[]             // 進度照片
   notes?: string
   updatedAt: Date
 }

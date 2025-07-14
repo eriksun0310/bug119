@@ -57,17 +57,15 @@ export const SegmentedControl = <T = string>({
           >
             {option.icon && (
               <View style={styles.segmentIcon}>
-                {isValidElement(option.icon) ? 
-                  cloneElement(option.icon, {
+                {React.isValidElement(option.icon) ? 
+                  React.cloneElement(option.icon, {
                     color: isActive ? theme.colors.primary : theme.colors.textSecondary,
                     ...(option.icon.props || {})
                   } as any) : 
-                  typeof option.icon === 'function' ?
-                    React.createElement(option.icon as React.ComponentType<any>, {
-                      size: 16,
-                      color: isActive ? theme.colors.primary : theme.colors.textSecondary
-                    }) :
-                    option.icon
+                  React.createElement(option.icon as React.ComponentType<any>, {
+                    size: 16,
+                    color: isActive ? theme.colors.primary : theme.colors.textSecondary
+                  })
                 }
               </View>
             )}
