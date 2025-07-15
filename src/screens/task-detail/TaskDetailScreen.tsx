@@ -5,15 +5,12 @@ import {
   View, 
   Text, 
   StyleSheet, 
-  ScrollView, 
-  TouchableOpacity,
+  ScrollView,
   Alert,
 } from 'react-native'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { 
-  ArrowLeft,
   MapPin, 
   Clock, 
   Calendar,
@@ -29,8 +26,8 @@ import {
   Send
 } from 'lucide-react-native'
 import { useTheme } from '@/shared/theme'
-import { useAuth } from '@/shared/hooks'
-import { Button, Card } from '@/shared/ui'
+import { useAuth, useResponsive } from '@/shared/hooks'
+import { Button, Card, ApplicantCard, ScreenHeader } from '@/shared/ui'
 import { 
   getPestTypeDisplayName,
   getPriorityDisplayInfo,
@@ -48,10 +45,10 @@ type TaskDetailNavigationProp = NativeStackNavigationProp<RootStackParamList, 'T
 export const TaskDetailScreen: React.FC = () => {
   const { theme } = useTheme()
   const { user } = useAuth()
+  const { isTablet } = useResponsive()
   const [accepting, setAccepting] = useState(false)
   const route = useRoute<TaskDetailRouteProp>()
   const navigation = useNavigation<TaskDetailNavigationProp>()
-  const insets = useSafeAreaInsets()
   
   // 根據 taskId 獲取任務資料
   const { taskId, fromTab } = route.params
@@ -135,100 +132,12 @@ export const TaskDetailScreen: React.FC = () => {
     return `${date.getMonth() + 1}/${date.getDate()} ${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`
   }
   
-  // 渲染申請者卡片
-  const renderApplicantCard = (assignment: TaskAssignment) => {
-    const applicantTerminator = mockUsers.find(u => u.id === assignment.terminatorId)
-    const applicantProfile = mockUserProfiles[assignment.terminatorId as keyof typeof mockUserProfiles]
-    
-    if (!applicantTerminator || !applicantProfile) return null
-    
-    return (
-      <View key={assignment.terminatorId} style={styles.applicantCard}>
-        <View style={styles.applicantHeader}>
-          <View style={styles.avatarContainer}>
-            <Image 
-              source={{ uri: applicantTerminator.avatar || 'https://via.placeholder.com/60' }}
-              style={styles.applicantAvatar}
-            />
-            {applicantTerminator.isVerified && (
-              <View style={styles.verifiedBadge}>
-                <Text style={styles.verifiedText}>✓</Text>
-              </View>
-            )}
-          </View>
-          
-          <View style={styles.applicantInfo}>
-            <Text style={styles.applicantName}>{applicantTerminator.name}</Text>
-            <View style={styles.ratingContainer}>
-              <Star size={16} color="#FFD700" fill="#FFD700" />
-              <Text style={styles.ratingText}>
-                {applicantProfile.rating} ({applicantProfile.totalReviews}評價)
-              </Text>
-            </View>
-            <View style={styles.experienceContainer}>
-              <Clock size={14} color={theme.colors.textSecondary} />
-              <Text style={styles.experienceText}>
-                {applicantProfile.experienceYears}年經驗
-              </Text>
-            </View>
-            <View style={styles.locationContainer}>
-              <MapPin size={14} color={theme.colors.textSecondary} />
-              <Text style={styles.locationText}>{applicantProfile.location}</Text>
-            </View>
-          </View>
-        </View>
-        
-        <View style={styles.proposalContainer}>
-          <View style={styles.priceContainer}>
-            <Text style={styles.priceLabel}>提議價格</Text>
-            <Text style={styles.priceValue}>${assignment.proposedPrice}</Text>
-          </View>
-        </View>
-        
-        {assignment.message && (
-          <View style={styles.messageContainer}>
-            <MessageCircle size={16} color={theme.colors.textSecondary} />
-            <Text style={styles.messageText}>{assignment.message}</Text>
-          </View>
-        )}
-        
-        <View style={styles.applicantActionContainer}>
-          <Button
-            variant="primary"
-            onPress={() => handleSelectTerminator(assignment)}
-            fullWidth
-          >
-            選擇委託
-          </Button>
-        </View>
-      </View>
-    )
-  }
   
   
   const styles = StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: theme.colors.background,
-    },
-    header: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      backgroundColor: theme.colors.surface,
-      paddingHorizontal: theme.spacing.md,
-      paddingTop: insets.top + theme.spacing.xs, // 添加安全區域頂部間距
-      paddingBottom: theme.spacing.sm,
-      borderBottomWidth: 1,
-      borderBottomColor: theme.colors.border,
-    },
-    backButton: {
-      marginRight: theme.spacing.md,
-    },
-    headerTitle: {
-      fontSize: theme.fontSize.lg,
-      fontWeight: '600',
-      color: theme.colors.text,
-      flex: 1,
     },
     content: {
       flex: 1,
@@ -406,122 +315,15 @@ export const TaskDetailScreen: React.FC = () => {
       borderTopColor: theme.colors.border,
     },
     // 申請者列表樣式
-    applicantCard: {
-      backgroundColor: theme.colors.background,
-      borderRadius: theme.borderRadius.lg,
-      padding: theme.spacing.md,
-      marginBottom: theme.spacing.md,
-      borderWidth: 1,
-      borderColor: theme.colors.border,
+    applicantsList: {
+      flexDirection: isTablet ? 'row' : 'column',
+      flexWrap: isTablet ? 'wrap' : 'nowrap',
+      justifyContent: isTablet ? 'flex-start' : 'stretch',
+      alignItems: isTablet ? 'flex-start' : 'stretch',
+      gap: theme.spacing.md,
     },
-    applicantHeader: {
-      flexDirection: 'row',
-      marginBottom: theme.spacing.md,
-    },
-    avatarContainer: {
-      position: 'relative',
-      marginRight: theme.spacing.md,
-    },
-    applicantAvatar: {
-      width: 60,
-      height: 60,
-      borderRadius: 30,
-    },
-    verifiedBadge: {
-      position: 'absolute',
-      bottom: -2,
-      right: -2,
-      width: 20,
-      height: 20,
-      borderRadius: 10,
-      backgroundColor: '#4CAF50',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    verifiedText: {
-      color: '#FFFFFF',
-      fontSize: 12,
-      fontWeight: 'bold',
-    },
-    applicantInfo: {
-      flex: 1,
-    },
-    applicantName: {
-      fontSize: theme.fontSize.md,
-      fontWeight: '600',
-      color: theme.colors.text,
-      marginBottom: theme.spacing.xs,
-    },
-    ratingContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginBottom: theme.spacing.xs,
-    },
-    ratingText: {
-      fontSize: theme.fontSize.sm,
-      color: theme.colors.text,
-      marginLeft: theme.spacing.xs,
-    },
-    experienceContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginBottom: theme.spacing.xs,
-    },
-    experienceText: {
-      fontSize: theme.fontSize.sm,
-      color: theme.colors.textSecondary,
-      marginLeft: theme.spacing.xs,
-    },
-    locationContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-    },
-    locationText: {
-      fontSize: theme.fontSize.sm,
-      color: theme.colors.textSecondary,
-      marginLeft: theme.spacing.xs,
-    },
-    proposalContainer: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      marginBottom: theme.spacing.md,
-      paddingVertical: theme.spacing.sm,
-      paddingHorizontal: theme.spacing.md,
-      backgroundColor: theme.colors.surface,
-      borderRadius: theme.borderRadius.md,
-    },
-    priceContainer: {
-      alignItems: 'center',
-    },
-    priceLabel: {
-      fontSize: theme.fontSize.xs,
-      color: theme.colors.textSecondary,
-      marginBottom: theme.spacing.xs,
-    },
-    priceValue: {
-      fontSize: theme.fontSize.lg,
-      fontWeight: '600',
-      color: theme.colors.text,
-    },
-    messageContainer: {
-      flexDirection: 'row',
-      marginBottom: theme.spacing.md,
-      paddingHorizontal: theme.spacing.md,
-      paddingVertical: theme.spacing.sm,
-      backgroundColor: theme.colors.surface,
-      borderRadius: theme.borderRadius.md,
-    },
-    messageText: {
-      fontSize: theme.fontSize.sm,
-      color: theme.colors.text,
-      marginLeft: theme.spacing.sm,
-      flex: 1,
-      lineHeight: 20,
-    },
-    applicantActionContainer: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
+    applicantCardTablet: {
+      width: '48%',
     },
     emptyApplicants: {
       textAlign: 'center',
@@ -534,16 +336,11 @@ export const TaskDetailScreen: React.FC = () => {
   
   return (
     <View style={styles.container}>
-      {/* 標題列 */}
-      <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <ArrowLeft size={24} color={theme.colors.text} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>任務詳情</Text>
-      </View>
+      <ScreenHeader 
+        title="任務詳情"
+        showBackButton
+        onBackPress={() => navigation.goBack()}
+      />
       
       <ScrollView style={styles.content}>
         {/* 任務基本資訊 */}
@@ -600,16 +397,7 @@ export const TaskDetailScreen: React.FC = () => {
             </Text>
           </View>
           
-          {/* 委託時間：只有小怕星且任務已分配時顯示 */}
-          {/* {user?.role === UserRole.FEAR_STAR && task.assignedTo && (
-            <View style={styles.infoRow}>
-              <Calendar size={20} color={theme.colors.textSecondary} />
-              <Text style={styles.infoText}>
-                委託時間：{formatDateTime(task.updatedAt.toISOString())}
-              </Text>
-            </View>
-          )} */}
-          
+        
           <View style={styles.infoRow}>
             <Clock size={20} color={theme.colors.textSecondary} />
             <Text style={styles.infoText}>
@@ -634,7 +422,25 @@ export const TaskDetailScreen: React.FC = () => {
           // 小怕星的待確認任務：顯示申請者列表
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>申請者列表 ({assignments.length}位)</Text>
-            {assignments.map(renderApplicantCard)}
+            <View style={styles.applicantsList}>
+              {assignments.map(assignment => {
+                const terminator = mockUsers.find(u => u.id === assignment.terminatorId)
+                const profile = mockUserProfiles[assignment.terminatorId as keyof typeof mockUserProfiles]
+                
+                if (!terminator || !profile) return null
+                
+                return (
+                  <View key={assignment.terminatorId} style={isTablet ? styles.applicantCardTablet : undefined}>
+                    <ApplicantCard
+                      user={terminator}
+                      profile={profile}
+                      assignment={assignment}
+                      onSelect={() => handleSelectTerminator(assignment)}
+                    />
+                  </View>
+                )
+              })}
+            </View>
           </View>
         ) : (
           // 其他情況：顯示單一聯絡人資訊
@@ -646,12 +452,6 @@ export const TaskDetailScreen: React.FC = () => {
               </View>
               <View style={styles.customerInfo}>
                 <Text style={styles.customerName}>{contactPerson?.name || '用戶'}</Text>
-                <View style={styles.customerRating}>
-                  <Star size={14} color="#FFD700" fill="#FFD700" />
-                  <Text style={styles.ratingText}>
-                    {contactProfile?.rating || 0} ({contactProfile?.totalReviews || 0} 評價)
-                  </Text>
-                </View>
               </View>
             </View>
             
@@ -687,9 +487,9 @@ export const TaskDetailScreen: React.FC = () => {
               </View>
             )}
             
-            {task.status === TaskStatus.PENDING && (
+            {/* {task.status === TaskStatus.PENDING && (
               <Text style={styles.contactHint}>接案後即可查看{contactLabel}聯絡資訊</Text>
-            )}
+            )} */}
             
             {/* 小怕星的待確認任務但沒有申請者 */}
             {user?.role === UserRole.FEAR_STAR && task.status === TaskStatus.PENDING && assignments.length === 0 && (

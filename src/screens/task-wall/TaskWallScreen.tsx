@@ -22,13 +22,14 @@ import {
   X
 } from 'lucide-react-native'
 import { useTheme } from '@/shared/theme'
-import { useAuth } from '@/shared/hooks'
-import { TaskCard, Input } from '@/shared/ui'
+import { useAuth, useResponsive } from '@/shared/hooks'
+import { TaskCard, Input, FilterModal, ScreenHeader } from '@/shared/ui'
 import { 
   getAvailableTasks, 
   getPestTypeDisplayName
 } from '@/shared/mocks'
 import { Task, PestType, TaskPriority, RootStackParamList } from '@/shared/types'
+import { FilterModalFilters } from '@/shared/ui/filter-modal/FilterModal.types'
 import { 
   TASK_WALL_PEST_FILTER_OPTIONS, 
   TASK_WALL_PRIORITY_FILTER_OPTIONS 
@@ -39,12 +40,13 @@ type TaskWallNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Tas
 export const TaskWallScreen = () => {
   const { theme } = useTheme()
   const { user } = useAuth()
+  const { isTablet } = useResponsive()
   const navigation = useNavigation<TaskWallNavigationProp>()
   const insets = useSafeAreaInsets()
   const [searchQuery, setSearchQuery] = useState('')
-  const [selectedFilters, setSelectedFilters] = useState({
-    pestType: null as PestType | null,
-    priority: null as TaskPriority | null,
+  const [selectedFilters, setSelectedFilters] = useState<FilterModalFilters>({
+    pestType: null,
+    priority: null,
     isImmediate: false,
   })
   const [showFilterModal, setShowFilterModal] = useState(false)
@@ -52,7 +54,6 @@ export const TaskWallScreen = () => {
   
   // 取得螢幕寬度
   const screenWidth = Dimensions.get('window').width
-  const isTablet = screenWidth >= 768 // 判斷是否為平板或電腦
   
   // 取得可接的任務
   const availableTasks = getAvailableTasks()
@@ -143,9 +144,8 @@ export const TaskWallScreen = () => {
   }
   
   // 應用篩選
-  const applyFilters = (filters: typeof selectedFilters) => {
+  const applyFilters = (filters: FilterModalFilters) => {
     setSelectedFilters(filters)
-    setShowFilterModal(false)
   }
   
   // 重置篩選
@@ -328,268 +328,8 @@ export const TaskWallScreen = () => {
         onApply={applyFilters}
         onReset={resetFilters}
         onClose={() => setShowFilterModal(false)}
-        theme={theme}
       />
     </View>
   )
 }
 
-// 篩選模態框組件
-const FilterModal = ({ 
-  visible, 
-  filters, 
-  onApply, 
-  onReset, 
-  onClose, 
-  theme 
-}: {
-  visible: boolean
-  filters: {
-    pestType: PestType | null
-    priority: TaskPriority | null  
-    isImmediate: boolean
-  }
-  onApply: (filters: any) => void
-  onReset: () => void
-  onClose: () => void
-  theme: any
-}) => {
-  const [tempFilters, setTempFilters] = useState(filters)
-  
-  
-  const styles = StyleSheet.create({
-    modalOverlay: {
-      flex: 1,
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-      justifyContent: 'flex-end',
-    },
-    modalContent: {
-      backgroundColor: theme.colors.surface,
-      borderTopLeftRadius: theme.borderRadius.xl,
-      borderTopRightRadius: theme.borderRadius.xl,
-      paddingTop: theme.spacing.md,
-      maxHeight: '80%',
-    },
-    modalHeader: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      paddingHorizontal: theme.spacing.lg,
-      paddingBottom: theme.spacing.md,
-      borderBottomWidth: 1,
-      borderBottomColor: theme.colors.border,
-    },
-    modalTitle: {
-      fontSize: theme.fontSize.lg,
-      fontWeight: 'bold',
-      color: theme.colors.text,
-    },
-    closeButton: {
-      padding: theme.spacing.xs,
-    },
-    filterSection: {
-      padding: theme.spacing.lg,
-    },
-    filterSectionTitle: {
-      fontSize: theme.fontSize.md,
-      fontWeight: '600',
-      color: theme.colors.text,
-      marginBottom: theme.spacing.md,
-    },
-    filterOptions: {
-      gap: theme.spacing.sm,
-    },
-    filterOption: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      paddingVertical: theme.spacing.sm,
-      paddingHorizontal: theme.spacing.md,
-      backgroundColor: theme.colors.background,
-      borderRadius: theme.borderRadius.md,
-      borderWidth: 1,
-      borderColor: theme.colors.border,
-    },
-    filterOptionActive: {
-      backgroundColor: theme.colors.secondary,
-      borderColor: theme.colors.secondary,
-    },
-    filterOptionText: {
-      fontSize: theme.fontSize.sm,
-      color: theme.colors.text,
-    },
-    filterOptionTextActive: {
-      color: theme.colors.primary,
-      fontWeight: '600',
-    },
-    modalActions: {
-      flexDirection: 'row',
-      gap: theme.spacing.md,
-      padding: theme.spacing.lg,
-      borderTopWidth: 1,
-      borderTopColor: theme.colors.border,
-    },
-    actionButton: {
-      flex: 1,
-      paddingVertical: theme.spacing.md,
-      borderRadius: theme.borderRadius.md,
-      alignItems: 'center',
-    },
-    resetButton: {
-      backgroundColor: theme.colors.background,
-      borderWidth: 1,
-      borderColor: theme.colors.border,
-    },
-    applyButton: {
-      backgroundColor: theme.colors.secondary,
-    },
-    actionButtonText: {
-      fontSize: theme.fontSize.md,
-      fontWeight: '600',
-    },
-    resetButtonText: {
-      color: theme.colors.text,
-    },
-    applyButtonText: {
-      color: theme.colors.primary,
-    },
-  })
-  
-  return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="slide"
-      onRequestClose={onClose}
-    >
-      <TouchableOpacity 
-        style={styles.modalOverlay}
-        activeOpacity={1}
-        onPress={onClose}
-      >
-        <TouchableOpacity 
-          style={styles.modalContent}
-          activeOpacity={1}
-          onPress={() => {}}
-        >
-          {/* 標題列 */}
-          <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>篩選條件</Text>
-            <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-              <X size={24} color={theme.colors.text} />
-            </TouchableOpacity>
-          </View>
-          
-          <ScrollView>
-            {/* 害蟲類型 */}
-            <View style={styles.filterSection}>
-              <Text style={styles.filterSectionTitle}>害蟲類型</Text>
-              <View style={styles.filterOptions}>
-                {TASK_WALL_PEST_FILTER_OPTIONS.map(pest => (
-                  <TouchableOpacity
-                    key={pest.key}
-                    style={[
-                      styles.filterOption,
-                      tempFilters.pestType === pest.key && styles.filterOptionActive
-                    ]}
-                    onPress={() => setTempFilters({
-                      ...tempFilters,
-                      pestType: tempFilters.pestType === pest.key ? null : pest.key as PestType
-                    })}
-                  >
-                    <Text style={[
-                      styles.filterOptionText,
-                      tempFilters.pestType === pest.key && styles.filterOptionTextActive
-                    ]}>
-                      {pest.label}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </View>
-            
-            {/* 優先程度 */}
-            <View style={styles.filterSection}>
-              <Text style={styles.filterSectionTitle}>優先程度</Text>
-              <View style={styles.filterOptions}>
-                {TASK_WALL_PRIORITY_FILTER_OPTIONS.map(priority => (
-                  <TouchableOpacity
-                    key={priority.key}
-                    style={[
-                      styles.filterOption,
-                      tempFilters.priority === priority.key && styles.filterOptionActive
-                    ]}
-                    onPress={() => setTempFilters({
-                      ...tempFilters,
-                      priority: tempFilters.priority === priority.key ? null : priority.key as TaskPriority
-                    })}
-                  >
-                    <Text style={[
-                      styles.filterOptionText,
-                      tempFilters.priority === priority.key && styles.filterOptionTextActive
-                    ]}>
-                      {priority.label}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </View>
-            
-            {/* 立即處理 */}
-            <View style={styles.filterSection}>
-              <Text style={styles.filterSectionTitle}>任務類型</Text>
-              <View style={styles.filterOptions}>
-                <TouchableOpacity
-                  style={[
-                    styles.filterOption,
-                    tempFilters.isImmediate && styles.filterOptionActive
-                  ]}
-                  onPress={() => setTempFilters({
-                    ...tempFilters,
-                    isImmediate: !tempFilters.isImmediate
-                  })}
-                >
-                  <Text style={[
-                    styles.filterOptionText,
-                    tempFilters.isImmediate && styles.filterOptionTextActive
-                  ]}>
-                    只顯示緊急任務
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </ScrollView>
-          
-          {/* 操作按鈕 */}
-          <View style={styles.modalActions}>
-            <TouchableOpacity 
-              style={[styles.actionButton, styles.resetButton]}
-              onPress={() => {
-                setTempFilters({
-                  pestType: null,
-                  priority: null,
-                  isImmediate: false,
-                })
-                onReset()
-                onClose()
-              }}
-            >
-              <Text style={[styles.actionButtonText, styles.resetButtonText]}>
-                重置
-              </Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity 
-              style={[styles.actionButton, styles.applyButton]}
-              onPress={() => onApply(tempFilters)}
-            >
-              <Text style={[styles.actionButtonText, styles.applyButtonText]}>
-                套用
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </TouchableOpacity>
-      </TouchableOpacity>
-    </Modal>
-  )
-}

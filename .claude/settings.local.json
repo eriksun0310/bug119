@@ -34,7 +34,8 @@
       "Bash(pnpm remove:*)",
       "Bash(timeout:*)",
       "Bash(tree:*)",
-      "Bash(pnpm dev:*)"
+      "Bash(pnpm dev:*)",
+      "Bash(npx expo:*)"
     ],
     "deny": []
   }

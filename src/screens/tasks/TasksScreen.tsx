@@ -338,7 +338,7 @@ export const TasksScreen = () => {
       <View style={styles.header}>
         <View style={styles.titleRow}>
           <View style={{ width: 40 }} />
-          <Text style={styles.title}>我的任務</Text>
+          <Text style={styles.title}>任務</Text>
           <TouchableOpacity style={styles.bellButton} onPress={handleNotificationPress}>
             <Bell size={24} color={theme.colors.text} />
           </TouchableOpacity>

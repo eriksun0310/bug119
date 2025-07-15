@@ -139,16 +139,16 @@ export const TaskCard: FC<TaskCardProps> = ({
           </View>
           
           {/* 根據偏好方式只顯示一種聯絡資訊 */}
-          {contactPerson.contactInfo.preferredMethod === 'phone' && (
+          {/* {contactPerson.contactInfo.preferredMethod === 'phone' && (
             <View style={styles.infoRow}>
               <Phone size={16} color={theme.colors.textSecondary} style={styles.infoIcon} />
               <Text style={styles.infoText}>
                 電話：{contactPerson.contactInfo.phone}
               </Text>
             </View>
-          )}
+          )} */}
           
-          {contactPerson.contactInfo.preferredMethod === 'line' && contactPerson.contactInfo.line && (
+          {/* {contactPerson.contactInfo.preferredMethod === 'line' && contactPerson.contactInfo.line && (
             <View style={styles.infoRow}>
               <MessageSquare size={16} color={theme.colors.textSecondary} style={styles.infoIcon} />
               <Text style={styles.infoText}>
@@ -156,7 +156,7 @@ export const TaskCard: FC<TaskCardProps> = ({
               </Text>
             </View>
           )}
-          
+           */}
           {contactPerson.contactInfo.preferredMethod === 'telegram' && contactPerson.contactInfo.telegram && (
             <View style={styles.infoRow}>
               <MessageSquare size={16} color={theme.colors.textSecondary} style={styles.infoIcon} />
