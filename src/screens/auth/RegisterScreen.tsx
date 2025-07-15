@@ -4,9 +4,11 @@ import React, { useState } from 'react'
 import { View, Text, StyleSheet, ScrollView, Alert, Dimensions } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { useTheme } from '@/shared/theme'
+import { useFormValidation } from '@/shared/hooks/useFormValidation'
 import { Button, Input, Card, SegmentedControl, KeyboardAvoidingContainer } from '@/shared/ui'
 import { ContactMethod } from '@/shared/types'
 import { CONTACT_METHOD_OPTIONS } from '@/shared/config/options.config'
+import { registerValidationRules } from '@/shared/config/validation.config'
 
 export const RegisterScreen = () => {
   const { theme } = useTheme()
@@ -16,75 +18,49 @@ export const RegisterScreen = () => {
   const screenWidth = Dimensions.get('window').width
   const isTablet = screenWidth >= 768 // 判斷是否為平板或電腦
   
-  // 表單狀態統一管理
-  const [form, setForm] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    phone: '',
-    line: '',
-    telegram: '',
-    preferredMethod: ContactMethod.PHONE
-  })
+  // 使用 useFormValidation Hook 統一管理表單
+  const {
+    form,
+    errors,
+    setForm,
+    handleInputChange,
+    validateForm
+  } = useFormValidation(
+    {
+      name: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      phone: '',
+      line: '',
+      telegram: '',
+      preferredMethod: ContactMethod.PHONE
+    },
+    registerValidationRules
+  )
   
-  const [errors, setErrors] = useState<Partial<typeof form>>({})
   const [loading, setLoading] = useState(false)
   
-  // 統一的表單更新函數
-  const handleInputChange = (field: keyof typeof form) => (value: string | ContactMethod) => {
-    setForm(prev => ({ ...prev, [field]: value }))
-    // 清除該欄位的錯誤
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: undefined }))
-    }
-  }
-  
-  // 表單驗證函數
-  const validateForm = (): boolean => {
-    const newErrors: Partial<typeof form> = {}
-    
-    if (!form.name.trim()) {
-      newErrors.name = '請輸入姓名'
-    }
-    
-    if (!form.email.trim()) {
-      newErrors.email = '請輸入電子郵件'
-    } else if (!/\S+@\S+\.\S+/.test(form.email)) {
-      newErrors.email = '請輸入有效的電子郵件格式'
-    }
-    
-    if (!form.password) {
-      newErrors.password = '請輸入密碼'
-    } else if (form.password.length < 6) {
-      newErrors.password = '密碼至少需要6個字元'
-    }
-    
-    if (!form.confirmPassword) {
-      newErrors.confirmPassword = '請確認密碼'
-    } else if (form.password !== form.confirmPassword) {
-      newErrors.confirmPassword = '密碼確認不符'
+  // 自訂驗證函數 - 處理根據偏好聯絡方式的條件式驗證
+  const validateFormWithContactMethod = (): boolean => {
+    // 先進行基本驗證
+    if (!validateForm()) {
+      return false
     }
     
     // 根據偏好聯絡方式驗證對應欄位
-    if (form.preferredMethod === ContactMethod.PHONE) {
-      if (!form.phone.trim()) {
-        newErrors.phone = '請輸入手機號碼'
-      } else if (!/^09\d{8}$/.test(form.phone)) {
-        newErrors.phone = '請輸入有效的手機號碼格式'
-      }
-    } else if (form.preferredMethod === ContactMethod.LINE) {
-      if (!form.line.trim()) {
-        newErrors.line = '請輸入 LINE ID'
-      }
+    if (form.preferredMethod === ContactMethod.PHONE && !form.phone.trim()) {
+      return false
+    }
+    if (form.preferredMethod === ContactMethod.LINE && !form.line.trim()) {
+      return false
     }
     
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
+    return true
   }
   
   const handleRegister = async () => {
-    if (!validateForm()) {
+    if (!validateFormWithContactMethod()) {
       return
     }
     

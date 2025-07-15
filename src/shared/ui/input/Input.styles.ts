@@ -110,4 +110,17 @@ export const createStyles = (theme: Theme) => StyleSheet.create({
     color: theme.colors.error,
     marginTop: theme.spacing.xs,
   },
+  
+  // 禁用狀態
+  disabled: {
+    backgroundColor: theme.colors.surface,
+    opacity: 0.7,
+  },
+  
+  // 必填星號
+  requiredStar: {
+    color: theme.colors.error,
+    fontSize: theme.fontSize.sm,
+    fontWeight: '500',
+  },
 })

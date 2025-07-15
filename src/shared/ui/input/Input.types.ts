@@ -11,4 +11,5 @@ export interface InputProps extends TextInputProps {
   variant?: 'outlined' | 'filled'
   size?: 'sm' | 'md' | 'lg'
   fullWidth?: boolean
+  required?: boolean // 是否必填，顯示紅色星號
 }

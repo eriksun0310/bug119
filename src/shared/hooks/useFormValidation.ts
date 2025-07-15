@@ -1,11 +1,13 @@
 import { useState, useCallback } from 'react'
+import { getFieldLabel, validationMessages } from '@/shared/utils/validation'
 
 export type ValidationRule<T> = {
   required?: boolean
   pattern?: RegExp
   minLength?: number
   maxLength?: number
-  custom?: (value: T) => string | undefined
+  custom?: (value: T, form?: any) => string | undefined
+  message?: string // 自定義錯誤訊息
 }
 
 export type ValidationRules<T> = {
@@ -56,27 +58,27 @@ export const useFormValidation = <T extends Record<string, any>>(
 
     // 必填驗證
     if (rule.required && (!value || (typeof value === 'string' && !value.trim()))) {
-      error = `請輸入${String(field)}`
+      error = rule.message || validationMessages.required(getFieldLabel(String(field)))
     }
 
     // 最小長度驗證
     if (!error && rule.minLength && typeof value === 'string' && value.length < rule.minLength) {
-      error = `${String(field)}至少需要${rule.minLength}個字元`
+      error = rule.message || validationMessages.minLength(getFieldLabel(String(field)), rule.minLength)
     }
 
     // 最大長度驗證
     if (!error && rule.maxLength && typeof value === 'string' && value.length > rule.maxLength) {
-      error = `${String(field)}不能超過${rule.maxLength}個字元`
+      error = rule.message || validationMessages.maxLength(getFieldLabel(String(field)), rule.maxLength)
     }
 
-    // 正則表達式驗證
-    if (!error && rule.pattern && typeof value === 'string' && !rule.pattern.test(value)) {
-      error = `${String(field)}格式不正確`
+    // 正則表達式驗證 - 只在有值時驗證
+    if (!error && rule.pattern && typeof value === 'string' && value.trim() && !rule.pattern.test(value)) {
+      error = rule.message || `${getFieldLabel(String(field))}格式不正確`
     }
 
     // 自定義驗證
     if (!error && rule.custom) {
-      error = rule.custom(value)
+      error = rule.custom(value, form)
     }
 
     if (error) {
@@ -103,27 +105,27 @@ export const useFormValidation = <T extends Record<string, any>>(
 
       // 必填驗證
       if (rule.required && (!value || (typeof value === 'string' && !value.trim()))) {
-        error = `請輸入${String(field)}`
+        error = rule.message || validationMessages.required(getFieldLabel(String(field)))
       }
 
       // 最小長度驗證
       if (!error && rule.minLength && typeof value === 'string' && value.length < rule.minLength) {
-        error = `${String(field)}至少需要${rule.minLength}個字元`
+        error = rule.message || validationMessages.minLength(getFieldLabel(String(field)), rule.minLength)
       }
 
       // 最大長度驗證
       if (!error && rule.maxLength && typeof value === 'string' && value.length > rule.maxLength) {
-        error = `${String(field)}不能超過${rule.maxLength}個字元`
+        error = rule.message || validationMessages.maxLength(getFieldLabel(String(field)), rule.maxLength)
       }
 
-      // 正則表達式驗證
-      if (!error && rule.pattern && typeof value === 'string' && !rule.pattern.test(value)) {
-        error = `${String(field)}格式不正確`
+      // 正則表達式驗證 - 只在有值時驗證
+      if (!error && rule.pattern && typeof value === 'string' && value.trim() && !rule.pattern.test(value)) {
+        error = rule.message || `${getFieldLabel(String(field))}格式不正確`
       }
 
       // 自定義驗證
       if (!error && rule.custom) {
-        error = rule.custom(value)
+        error = rule.custom(value, form)
       }
 
       if (error) {

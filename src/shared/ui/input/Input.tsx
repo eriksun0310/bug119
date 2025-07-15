@@ -20,6 +20,7 @@ export const Input: FC<InputProps> = ({
   variant = 'outlined',
   size = 'md',
   fullWidth = true,
+  required = false,
   style,
   ...props
 }) => {
@@ -35,12 +36,16 @@ export const Input: FC<InputProps> = ({
       baseStyle.push(styles.multiline)
     }
     
-    if (isFocused) {
+    if (isFocused && props.editable !== false) {
       baseStyle.push(styles[`${variant}Focused` as keyof typeof styles])
     }
     
     if (error) {
       baseStyle.push(styles[`${variant}Error` as keyof typeof styles])
+    }
+    
+    if (props.editable === false) {
+      baseStyle.push(styles.disabled)
     }
     
     return baseStyle
@@ -50,7 +55,10 @@ export const Input: FC<InputProps> = ({
     <View style={[styles.container, fullWidth && styles.fullWidth]}>
       {/* 標籤 */}
       {label && (
-        <Text style={styles.label}>{label}</Text>
+        <Text style={styles.label}>
+          {label}
+          {required && <Text style={(styles as any).requiredStar}> *</Text>}
+        </Text>
       )}
       
       {/* 輸入框容器 */}

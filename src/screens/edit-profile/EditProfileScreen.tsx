@@ -24,11 +24,13 @@ import {
 } from 'lucide-react-native'
 import { useTheme } from '@/shared/theme'
 import { useAuth } from '@/shared/hooks'
+import { useFormValidation } from '@/shared/hooks/useFormValidation'
 import { Input, SegmentedControl, AddressSelector, KeyboardAvoidingContainer } from '@/shared/ui'
 import { showAlert } from '@/shared/utils'
 import * as ImagePicker from 'expo-image-picker'
 import { ContactMethod } from '@/shared/types'
 import { CONTACT_METHOD_OPTIONS } from '@/shared/config/options.config'
+import { editProfileValidationRules } from '@/shared/config/validation.config'
 
 const EditProfileScreen = () => {
   const { theme } = useTheme()
@@ -43,53 +45,54 @@ const EditProfileScreen = () => {
   const screenWidth = Dimensions.get('window').width
   const isTablet = screenWidth >= 768 // 判斷是否為平板或電腦
   
-  // 表單狀態
-  const [form, setForm] = useState({
-    name: user?.name || '',
-    email: user?.email || '',
-    phone: user?.contactInfo?.phone || '',
-    line: user?.contactInfo?.line || '',
-    location: {
-      city: '',
-      district: ''
+  // 使用 useFormValidation Hook 統一管理表單
+  const {
+    form,
+    errors,
+    setForm,
+    handleInputChange,
+    validateForm
+  } = useFormValidation(
+    {
+      name: user?.name || '',
+      email: user?.email || '',
+      phone: user?.contactInfo?.phone || '',
+      line: user?.contactInfo?.line || '',
+      telegram: user?.contactInfo?.telegram || '',
+      city: user?.location?.city || '',
+      district: user?.location?.district || '',
+      bio: user?.bio || '',
+      preferredMethod: user?.contactInfo?.preferredMethod || ContactMethod.PHONE,
     },
-    bio: '',
-    preferredMethod: user?.contactInfo?.preferredMethod || ContactMethod.PHONE,
-  })
+    editProfileValidationRules
+  )
   
-  const [errors, setErrors] = useState<Partial<typeof form>>({})
+  // 為 AddressSelector 建立 location 物件
+  const locationValue = {
+    city: form.city,
+    district: form.district
+  }
   
-  // 表單驗證
-  const validateForm = (): boolean => {
-    const newErrors: Partial<typeof form> = {}
-    
-    if (!form.name.trim()) {
-      newErrors.name = '請輸入姓名'
+  // 自訂驗證函數 - 處理根據偵好聯絡方式的條件式驗證
+  const validateFormWithContactMethod = (): boolean => {
+    // 先進行基本驗證
+    if (!validateForm()) {
+      console.log('基本驗證失敗，錯誤：', errors)
+      return false
     }
     
-    if (!form.email.trim()) {
-      newErrors.email = '請輸入電子郵件'
-    } else if (!/\S+@\S+\.\S+/.test(form.email)) {
-      newErrors.email = '請輸入有效的電子郵件'
+    // 根據偵好聯絡方式驗證對應欄位
+    if (form.preferredMethod === ContactMethod.PHONE && !form.phone.trim()) {
+      console.log('手機號碼驗證失敗')
+      return false
+    }
+    if (form.preferredMethod === ContactMethod.LINE && !form.line.trim()) {
+      console.log('LINE ID 驗證失敗')
+      return false
     }
     
-    // 根據選擇的聯絡方式驗證對應欄位
-    if (form.preferredMethod === ContactMethod.PHONE) {
-      if (!form.phone.trim()) {
-        newErrors.phone = '請輸入手機號碼'
-      } else if (!/^09\d{8}$/.test(form.phone)) {
-        newErrors.phone = '請輸入有效的手機號碼'
-      }
-    }
-    
-    if (form.preferredMethod === ContactMethod.LINE) {
-      if (!form.line.trim()) {
-        newErrors.line = '請輸入 LINE ID'
-      }
-    }
-    
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
+    console.log('所有驗證通過')
+    return true
   }
   
   // 處理自我介紹輸入框的焦點，滾動到底部
@@ -215,7 +218,12 @@ const EditProfileScreen = () => {
 
   // 處理儲存
   const handleSave = async () => {
-    if (!validateForm()) {
+    console.log('表單資料：', form)
+    console.log('表單錯誤：', errors)
+    
+    if (!validateFormWithContactMethod()) {
+      console.log('驗證失敗，表單資料：', form)
+      console.log('驗證失敗，錯誤訊息：', errors)
       showAlert('表單有誤', '請檢查並修正錯誤')
       return
     }
@@ -388,7 +396,7 @@ const EditProfileScreen = () => {
       fontStyle: 'italic',
     },
     preferredMethodContainer: {
-      marginTop: theme.spacing.md,
+      //marginTop: theme.spacing.md,
     },
     preferredMethodLabel: {
       fontSize: theme.fontSize.md,
@@ -475,40 +483,50 @@ const EditProfileScreen = () => {
             <Input
               label="姓名"
               value={form.name}
-              onChangeText={(name) => setForm({ ...form, name })}
+              onChangeText={handleInputChange('name')}
               placeholder="請輸入您的姓名"
               error={errors.name}
               leftIcon={<User size={16} color={theme.colors.textSecondary} />}
+              required={true}
             />
             
             <Input
               label="電子郵件"
               value={form.email}
-              onChangeText={(email) => setForm({ ...form, email })}
+              onChangeText={handleInputChange('email')}
               placeholder="請輸入電子郵件"
               keyboardType="email-address"
               autoCapitalize="none"
               error={errors.email}
               leftIcon={<Mail size={16} color={theme.colors.textSecondary} />}
+              editable={false}
             />
             
             <AddressSelector
               label="居住地址"
-              value={form.location}
-              onChange={(location) => setForm({ ...form, location })}
-              errors={errors.location}
+              value={locationValue}
+              onChange={(location) => {
+                setForm({ ...form, city: location.city, district: location.district })
+              }}
+              errors={{ city: errors.city, district: errors.district }}
               showQuickSet={false} // 個人資料頁面不顯示快速設定
+              required={true}
             />
           </View>
+          
           
           {/* 聯絡方式 */}
           <View style={styles.section}>
             <View style={styles.preferredMethodContainer}>
-              <Text style={styles.preferredMethodLabel}>聯絡方式：</Text>
+              <Text style={styles.preferredMethodLabel}>
+                聯絡方式
+                <Text style={{ color: theme.colors.error }}> *</Text>
+                ：
+              </Text>
               <SegmentedControl
                 options={CONTACT_METHOD_OPTIONS}
                 value={form.preferredMethod}
-                onValueChange={(value: ContactMethod) => setForm({ ...form, preferredMethod: value })}
+                onValueChange={handleInputChange('preferredMethod')}
               />
             </View>
             
@@ -517,7 +535,7 @@ const EditProfileScreen = () => {
               <Input
                 label="手機號碼"
                 value={form.phone}
-                onChangeText={(phone) => setForm({ ...form, phone })}
+                onChangeText={handleInputChange('phone')}
                 placeholder="請輸入手機號碼"
                 keyboardType="phone-pad"
                 error={errors.phone}
@@ -529,7 +547,7 @@ const EditProfileScreen = () => {
               <Input
                 label="LINE ID"
                 value={form.line}
-                onChangeText={(line) => setForm({ ...form, line })}
+                onChangeText={handleInputChange('line')}
                 placeholder="請輸入 LINE ID"
                 error={errors.line}
                 leftIcon={<MessageCircle size={16} color="#00B900" />}
@@ -539,12 +557,10 @@ const EditProfileScreen = () => {
           
           {/* 個人簡介 */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>個人簡介</Text>
-            
             <Input
-              label={user?.role === 'terminator' ? '專業介紹' : '自我介紹'}
+              label='自我介紹'
               value={form.bio}
-              onChangeText={(bio) => setForm({ ...form, bio })}
+              onChangeText={handleInputChange('bio')}
               onFocus={handleBioFocus}
               placeholder={
                 user?.role === 'terminator' 

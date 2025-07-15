@@ -21,6 +21,7 @@ export const AddressSelector: FC<AddressSelectorProps> = ({
   cityPlaceholder = '請選擇縣市',
   districtPlaceholder = '請選擇區域',
   showQuickSet = true,
+  required = false,
   style,
   ...props
 }) => {
@@ -47,12 +48,17 @@ export const AddressSelector: FC<AddressSelectorProps> = ({
   
   return (
     <View style={[styles.container, style]} {...props}>
-      {label && <Text style={styles.sectionTitle}>{label}</Text>}
+      {label && (
+        <Text style={styles.sectionTitle}>
+          {label}
+          {required && <Text style={(styles as any).requiredStar}> *</Text>}
+        </Text>
+      )}
       
       <View style={styles.locationRow}>
         <View style={styles.citySelect}>
           <Select
-            label="縣市"
+            label=""
             value={value.city}
             placeholder={cityPlaceholder}
             options={CITY_SELECT_OPTIONS}
@@ -63,7 +69,7 @@ export const AddressSelector: FC<AddressSelectorProps> = ({
         
         <View style={styles.districtSelect}>
           <Select
-            label="區域"
+            label=""
             value={value.district}
             placeholder={districtPlaceholder}
             options={getDistrictOptions(value.city)}

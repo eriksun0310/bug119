@@ -3,13 +3,13 @@ import { Theme } from '@/shared/theme/types'
 
 export const createStyles = (theme: Theme) => StyleSheet.create({
   container: {
-    marginBottom: theme.spacing.md,
+    // marginBottom: theme.spacing.md,
   },
   sectionTitle: {
-    fontSize: theme.fontSize.lg,
-    fontWeight: '600',
+    fontSize: theme.fontSize.sm,
+    fontWeight: '500',
     color: theme.colors.text,
-    marginBottom: theme.spacing.md,
+    marginBottom: theme.spacing.xs,
   },
   locationRow: {
     flexDirection: 'row',
@@ -39,5 +39,12 @@ export const createStyles = (theme: Theme) => StyleSheet.create({
     fontSize: theme.fontSize.sm,
     color: theme.colors.text,
     textAlign: 'center',
+  },
+  
+  // 必填星號
+  requiredStar: {
+    color: theme.colors.error,
+    fontSize: theme.fontSize.sm,
+    fontWeight: '500',
   },
 })

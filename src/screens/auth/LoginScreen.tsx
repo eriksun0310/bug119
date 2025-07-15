@@ -5,7 +5,9 @@ import { View, Text, StyleSheet, ScrollView, Alert, Dimensions } from 'react-nat
 import { useNavigation } from '@react-navigation/native'
 import { useTheme } from '@/shared/theme'
 import { useAuth } from '@/shared/hooks'
+import { useFormValidation } from '@/shared/hooks/useFormValidation'
 import { Button, Input, Card, KeyboardAvoidingContainer } from '@/shared/ui'
+import { loginValidationRules } from '@/shared/config/validation.config'
 
 export const LoginScreen = () => {
   const { theme } = useTheme()
@@ -16,41 +18,22 @@ export const LoginScreen = () => {
   const screenWidth = Dimensions.get('window').width
   const isTablet = screenWidth >= 768 // 判斷是否為平板或電腦
   
-  // 表單狀態統一管理
-  const [form, setForm] = useState({
-    email: '',
-    password: ''
-  })
+  // 使用 useFormValidation Hook 統一管理表單
+  const {
+    form,
+    errors,
+    setForm,
+    handleInputChange,
+    validateForm
+  } = useFormValidation(
+    {
+      email: '',
+      password: ''
+    },
+    loginValidationRules
+  )
   
-  const [errors, setErrors] = useState<Partial<typeof form>>({})
   const [loading, setLoading] = useState(false)
-  
-  // 統一的表單更新函數
-  const handleInputChange = (field: keyof typeof form) => (value: string) => {
-    setForm(prev => ({ ...prev, [field]: value }))
-    // 清除該欄位的錯誤
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: undefined }))
-    }
-  }
-  
-  // 表單驗證函數
-  const validateForm = (): boolean => {
-    const newErrors: Partial<typeof form> = {}
-    
-    if (!form.email.trim()) {
-      newErrors.email = '請輸入電子郵件'
-    } else if (!/\S+@\S+\.\S+/.test(form.email)) {
-      newErrors.email = '請輸入有效的電子郵件格式'
-    }
-    
-    if (!form.password) {
-      newErrors.password = '請輸入密碼'
-    }
-    
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
   
   const handleLogin = async () => {
     if (!validateForm()) {
@@ -75,20 +58,16 @@ export const LoginScreen = () => {
   // 快速填入測試帳號
   const fillTestAccount = (type: 'fearStar' | 'terminator') => {
     if (type === 'fearStar') {
-      setForm(prev => ({
-        ...prev,
+      setForm({
         email: 'fearstar@test.com',
         password: '123456'
-      }))
+      })
     } else {
-      setForm(prev => ({
-        ...prev,
+      setForm({
         email: 'terminator@test.com',
         password: '123456'
-      }))
+      })
     }
-    // 清除錯誤
-    setErrors({})
   }
   
   const styles = StyleSheet.create({
