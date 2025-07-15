@@ -215,7 +215,12 @@ export const TaskWallScreen = () => {
     taskList: {
       padding: theme.spacing.md,
       width: '100%',
-      maxWidth: isTablet ? 600 : undefined, // 電腦版最大寬度 600px
+      maxWidth: isTablet ? 1200 : undefined, // 電腦版放寬最大寬度
+      flexDirection: 'row', // 橫向排列
+      flexWrap: 'wrap', // 允許換行
+      justifyContent: 'flex-start',
+      alignItems: 'flex-start',
+      gap: theme.spacing.md,
     },
     emptyState: {
       flex: 1,
@@ -228,6 +233,9 @@ export const TaskWallScreen = () => {
       color: theme.colors.textSecondary,
       textAlign: 'center',
       marginTop: theme.spacing.md,
+    },
+    taskCardHorizontal: {
+      width: screenWidth > 600 ? '48%' : '100%', // 寬螢幕每行顯示兩個卡片，窄螢幕每行一個
     },
   })
   
@@ -295,6 +303,7 @@ export const TaskWallScreen = () => {
                   onPress={handleTaskPress}
                   onAccept={handleAcceptTask}
                   currentUserRole={user?.role}
+                  style={styles.taskCardHorizontal}
                 />
               ))
             ) : (

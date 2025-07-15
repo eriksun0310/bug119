@@ -34,7 +34,8 @@ import {
   BudgetSelector,
   BudgetRange,
   GenderSelector,
-  AddressSelector
+  AddressSelector,
+  KeyboardAvoidingContainer
 } from '@/shared/ui'
 import { PestType, TaskPriority, RootStackParamList, Gender } from '@/shared/types'
 import { CITY_OPTIONS, getCityOptionByName } from '@/shared/config/options.config'
@@ -279,7 +280,7 @@ export const CreateTaskScreen = () => {
   })
   
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingContainer style={styles.container}>
       {/* 標題區 */}
       <View style={styles.header}>
         <View style={{ width: 40 }} />
@@ -434,6 +435,6 @@ export const CreateTaskScreen = () => {
           預計 5-10 分鐘內會有專家與您聯繫
         </Text>
       </View>
-    </View>
+    </KeyboardAvoidingContainer>
   )
 }

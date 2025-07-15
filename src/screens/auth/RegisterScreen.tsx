@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { View, Text, StyleSheet, ScrollView, Alert, Dimensions } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { useTheme } from '@/shared/theme'
-import { Button, Input, Card, SegmentedControl } from '@/shared/ui'
+import { Button, Input, Card, SegmentedControl, KeyboardAvoidingContainer } from '@/shared/ui'
 import { ContactMethod } from '@/shared/types'
 import { CONTACT_METHOD_OPTIONS } from '@/shared/config/options.config'
 
@@ -156,7 +156,7 @@ export const RegisterScreen = () => {
   })
   
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingContainer style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.formContainer}>
           <Card>
@@ -245,6 +245,6 @@ export const RegisterScreen = () => {
           </Card>
         </View>
       </ScrollView>
-    </View>
+    </KeyboardAvoidingContainer>
   )
 }

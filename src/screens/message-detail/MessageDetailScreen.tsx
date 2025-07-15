@@ -8,7 +8,6 @@ import {
   ScrollView, 
   TouchableOpacity,
   TextInput,
-  KeyboardAvoidingView,
   Platform,
   Modal,
   Alert
@@ -30,6 +29,7 @@ import {
 } from 'lucide-react-native'
 import { useTheme } from '@/shared/theme'
 import { useAuth } from '@/shared/hooks'
+import { KeyboardAvoidingContainer } from '@/shared/ui'
 import { RootStackParamList } from '@/shared/types'
 
 type MessageDetailRouteProp = RouteProp<RootStackParamList, 'MessageDetail'>
@@ -390,11 +390,7 @@ export const MessageDetailScreen: React.FC = () => {
   }, [])
   
   return (
-    <KeyboardAvoidingView 
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
-    >
+    <KeyboardAvoidingContainer style={styles.container}>
       {/* 標題列 */}
       <View style={styles.header}>
         <TouchableOpacity 
@@ -533,6 +529,6 @@ export const MessageDetailScreen: React.FC = () => {
           </TouchableOpacity>
         </TouchableOpacity>
       </Modal>
-    </KeyboardAvoidingView>
+    </KeyboardAvoidingContainer>
   )
 }

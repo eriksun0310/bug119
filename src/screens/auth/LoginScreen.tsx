@@ -5,7 +5,7 @@ import { View, Text, StyleSheet, ScrollView, Alert, Dimensions } from 'react-nat
 import { useNavigation } from '@react-navigation/native'
 import { useTheme } from '@/shared/theme'
 import { useAuth } from '@/shared/hooks'
-import { Button, Input, Card } from '@/shared/ui'
+import { Button, Input, Card, KeyboardAvoidingContainer } from '@/shared/ui'
 
 export const LoginScreen = () => {
   const { theme } = useTheme()
@@ -159,7 +159,7 @@ export const LoginScreen = () => {
   })
   
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingContainer style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.formContainer}>
           <Card>
@@ -230,6 +230,6 @@ export const LoginScreen = () => {
           </View>
         </View>
       </ScrollView>
-    </View>
+    </KeyboardAvoidingContainer>
   )
 }

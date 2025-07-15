@@ -1,15 +1,16 @@
 // 編輯個人資料頁面
 
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { 
   View, 
   Text, 
   StyleSheet, 
   ScrollView, 
   TouchableOpacity,
-  KeyboardAvoidingView,
-  Platform,
-  Dimensions
+  Dimensions,
+  Image,
+  Alert,
+  Platform
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
@@ -25,8 +26,9 @@ import {
 } from 'lucide-react-native'
 import { useTheme } from '@/shared/theme'
 import { useAuth } from '@/shared/hooks'
-import { Button, Input, SegmentedControl, AddressSelector } from '@/shared/ui'
+import { Button, Input, SegmentedControl, AddressSelector, KeyboardAvoidingContainer } from '@/shared/ui'
 import { showAlert } from '@/shared/utils'
+import * as ImagePicker from 'expo-image-picker'
 import { ContactMethod } from '@/shared/types'
 import { CONTACT_METHOD_OPTIONS } from '@/shared/config/options.config'
 
@@ -36,6 +38,8 @@ const EditProfileScreen = () => {
   const navigation = useNavigation()
   const insets = useSafeAreaInsets()
   const [loading, setLoading] = useState(false)
+  const [avatarUri, setAvatarUri] = useState<string | null>(user?.avatar || null)
+  const scrollViewRef = useRef<ScrollView>(null)
   
   // 取得螢幕寬度
   const screenWidth = Dimensions.get('window').width
@@ -90,6 +94,127 @@ const EditProfileScreen = () => {
     return Object.keys(newErrors).length === 0
   }
   
+  // 處理自我介紹輸入框的焦點，滾動到底部
+  const handleBioFocus = () => {
+    setTimeout(() => {
+      scrollViewRef.current?.scrollToEnd({ animated: true })
+    }, 300) // 延遲確保鍵盤已完全彈出
+  }
+
+  // 處理更換頭像
+  const handleChangeAvatar = () => {
+    if (Platform.OS === 'web') {
+      // Web 平台直接選擇檔案
+      pickImageFromWeb()
+    } else {
+      // 原生平台顯示選項
+      Alert.alert(
+        '選擇頭像',
+        '請選擇頭像來源',
+        [
+          { text: '取消', style: 'cancel' },
+          { text: '從相簿選擇', onPress: pickImageFromLibrary },
+          { text: '拍照', onPress: takePhoto }
+        ]
+      )
+    }
+  }
+
+  // Web 平台選擇圖片
+  const pickImageFromWeb = () => {
+    try {
+      if (typeof document === 'undefined') {
+        Alert.alert('不支援', '此功能不支援當前平台')
+        return
+      }
+      
+      const input = document.createElement('input')
+      input.type = 'file'
+      input.accept = 'image/*'
+      input.multiple = false
+      
+      input.onchange = (event: any) => {
+        const file = event.target.files?.[0]
+        if (file) {
+          // 檢查檔案大小（限制為 5MB）
+          if (file.size > 5 * 1024 * 1024) {
+            Alert.alert('檔案過大', '請選擇小於 5MB 的圖片檔案')
+            return
+          }
+          
+          // 檢查檔案類型
+          if (!file.type.startsWith('image/')) {
+            Alert.alert('檔案類型錯誤', '請選擇圖片檔案')
+            return
+          }
+          
+          // 讀取檔案並設定為頭像
+          const reader = new FileReader()
+          reader.onload = (e) => {
+            const result = e.target?.result as string
+            if (result) {
+              setAvatarUri(result)
+            }
+          }
+          reader.readAsDataURL(file)
+        }
+      }
+      
+      input.click()
+    } catch (error) {
+      Alert.alert('錯誤', '選擇圖片時發生錯誤')
+    }
+  }
+
+  // 從相簿選擇圖片
+  const pickImageFromLibrary = async () => {
+    try {
+      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync()
+      
+      if (!permissionResult.granted) {
+        Alert.alert('權限不足', '需要相簿存取權限才能選擇照片')
+        return
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
+      })
+
+      if (!result.canceled) {
+        setAvatarUri(result.assets[0].uri)
+      }
+    } catch (error) {
+      Alert.alert('錯誤', '選擇圖片時發生錯誤')
+    }
+  }
+
+  // 拍照
+  const takePhoto = async () => {
+    try {
+      const permissionResult = await ImagePicker.requestCameraPermissionsAsync()
+      
+      if (!permissionResult.granted) {
+        Alert.alert('權限不足', '需要相機權限才能拍照')
+        return
+      }
+
+      const result = await ImagePicker.launchCameraAsync({
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
+      })
+
+      if (!result.canceled) {
+        setAvatarUri(result.assets[0].uri)
+      }
+    } catch (error) {
+      Alert.alert('錯誤', '拍照時發生錯誤')
+    }
+  }
+
   // 處理儲存
   const handleSave = async () => {
     if (!validateForm()) {
@@ -102,6 +227,13 @@ const EditProfileScreen = () => {
     try {
       // 模擬 API 呼叫
       await new Promise(resolve => setTimeout(resolve, 1500))
+      
+      // 如果有新的頭像，這裡會上傳到伺服器
+      if (avatarUri && avatarUri !== user?.avatar) {
+        // 模擬頭像上傳
+        console.log('上傳頭像:', avatarUri)
+        // 實際實作時會呼叫 API 上傳圖片
+      }
       
       showAlert(
         '儲存成功',
@@ -180,6 +312,19 @@ const EditProfileScreen = () => {
       alignItems: 'center',
       justifyContent: 'center',
       marginBottom: theme.spacing.md,
+      overflow: 'hidden',
+      ...(Platform.OS === 'web' && {
+        cursor: 'pointer',
+        transition: 'opacity 0.2s ease',
+        '&:hover': {
+          opacity: 0.8,
+        },
+      }),
+    },
+    avatarImage: {
+      width: 100,
+      height: 100,
+      borderRadius: 50,
     },
     changeAvatarButton: {
       flexDirection: 'row',
@@ -273,10 +418,7 @@ const EditProfileScreen = () => {
   })
   
   return (
-    <KeyboardAvoidingView 
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
+    <KeyboardAvoidingContainer style={styles.container}>
       {/* 標題列 */}
       <View style={styles.header}>
         <TouchableOpacity 
@@ -295,16 +437,28 @@ const EditProfileScreen = () => {
         </TouchableOpacity>
       </View>
       
-      <ScrollView style={styles.content} contentContainerStyle={styles.contentContainer}>
+      <ScrollView 
+        ref={scrollViewRef}
+        style={styles.content} 
+        contentContainerStyle={styles.contentContainer}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.form}>
           {/* 頭像區塊 */}
           <View style={styles.avatarSection}>
-            <View style={styles.avatar}>
-              <User size={40} color={theme.colors.textSecondary} />
-            </View>
-            <TouchableOpacity style={styles.changeAvatarButton}>
+            <TouchableOpacity style={styles.avatar} onPress={handleChangeAvatar}>
+              {avatarUri ? (
+                <Image source={{ uri: avatarUri }} style={styles.avatarImage} />
+              ) : (
+                <User size={40} color={theme.colors.textSecondary} />
+              )}
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.changeAvatarButton} onPress={handleChangeAvatar}>
               <User size={16} color={theme.colors.primary} />
-              <Text style={styles.changeAvatarText}>更換頭像</Text>
+              <Text style={styles.changeAvatarText}>
+                {Platform.OS === 'web' ? '選擇頭像' : '更換頭像'}
+              </Text>
             </TouchableOpacity>
           </View>
           
@@ -404,6 +558,7 @@ const EditProfileScreen = () => {
               label={user?.role === 'terminator' ? '專業介紹' : '自我介紹'}
               value={form.bio}
               onChangeText={(bio) => setForm({ ...form, bio })}
+              onFocus={handleBioFocus}
               placeholder={
                 user?.role === 'terminator' 
                   ? '介紹您的除蟲經驗、專長等...'
@@ -417,7 +572,7 @@ const EditProfileScreen = () => {
       </ScrollView>
       
       {/* 底部按鈕 */}
-      <View style={styles.bottomContainer}>
+      {/* <View style={styles.bottomContainer}>
         <View style={styles.bottomContent}>
           <Button
             variant="primary"
@@ -428,8 +583,8 @@ const EditProfileScreen = () => {
             儲存變更
           </Button>
         </View>
-      </View>
-    </KeyboardAvoidingView>
+      </View> */}
+    </KeyboardAvoidingContainer>
   )
 }
 

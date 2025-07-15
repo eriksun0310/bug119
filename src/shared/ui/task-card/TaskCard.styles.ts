@@ -8,10 +8,11 @@ export const createStyles = (theme: Theme) => StyleSheet.create({
     backgroundColor: theme.colors.surface,
     borderRadius: theme.borderRadius.lg,
     padding: theme.spacing.md,
-    marginBottom: theme.spacing.md,
     borderWidth: 1,
     borderColor: theme.colors.border,
     ...theme.shadows.sm,
+    minWidth: 280, // 最小寬度確保內容可讀性
+    maxWidth: 450, // 增加最大寬度
   },
   
   header: {
