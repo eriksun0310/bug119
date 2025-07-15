@@ -31,6 +31,10 @@ export const Input: FC<InputProps> = ({
   const getContainerStyle = () => {
     const baseStyle: any[] = [styles.inputContainer, styles[variant], styles[size]]
     
+    if (props.multiline) {
+      baseStyle.push(styles.multiline)
+    }
+    
     if (isFocused) {
       baseStyle.push(styles[`${variant}Focused` as keyof typeof styles])
     }

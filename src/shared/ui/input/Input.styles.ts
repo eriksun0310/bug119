@@ -55,14 +55,23 @@ export const createStyles = (theme: Theme) => StyleSheet.create({
   sm: {
     minHeight: 36,
     paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.xs,
   },
   md: {
     minHeight: 44,
     paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
   },
   lg: {
     minHeight: 52,
     paddingHorizontal: theme.spacing.lg,
+    paddingVertical: theme.spacing.md,
+  },
+  
+  // 多行輸入樣式
+  multiline: {
+    alignItems: 'flex-start',
+    minHeight: 88, // 約 4 行的高度
   },
   
   // 圖示容器
@@ -79,6 +88,7 @@ export const createStyles = (theme: Theme) => StyleSheet.create({
     fontSize: theme.fontSize.md,
     color: theme.colors.text,
     paddingVertical: 0, // 移除預設 padding
+    textAlignVertical: 'top', // Android 多行輸入時文字置頂
   },
   inputSm: {
     fontSize: theme.fontSize.sm,

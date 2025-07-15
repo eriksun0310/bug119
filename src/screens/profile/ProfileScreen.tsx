@@ -145,8 +145,7 @@ export const ProfileScreen = () => {
       alignItems: 'center',
       paddingVertical: theme.spacing.md,
       paddingHorizontal: theme.spacing.md,
-      borderBottomWidth: 1,
-      borderBottomColor: theme.colors.border,
+   
     },
     menuItemLeft: {
       flexDirection: 'row',
@@ -198,7 +197,7 @@ export const ProfileScreen = () => {
         
         
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>帳號</Text>
+          {/* <Text style={styles.sectionTitle}>帳號</Text> */}
           <Card padding="none">
             <TouchableOpacity style={styles.menuItem} onPress={handleEditProfile}>
               <View style={styles.menuItemLeft}>

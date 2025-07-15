@@ -98,18 +98,18 @@ export const TaskApplicantsScreen = () => {
           
           <View style={styles.applicantInfo}>
             <Text style={styles.applicantName}>{terminator.name}</Text>
-            <View style={styles.ratingContainer}>
+            {/* <View style={styles.ratingContainer}>
               <Star size={16} color="#FFD700" fill="#FFD700" />
               <Text style={styles.ratingText}>
                 {profile.rating} ({profile.totalReviews}評價)
               </Text>
-            </View>
-            <View style={styles.experienceContainer}>
+            </View> */}
+            {/* <View style={styles.experienceContainer}>
               <Clock size={14} color={theme.colors.textSecondary} />
               <Text style={styles.experienceText}>
                 {profile.experienceYears}年經驗
               </Text>
-            </View>
+            </View> */}
             <View style={styles.locationContainer}>
               <MapPin size={14} color={theme.colors.textSecondary} />
               <Text style={styles.locationText}>{profile.location}</Text>
@@ -124,12 +124,12 @@ export const TaskApplicantsScreen = () => {
           </View>
         </View>
         
-        {assignment.message && (
+        {/* {assignment.message && (
           <View style={styles.messageContainer}>
             <MessageCircle size={16} color={theme.colors.textSecondary} />
             <Text style={styles.messageText}>{assignment.message}</Text>
           </View>
-        )}
+        )} */}
         
         <View style={styles.actionContainer}>
           {/* <TouchableOpacity 

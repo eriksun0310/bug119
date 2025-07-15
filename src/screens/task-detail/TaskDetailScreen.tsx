@@ -601,14 +601,14 @@ export const TaskDetailScreen: React.FC = () => {
           </View>
           
           {/* 委託時間：只有小怕星且任務已分配時顯示 */}
-          {user?.role === UserRole.FEAR_STAR && task.assignedTo && (
+          {/* {user?.role === UserRole.FEAR_STAR && task.assignedTo && (
             <View style={styles.infoRow}>
               <Calendar size={20} color={theme.colors.textSecondary} />
               <Text style={styles.infoText}>
                 委託時間：{formatDateTime(task.updatedAt.toISOString())}
               </Text>
             </View>
-          )}
+          )} */}
           
           <View style={styles.infoRow}>
             <Clock size={20} color={theme.colors.textSecondary} />
@@ -625,7 +625,7 @@ export const TaskDetailScreen: React.FC = () => {
             <Text style={styles.budgetText}>
               NT$ {task.budget.min.toLocaleString()} - {task.budget.max.toLocaleString()}
             </Text>
-            <Text style={styles.budgetSubText}>實際費用可協商</Text>
+            {/* <Text style={styles.budgetSubText}>實際費用可協商</Text> */}
           </View>
         </View>
         
