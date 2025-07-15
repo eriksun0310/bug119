@@ -8,7 +8,8 @@ import {
   ScrollView, 
   TouchableOpacity,
   KeyboardAvoidingView,
-  Platform
+  Platform,
+  Dimensions
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
@@ -24,7 +25,7 @@ import {
 } from 'lucide-react-native'
 import { useTheme } from '@/shared/theme'
 import { useAuth } from '@/shared/hooks'
-import { Button, Input, SegmentedControl } from '@/shared/ui'
+import { Button, Input, SegmentedControl, AddressSelector } from '@/shared/ui'
 import { showAlert } from '@/shared/utils'
 import { ContactMethod } from '@/shared/types'
 import { CONTACT_METHOD_OPTIONS } from '@/shared/config/options.config'
@@ -36,13 +37,20 @@ const EditProfileScreen = () => {
   const insets = useSafeAreaInsets()
   const [loading, setLoading] = useState(false)
   
+  // 取得螢幕寬度
+  const screenWidth = Dimensions.get('window').width
+  const isTablet = screenWidth >= 768 // 判斷是否為平板或電腦
+  
   // 表單狀態
   const [form, setForm] = useState({
     name: user?.name || '',
     email: user?.email || '',
     phone: user?.contactInfo?.phone || '',
     line: user?.contactInfo?.line || '',
-    location: '',
+    location: {
+      city: '',
+      district: ''
+    },
     bio: '',
     preferredMethod: user?.contactInfo?.preferredMethod || ContactMethod.PHONE,
   })
@@ -142,9 +150,14 @@ const EditProfileScreen = () => {
     content: {
       flex: 1,
     },
+    contentContainer: {
+      alignItems: isTablet ? 'center' : 'stretch',
+    },
     form: {
       padding: theme.spacing.md,
       gap: theme.spacing.lg,
+      width: '100%',
+      maxWidth: isTablet ? 600 : undefined,
     },
     section: {
       gap: theme.spacing.md,
@@ -246,20 +259,16 @@ const EditProfileScreen = () => {
       color: theme.colors.text,
       marginBottom: theme.spacing.xs,
     },
-    selectButton: {
-      borderWidth: 1,
-      borderColor: theme.colors.border,
-      borderRadius: theme.borderRadius.md,
-      backgroundColor: theme.colors.background,
-      paddingHorizontal: theme.spacing.md,
-      paddingVertical: theme.spacing.md,
-      height: 48,
-      justifyContent: 'center',
-      marginBottom: theme.spacing.md,
+    bottomContainer: {
+      backgroundColor: theme.colors.surface,
+      borderTopWidth: 1,
+      borderTopColor: theme.colors.border,
+      alignItems: isTablet ? 'center' : 'stretch',
     },
-    selectButtonText: {
-      fontSize: theme.fontSize.md,
-      color: theme.colors.text,
+    bottomContent: {
+      padding: theme.spacing.md,
+      width: '100%',
+      maxWidth: isTablet ? 600 : undefined,
     },
   })
   
@@ -286,7 +295,7 @@ const EditProfileScreen = () => {
         </TouchableOpacity>
       </View>
       
-      <ScrollView style={styles.content}>
+      <ScrollView style={styles.content} contentContainerStyle={styles.contentContainer}>
         <View style={styles.form}>
           {/* 頭像區塊 */}
           <View style={styles.avatarSection}>
@@ -300,12 +309,12 @@ const EditProfileScreen = () => {
           </View>
           
           {/* 提示資訊 */}
-          <View style={styles.infoCard}>
+          {/* <View style={styles.infoCard}>
             <Info size={16} color={theme.colors.secondary} />
             <Text style={styles.infoText}>
               為保護用戶安全，註冊後無法修改性別資訊。如需修改其他重要資訊，可能需要進行身份驗證。
             </Text>
-          </View>
+          </View> */}
           
           {/* 基本資訊 */}
           <View style={styles.section}>
@@ -339,30 +348,19 @@ const EditProfileScreen = () => {
               leftIcon={<Mail size={16} color={theme.colors.textSecondary} />}
             />
             
-            <Text style={styles.inputLabel}>居住縣市</Text>
-            <TouchableOpacity 
-              style={styles.selectButton}
-              onPress={() => {
-                // 簡單的示範，實際上可以開啟一個選擇器
-                if (form.location === '台北市') {
-                  setForm({ ...form, location: '新北市' })
-                } else if (form.location === '新北市') {
-                  setForm({ ...form, location: '桃園市' })
-                } else {
-                  setForm({ ...form, location: '台北市' })
-                }
-              }}
-            >
-              <Text style={styles.selectButtonText}>
-                {form.location || '請選擇居住縣市'}
-              </Text>
-            </TouchableOpacity>
+            <AddressSelector
+              label="居住地址"
+              value={form.location}
+              onChange={(location) => setForm({ ...form, location })}
+              errors={errors.location}
+              showQuickSet={false} // 個人資料頁面不顯示快速設定
+            />
           </View>
           
           {/* 聯絡方式 */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>聯絡方式</Text>
-            <Text style={styles.contactHint}>選擇您偏好的聯絡方式</Text>
+            {/* <Text style={styles.sectionTitle}>聯絡方式</Text>
+            <Text style={styles.contactHint}>選擇您偏好的聯絡方式</Text> */}
             
             <View style={styles.preferredMethodContainer}>
               <Text style={styles.preferredMethodLabel}>聯絡方式：</Text>
@@ -419,20 +417,17 @@ const EditProfileScreen = () => {
       </ScrollView>
       
       {/* 底部按鈕 */}
-      <View style={{ 
-        padding: theme.spacing.md,
-        backgroundColor: theme.colors.surface,
-        borderTopWidth: 1,
-        borderTopColor: theme.colors.border,
-      }}>
-        <Button
-          variant="primary"
-          loading={loading}
-          onPress={handleSave}
-          fullWidth
-        >
-          儲存變更
-        </Button>
+      <View style={styles.bottomContainer}>
+        <View style={styles.bottomContent}>
+          <Button
+            variant="primary"
+            loading={loading}
+            onPress={handleSave}
+            fullWidth
+          >
+            儲存變更
+          </Button>
+        </View>
       </View>
     </KeyboardAvoidingView>
   )

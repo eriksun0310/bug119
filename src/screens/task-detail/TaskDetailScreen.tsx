@@ -114,7 +114,7 @@ export const TaskDetailScreen: React.FC = () => {
     
     showAlert(
       '確認委託',
-      `確定要委託「${selectedTerminator?.name}」處理這個任務嗎？\n\n提議價格：$${assignment.proposedPrice}\n預估時間：${assignment.estimatedDuration}分鐘`,
+      `確定要委託「${selectedTerminator?.name}」處理這個任務嗎？\n\n提議價格：$${assignment.proposedPrice}`,
       [
         { text: '取消', style: 'cancel' },
         {
@@ -182,10 +182,6 @@ export const TaskDetailScreen: React.FC = () => {
           <View style={styles.priceContainer}>
             <Text style={styles.priceLabel}>提議價格</Text>
             <Text style={styles.priceValue}>${assignment.proposedPrice}</Text>
-          </View>
-          <View style={styles.timeContainer}>
-            <Text style={styles.timeLabel}>預估時間</Text>
-            <Text style={styles.timeValue}>{assignment.estimatedDuration}分鐘</Text>
           </View>
         </View>
         
@@ -504,19 +500,6 @@ export const TaskDetailScreen: React.FC = () => {
     },
     priceValue: {
       fontSize: theme.fontSize.lg,
-      fontWeight: '600',
-      color: theme.colors.text,
-    },
-    timeContainer: {
-      alignItems: 'center',
-    },
-    timeLabel: {
-      fontSize: theme.fontSize.xs,
-      color: theme.colors.textSecondary,
-      marginBottom: theme.spacing.xs,
-    },
-    timeValue: {
-      fontSize: theme.fontSize.md,
       fontWeight: '600',
       color: theme.colors.text,
     },

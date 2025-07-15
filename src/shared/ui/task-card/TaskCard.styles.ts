@@ -86,16 +86,6 @@ export const createStyles = (theme: Theme) => StyleSheet.create({
     marginLeft: theme.spacing.xs,
   },
   
-  timeContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  
-  timeText: {
-    fontSize: theme.fontSize.sm,
-    color: theme.colors.textSecondary,
-    marginLeft: theme.spacing.xs,
-  },
   
   acceptButton: {
     backgroundColor: theme.colors.secondary,

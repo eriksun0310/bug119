@@ -33,7 +33,8 @@ import {
   PrioritySelector,
   BudgetSelector,
   BudgetRange,
-  GenderSelector
+  GenderSelector,
+  AddressSelector
 } from '@/shared/ui'
 import { PestType, TaskPriority, RootStackParamList, Gender } from '@/shared/types'
 import { CITY_OPTIONS, getCityOptionByName } from '@/shared/config/options.config'
@@ -46,8 +47,10 @@ interface CreateTaskForm {
   pestType?: PestType
   priority: TaskPriority
   budget?: BudgetRange
-  city: string
-  district: string
+  location: {
+    city: string
+    district: string
+  }
   preferredGender?: Gender
   isImmediate: boolean
   scheduledDate?: string
@@ -65,8 +68,10 @@ export const CreateTaskScreen = () => {
     title: '',
     description: '',
     priority: TaskPriority.NORMAL,
-    city: '',
-    district: '',
+    location: {
+      city: '',
+      district: ''
+    },
     preferredGender: Gender.ANY,
     isImmediate: true,
   })
@@ -89,12 +94,12 @@ export const CreateTaskScreen = () => {
       newErrors.pestType = '請選擇害蟲類型'
     }
     
-    if (!form.city.trim()) {
-      newErrors.city = '請選擇縣市'
+    if (!form.location.city.trim()) {
+      newErrors.location = '請選擇縣市'
     }
     
-    if (!form.district.trim()) {
-      newErrors.district = '請選擇區域'
+    if (!form.location.district.trim()) {
+      newErrors.location = '請選擇區域'
     }
     
     if (!form.budget || form.budget.min <= 0 || form.budget.max <= 0) {
@@ -139,11 +144,13 @@ export const CreateTaskScreen = () => {
                 title: '',
                 description: '',
                 priority: TaskPriority.NORMAL,
-                city: '',
-                district: '',
+                location: {
+                  city: '',
+                  district: ''
+                },
                 preferredGender: Gender.ANY,
                 isImmediate: true,
-                          })
+              })
             }
           }
         ]
@@ -203,6 +210,9 @@ export const CreateTaskScreen = () => {
     form: {
       padding: theme.spacing.md,
       gap: theme.spacing.lg,
+      maxWidth: 600,
+      width: '100%',
+      alignSelf: 'center',
     },
     section: {
       gap: theme.spacing.md,
@@ -243,71 +253,19 @@ export const CreateTaskScreen = () => {
     scheduledInput: {
       flex: 1,
     },
-    locationRow: {
-      flexDirection: 'row',
-      gap: theme.spacing.md,
-    },
-    citySelect: {
-      flex: 1,
-    },
-    districtSelect: {
-      flex: 1,
-    },
-    inputLabel: {
-      fontSize: theme.fontSize.sm,
-      fontWeight: '600',
-      color: theme.colors.text,
-      marginBottom: theme.spacing.xs,
-    },
-    selectButton: {
-      borderWidth: 1,
-      borderColor: theme.colors.border,
-      borderRadius: theme.borderRadius.md,
-      backgroundColor: theme.colors.background,
-      paddingHorizontal: theme.spacing.md,
-      paddingVertical: theme.spacing.md,
-      height: 48,
-      justifyContent: 'center',
-    },
-    selectButtonText: {
-      fontSize: theme.fontSize.md,
-      color: theme.colors.text,
-    },
-    disabledButton: {
-      opacity: 0.5,
-    },
-    disabledText: {
-      color: theme.colors.textSecondary,
-    },
     errorText: {
       fontSize: theme.fontSize.xs,
       color: theme.colors.error,
       marginTop: theme.spacing.xs,
     },
-    quickSetRow: {
-      flexDirection: 'row',
-      gap: theme.spacing.sm,
-      marginTop: theme.spacing.sm,
-    },
-    quickSetButton: {
-      flex: 1,
-      backgroundColor: theme.colors.surface,
-      borderRadius: theme.borderRadius.md,
-      paddingVertical: theme.spacing.sm,
-      paddingHorizontal: theme.spacing.md,
-      borderWidth: 1,
-      borderColor: theme.colors.border,
-    },
-    quickSetText: {
-      fontSize: theme.fontSize.sm,
-      color: theme.colors.text,
-      textAlign: 'center',
-    },
     submitSection: {
       padding: theme.spacing.md,
       borderTopWidth: 1,
       borderTopColor: theme.colors.border,
-      backgroundColor: theme.colors.surface,
+      // backgroundColor: theme.colors.surface,
+      maxWidth: 600,
+      width: '100%',
+      alignSelf: 'center',
     },
     submitButton: {
       marginBottom: theme.spacing.sm,
@@ -377,61 +335,12 @@ export const CreateTaskScreen = () => {
           </View>
           
           {/* 地點資訊 */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>地點資訊</Text>
-            
-            <View style={styles.locationRow}>
-              <View style={styles.citySelect}>
-                <Text style={styles.inputLabel}>縣市</Text>
-                <TouchableOpacity 
-                  style={styles.selectButton}
-                  onPress={() => {
-                    // 這裡可以開啟一個模態視窗選擇縣市，或使用簡單的 Alert
-                    showAlert('選擇縣市', '請在這裡實作縣市選擇器')
-                  }}
-                >
-                  <Text style={styles.selectButtonText}>
-                    {form.city || '請選擇縣市'}
-                  </Text>
-                </TouchableOpacity>
-                {errors.city && <Text style={styles.errorText}>{errors.city}</Text>}
-              </View>
-              
-              <View style={styles.districtSelect}>
-                <Text style={styles.inputLabel}>區域</Text>
-                <TouchableOpacity 
-                  style={[styles.selectButton, !form.city && styles.disabledButton]}
-                  disabled={!form.city}
-                  onPress={() => {
-                    if (form.city) {
-                      showAlert('選擇區域', '請在這裡實作區域選擇器')
-                    }
-                  }}
-                >
-                  <Text style={[styles.selectButtonText, !form.city && styles.disabledText]}>
-                    {form.district || '請選擇區域'}
-                  </Text>
-                </TouchableOpacity>
-                {errors.district && <Text style={styles.errorText}>{errors.district}</Text>}
-              </View>
-            </View>
-            
-            {/* 暫時手動設定預設值供測試 */}
-            <View style={styles.quickSetRow}>
-              <TouchableOpacity 
-                style={styles.quickSetButton}
-                onPress={() => setForm({ ...form, city: '台北市', district: '大安區' })}
-              >
-                <Text style={styles.quickSetText}>台北市 大安區</Text>
-              </TouchableOpacity>
-              <TouchableOpacity 
-                style={styles.quickSetButton}
-                onPress={() => setForm({ ...form, city: '新北市', district: '板橋區' })}
-              >
-                <Text style={styles.quickSetText}>新北市 板橋區</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
+          <AddressSelector
+            value={form.location}
+            onChange={(location) => setForm({ ...form, location })}
+            errors={typeof errors.location === 'string' ? { city: errors.location } : undefined}
+            showQuickSet={true} // 發布任務頁面顯示快速設定
+          />
           
           {/* 時間安排 */}
           <View style={styles.section}>

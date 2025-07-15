@@ -33,7 +33,8 @@
       "Bash(sed:*)",
       "Bash(pnpm remove:*)",
       "Bash(timeout:*)",
-      "Bash(tree:*)"
+      "Bash(tree:*)",
+      "Bash(pnpm dev:*)"
     ],
     "deny": []
   }

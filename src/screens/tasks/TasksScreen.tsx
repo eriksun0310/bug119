@@ -7,7 +7,8 @@ import {
   StyleSheet, 
   ScrollView, 
   TouchableOpacity,
-  RefreshControl 
+  RefreshControl,
+  Dimensions
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
@@ -37,6 +38,10 @@ export const TasksScreen = () => {
   const [activeTab, setActiveTab] = useState<TaskTab>('ongoing')
   const [refreshing, setRefreshing] = useState(false)
   const activeTabRef = useRef<TaskTab>('ongoing')
+  
+  // 取得螢幕寬度
+  const screenWidth = Dimensions.get('window').width
+  const isTablet = screenWidth >= 768 // 判斷是否為平板或電腦
   
   // 監聽 activeTab 變化並同步到 ref
   useEffect(() => {
@@ -260,8 +265,23 @@ export const TasksScreen = () => {
     content: {
       flex: 1,
     },
+    scrollContainer: {
+      flex: 1,
+    },
+    taskListContainer: {
+      flexGrow: 1,
+      alignItems: isTablet ? 'center' : 'stretch',
+      paddingBottom: isTablet ? theme.spacing.md : 50, // 手機版添加底部 padding 避免被導航列遮住
+    },
     taskList: {
       padding: theme.spacing.md,
+      width: '100%',
+      maxWidth: isTablet ? 1200 : undefined, // 電腦版放寬最大寬度
+      flexDirection: isTablet ? 'row' : 'column', // 電腦版使用橫向排列
+      flexWrap: isTablet ? 'wrap' : 'nowrap', // 電腦版允許換行
+      justifyContent: isTablet ? 'flex-start' : 'stretch',
+      alignItems: isTablet ? 'flex-start' : 'stretch',
+      gap: theme.spacing.md,
     },
     emptyState: {
       flex: 1,
@@ -305,6 +325,10 @@ export const TasksScreen = () => {
       fontSize: theme.fontSize.xs,
       color: theme.colors.textSecondary,
       marginTop: 2,
+    },
+    taskCardTablet: {
+      width: '48%', // 每行顯示兩個卡片
+      marginBottom: 0, // 移除底部邊距，因為已有 gap
     },
   })
   
@@ -353,7 +377,8 @@ export const TasksScreen = () => {
       {/* 任務列表 */}
       <View style={styles.content}>
         <ScrollView
-          style={styles.taskList}
+          style={styles.scrollContainer}
+          contentContainerStyle={styles.taskListContainer}
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
@@ -363,33 +388,36 @@ export const TasksScreen = () => {
             />
           }
         >
-          {currentTasks.length > 0 ? (
-            currentTasks.map(task => (
-              <TaskCard
-                key={task.id}
-                task={task}
-                onPress={handleTaskPress}
-                variant="default"
-                showContactInfo={user?.role === UserRole.TERMINATOR}
-                currentUserRole={user?.role}
-              />
-            ))
-          ) : (
-            <View style={styles.emptyState}>
-              {activeTab === 'ongoing' && <Clock size={48} color={theme.colors.textSecondary} />}
-              {activeTab === 'pending' && <AlertCircle size={48} color={theme.colors.textSecondary} />}
-              {activeTab === 'completed' && <CheckCircle size={48} color={theme.colors.textSecondary} />}
-              <Text style={styles.emptyStateText}>
-                {activeTab === 'ongoing' && '目前沒有進行中的任務'}
-                {activeTab === 'pending' && (
-                  user?.role === UserRole.FEAR_STAR 
-                    ? '沒有待選擇終結者的任務' 
-                    : '沒有待確認的任務'
-                )}
-                {activeTab === 'completed' && '還沒有完成的任務'}
-              </Text>
-            </View>
-          )}
+          <View style={styles.taskList}>
+            {currentTasks.length > 0 ? (
+              currentTasks.map(task => (
+                <TaskCard
+                  key={task.id}
+                  task={task}
+                  onPress={handleTaskPress}
+                  variant="default"
+                  showContactInfo={user?.role === UserRole.TERMINATOR}
+                  currentUserRole={user?.role}
+                  style={isTablet ? styles.taskCardTablet : undefined}
+                />
+              ))
+            ) : (
+              <View style={styles.emptyState}>
+                {activeTab === 'ongoing' && <Clock size={48} color={theme.colors.textSecondary} />}
+                {activeTab === 'pending' && <AlertCircle size={48} color={theme.colors.textSecondary} />}
+                {activeTab === 'completed' && <CheckCircle size={48} color={theme.colors.textSecondary} />}
+                <Text style={styles.emptyStateText}>
+                  {activeTab === 'ongoing' && '目前沒有進行中的任務'}
+                  {activeTab === 'pending' && (
+                    user?.role === UserRole.FEAR_STAR 
+                      ? '沒有待選擇終結者的任務' 
+                      : '沒有待確認的任務'
+                  )}
+                  {activeTab === 'completed' && '還沒有完成的任務'}
+                </Text>
+              </View>
+            )}
+          </View>
         </ScrollView>
       </View>
     </View>

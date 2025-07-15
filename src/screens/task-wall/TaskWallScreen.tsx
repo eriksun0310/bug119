@@ -9,7 +9,8 @@ import {
   TouchableOpacity,
   RefreshControl,
   Alert,
-  Modal
+  Modal,
+  Dimensions
 } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
@@ -48,6 +49,10 @@ export const TaskWallScreen = () => {
   })
   const [showFilterModal, setShowFilterModal] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
+  
+  // 取得螢幕寬度
+  const screenWidth = Dimensions.get('window').width
+  const isTablet = screenWidth >= 768 // 判斷是否為平板或電腦
   
   // 取得可接的任務
   const availableTasks = getAvailableTasks()
@@ -199,8 +204,18 @@ export const TaskWallScreen = () => {
     content: {
       flex: 1,
     },
+    scrollContainer: {
+      flex: 1,
+    },
+    taskListContainer: {
+      flexGrow: 1,
+      alignItems: isTablet ? 'center' : 'stretch',
+      paddingBottom: isTablet ? theme.spacing.md : 50, // 手機版添加底部 padding 避免被導航列遮住
+    },
     taskList: {
       padding: theme.spacing.md,
+      width: '100%',
+      maxWidth: isTablet ? 600 : undefined, // 電腦版最大寬度 600px
     },
     emptyState: {
       flex: 1,
@@ -260,7 +275,8 @@ export const TaskWallScreen = () => {
       {/* 任務列表 */}
       <View style={styles.content}>
         <ScrollView
-          style={styles.taskList}
+          style={styles.scrollContainer}
+          contentContainerStyle={styles.taskListContainer}
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
@@ -270,27 +286,29 @@ export const TaskWallScreen = () => {
             />
           }
         >
-          {filteredTasks.length > 0 ? (
-            filteredTasks.map(task => (
-              <TaskCard
-                key={task.id}
-                task={task}
-                onPress={handleTaskPress}
-                onAccept={handleAcceptTask}
-                currentUserRole={user?.role}
-              />
-            ))
-          ) : (
-            <View style={styles.emptyState}>
-              <Search size={48} color={theme.colors.textSecondary} />
-              <Text style={styles.emptyStateText}>
-                {searchQuery || Object.values(selectedFilters).some(Boolean)
-                  ? '沒有符合條件的任務'
-                  : '目前沒有可接的任務\n請稍後再查看'
-                }
-              </Text>
-            </View>
-          )}
+          <View style={styles.taskList}>
+            {filteredTasks.length > 0 ? (
+              filteredTasks.map(task => (
+                <TaskCard
+                  key={task.id}
+                  task={task}
+                  onPress={handleTaskPress}
+                  onAccept={handleAcceptTask}
+                  currentUserRole={user?.role}
+                />
+              ))
+            ) : (
+              <View style={styles.emptyState}>
+                <Search size={48} color={theme.colors.textSecondary} />
+                <Text style={styles.emptyStateText}>
+                  {searchQuery || Object.values(selectedFilters).some(Boolean)
+                    ? '沒有符合條件的任務'
+                    : '目前沒有可接的任務\n請稍後再查看'
+                  }
+                </Text>
+              </View>
+            )}
+          </View>
         </ScrollView>
       </View>
       

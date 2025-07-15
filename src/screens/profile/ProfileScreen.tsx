@@ -92,6 +92,10 @@ export const ProfileScreen = () => {
     content: {
       paddingHorizontal: theme.spacing.lg,
       paddingVertical: theme.spacing.lg,
+      paddingBottom: 50, // 添加底部 padding 避免被導航列遮住
+      maxWidth: 600,
+      width: '100%',
+      alignSelf: 'center',
     },
     profileCard: {
       marginBottom: theme.spacing.lg,

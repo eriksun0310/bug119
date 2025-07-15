@@ -350,3 +350,20 @@ export const getCityOption = (code: string) => {
 export const getCityOptionByName = (name: string) => {
   return CITY_OPTIONS.find(city => city.name === name)
 }
+
+// 用於 Select 元件的縣市選項
+export const CITY_SELECT_OPTIONS = CITY_OPTIONS.map(city => ({
+  label: city.name,
+  value: city.name
+}))
+
+// 根據縣市名稱獲取該縣市的區域選項
+export const getDistrictOptions = (cityName: string) => {
+  const city = getCityOptionByName(cityName)
+  if (!city) return []
+  
+  return city.districts.map(district => ({
+    label: district,
+    value: district
+  }))
+}

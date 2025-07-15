@@ -7,7 +7,8 @@ import {
   StyleSheet, 
   ScrollView, 
   TouchableOpacity,
-  Image
+  Image,
+  Dimensions
 } from 'react-native'
 import { 
   ChevronLeft, 
@@ -42,6 +43,10 @@ export const TaskApplicantsScreen = () => {
   
   const { taskId } = route.params
   
+  // 取得螢幕寬度
+  const screenWidth = Dimensions.get('window').width
+  const isTablet = screenWidth >= 768 // 判斷是否為平板或電腦
+  
   // 獲取任務資訊
   const task = mockTasks.find(t => t.id === taskId)
   
@@ -55,7 +60,7 @@ export const TaskApplicantsScreen = () => {
     
     showAlert(
       '確認委託',
-      `確定要委託「${terminator?.name}」處理這個任務嗎？\n\n提議價格：$${assignment.proposedPrice}\n預估時間：${assignment.estimatedDuration}分鐘`,
+      `確定要委託「${terminator?.name}」處理這個任務嗎？\n\n提議價格：$${assignment.proposedPrice}`,
       [
         { text: '取消', style: 'cancel' },
         {
@@ -116,10 +121,6 @@ export const TaskApplicantsScreen = () => {
           <View style={styles.priceContainer}>
             <Text style={styles.priceLabel}>提議價格</Text>
             <Text style={styles.priceValue}>${assignment.proposedPrice}</Text>
-          </View>
-          <View style={styles.timeContainer}>
-            <Text style={styles.timeLabel}>預估時間</Text>
-            <Text style={styles.timeValue}>{assignment.estimatedDuration}分鐘</Text>
           </View>
         </View>
         
@@ -182,6 +183,10 @@ export const TaskApplicantsScreen = () => {
     content: {
       paddingHorizontal: theme.spacing.lg,
       paddingVertical: theme.spacing.lg,
+      paddingBottom: isTablet ? theme.spacing.lg : 50, // 手機版添加底部 padding 避免被導航列遮住
+      maxWidth: isTablet ? 1200 : undefined,
+      width: '100%',
+      alignSelf: 'center',
     },
     taskInfo: {
       marginBottom: theme.spacing.lg,
@@ -204,7 +209,7 @@ export const TaskApplicantsScreen = () => {
       marginBottom: theme.spacing.md,
     },
     applicantCard: {
-      marginBottom: theme.spacing.md,
+      marginBottom: isTablet ? 0 : theme.spacing.md, // 平板模式下移除 marginBottom
     },
     applicantHeader: {
       flexDirection: 'row',
@@ -295,19 +300,6 @@ export const TaskApplicantsScreen = () => {
       fontWeight: '600',
       color: theme.colors.text,
     },
-    timeContainer: {
-      alignItems: 'center',
-    },
-    timeLabel: {
-      fontSize: theme.fontSize.xs,
-      color: theme.colors.textSecondary,
-      marginBottom: theme.spacing.xs,
-    },
-    timeValue: {
-      fontSize: theme.fontSize.md,
-      fontWeight: '600',
-      color: theme.colors.text,
-    },
     messageContainer: {
       flexDirection: 'row',
       marginBottom: theme.spacing.md,
@@ -357,6 +349,16 @@ export const TaskApplicantsScreen = () => {
       color: theme.colors.textSecondary,
       textAlign: 'center',
     },
+    applicantsList: {
+      flexDirection: isTablet ? 'row' : 'column',
+      flexWrap: isTablet ? 'wrap' : 'nowrap',
+      justifyContent: isTablet ? 'flex-start' : 'stretch',
+      alignItems: isTablet ? 'flex-start' : 'stretch',
+      gap: theme.spacing.md,
+    },
+    applicantCardTablet: {
+      width: '48%', // 每行顯示兩個卡片
+    },
   })
   
   if (!task) {
@@ -402,11 +404,17 @@ export const TaskApplicantsScreen = () => {
         </Card>
         
         <Text style={styles.sectionTitle}>
-          申請者列表 ({assignments.length}位§)
+          申請者列表 ({assignments.length}位)
         </Text>
         
         {assignments.length > 0 ? (
-          assignments.map(renderApplicantCard)
+          <View style={styles.applicantsList}>
+            {assignments.map(assignment => 
+              <View key={assignment.terminatorId} style={isTablet ? styles.applicantCardTablet : undefined}>
+                {renderApplicantCard(assignment)}
+              </View>
+            )}
+          </View>
         ) : (
           <View style={styles.emptyContainer}>
             <Text style={styles.emptyText}>
