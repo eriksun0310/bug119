@@ -1,10 +1,10 @@
 // 登入畫面
 
 import React, { useState } from 'react'
-import { View, Text, StyleSheet, ScrollView, Alert, Dimensions } from 'react-native'
+import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { useTheme } from '@/shared/theme'
-import { useAuth } from '@/shared/hooks'
+import { useAuth, useResponsive } from '@/shared/hooks'
 import { useFormValidation } from '@/shared/hooks/useFormValidation'
 import { Button, Input, Card, KeyboardAvoidingContainer } from '@/shared/ui'
 import { loginValidationRules } from '@/shared/config/validation.config'
@@ -12,11 +12,8 @@ import { loginValidationRules } from '@/shared/config/validation.config'
 export const LoginScreen = () => {
   const { theme } = useTheme()
   const { login } = useAuth()
+  const { isTablet } = useResponsive()
   const navigation = useNavigation<any>()
-  
-  // 取得螢幕寬度
-  const screenWidth = Dimensions.get('window').width
-  const isTablet = screenWidth >= 768 // 判斷是否為平板或電腦
   
   // 使用 useFormValidation Hook 統一管理表單
   const {

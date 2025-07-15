@@ -7,8 +7,7 @@ import {
   StyleSheet, 
   ScrollView, 
   TouchableOpacity,
-  RefreshControl,
-  Dimensions
+  RefreshControl
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
@@ -20,7 +19,7 @@ import {
   Bell
 } from 'lucide-react-native'
 import { useTheme } from '@/shared/theme'
-import { useAuth } from '@/shared/hooks'
+import { useAuth, useResponsive } from '@/shared/hooks'
 import { TaskCard } from '@/shared/ui'
 import { getAssignedTasks, mockTasks } from '@/shared/mocks'
 import { Task, TaskStatus, RootStackParamList, UserRole } from '@/shared/types'
@@ -33,15 +32,12 @@ type TaskTab = 'ongoing' | 'pending' | 'completed'
 export const TasksScreen = () => {
   const { theme } = useTheme()
   const { user } = useAuth()
+  const { isTablet } = useResponsive()
   const insets = useSafeAreaInsets()
   const navigation = useNavigation<TasksNavigationProp>()
   const [activeTab, setActiveTab] = useState<TaskTab>('ongoing')
   const [refreshing, setRefreshing] = useState(false)
   const activeTabRef = useRef<TaskTab>('ongoing')
-  
-  // 取得螢幕寬度
-  const screenWidth = Dimensions.get('window').width
-  const isTablet = screenWidth >= 768 // 判斷是否為平板或電腦
   
   // 監聽 activeTab 變化並同步到 ref
   useEffect(() => {
@@ -81,7 +77,6 @@ export const TasksScreen = () => {
           budget: { min: 2000, max: 3500 },
           scheduledTime: new Date('2024-07-03T09:00:00'),
           isImmediate: false,
-          images: [],
           createdBy: '1',
           assignedTo: user?.id,
           createdAt: new Date('2024-07-02T07:30:00'),
@@ -102,7 +97,6 @@ export const TasksScreen = () => {
           priority: 'normal' as any,
           budget: { min: 1200, max: 1200 },
           isImmediate: false,
-          images: [],
           createdBy: '1',
           assignedTo: user?.id,
           createdAt: new Date('2024-07-01T14:20:00'),

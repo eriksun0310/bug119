@@ -9,8 +9,7 @@ import {
   TouchableOpacity,
   RefreshControl,
   Alert,
-  Modal,
-  Dimensions
+  Modal
 } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
@@ -40,7 +39,7 @@ type TaskWallNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Tas
 export const TaskWallScreen = () => {
   const { theme } = useTheme()
   const { user } = useAuth()
-  const { isTablet } = useResponsive()
+  const { isTablet, screenWidth } = useResponsive()
   const navigation = useNavigation<TaskWallNavigationProp>()
   const insets = useSafeAreaInsets()
   const [searchQuery, setSearchQuery] = useState('')
@@ -52,8 +51,6 @@ export const TaskWallScreen = () => {
   const [showFilterModal, setShowFilterModal] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
   
-  // 取得螢幕寬度
-  const screenWidth = Dimensions.get('window').width
   
   // 取得可接的任務
   const availableTasks = getAvailableTasks()

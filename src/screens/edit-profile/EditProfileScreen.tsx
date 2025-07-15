@@ -7,7 +7,6 @@ import {
   StyleSheet, 
   ScrollView, 
   TouchableOpacity,
-  Dimensions,
   Image,
   Alert,
   Platform
@@ -23,7 +22,7 @@ import {
   MessageCircle
 } from 'lucide-react-native'
 import { useTheme } from '@/shared/theme'
-import { useAuth } from '@/shared/hooks'
+import { useAuth, useResponsive } from '@/shared/hooks'
 import { useFormValidation } from '@/shared/hooks/useFormValidation'
 import { Input, SegmentedControl, AddressSelector, KeyboardAvoidingContainer } from '@/shared/ui'
 import { showAlert } from '@/shared/utils'
@@ -35,15 +34,12 @@ import { editProfileValidationRules } from '@/shared/config/validation.config'
 const EditProfileScreen = () => {
   const { theme } = useTheme()
   const { user } = useAuth()
+  const { isTablet } = useResponsive()
   const navigation = useNavigation()
   const insets = useSafeAreaInsets()
   const [loading, setLoading] = useState(false)
   const [avatarUri, setAvatarUri] = useState<string | null>(user?.avatar || null)
   const scrollViewRef = useRef<ScrollView>(null)
-  
-  // 取得螢幕寬度
-  const screenWidth = Dimensions.get('window').width
-  const isTablet = screenWidth >= 768 // 判斷是否為平板或電腦
   
   // 使用 useFormValidation Hook 統一管理表單
   const {
@@ -470,7 +466,6 @@ const EditProfileScreen = () => {
           
           {/* 基本資訊 */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>基本資訊</Text>
             
             {/* 角色顯示 */}
             <View style={styles.roleInfo}>
@@ -512,12 +507,9 @@ const EditProfileScreen = () => {
               showQuickSet={false} // 個人資料頁面不顯示快速設定
               required={true}
             />
-          </View>
-          
-          
-          {/* 聯絡方式 */}
-          <View style={styles.section}>
-            <View style={styles.preferredMethodContainer}>
+
+
+             <View style={styles.preferredMethodContainer}>
               <Text style={styles.preferredMethodLabel}>
                 聯絡方式
                 <Text style={{ color: theme.colors.error }}> *</Text>
@@ -553,11 +545,8 @@ const EditProfileScreen = () => {
                 leftIcon={<MessageCircle size={16} color="#00B900" />}
               />
             )}
-          </View>
-          
-          {/* 個人簡介 */}
-          <View style={styles.section}>
-            <Input
+
+             <Input
               label='自我介紹'
               value={form.bio}
               onChangeText={handleInputChange('bio')}
@@ -571,6 +560,10 @@ const EditProfileScreen = () => {
               numberOfLines={4}
             />
           </View>
+          
+          
+      
+        
         </View>
       </ScrollView>
     </KeyboardAvoidingContainer>
