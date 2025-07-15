@@ -4,7 +4,7 @@ import React from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { Bug, List, User } from 'lucide-react-native'
 import { useTheme } from '@/shared/theme'
-import { FearStarTabParamList, TerminatorTabParamList } from '@/shared/types'
+import { FearStarTabParamList } from '@/shared/types'
 
 // 暫時使用統一的標籤類型，後續根據用戶角色動態切換
 type MainTabParamList = FearStarTabParamList

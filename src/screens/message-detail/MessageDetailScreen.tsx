@@ -22,7 +22,6 @@ import {
   Phone,
   MoreVertical,
   Image as ImageIcon,
-  MapPin,
   Flag,
   Trash2,
   X

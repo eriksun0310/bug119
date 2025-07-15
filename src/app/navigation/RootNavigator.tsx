@@ -8,7 +8,6 @@ import { useTheme } from '@/shared/theme'
 import { useAuth } from '@/shared/hooks'
 
 // 導入畫面組件
-import { SplashScreen } from '@/screens/splash/SplashScreen'
 import { AuthNavigator } from './AuthNavigator'
 import { MainNavigator } from './MainNavigator'
 import { TerminatorNavigator } from './TerminatorNavigator'

@@ -19,14 +19,12 @@ import {
   User,
   Mail,
   Phone,
-  MapPin,
-  Info,
   Save,
   MessageCircle
 } from 'lucide-react-native'
 import { useTheme } from '@/shared/theme'
 import { useAuth } from '@/shared/hooks'
-import { Button, Input, SegmentedControl, AddressSelector, KeyboardAvoidingContainer } from '@/shared/ui'
+import { Input, SegmentedControl, AddressSelector, KeyboardAvoidingContainer } from '@/shared/ui'
 import { showAlert } from '@/shared/utils'
 import * as ImagePicker from 'expo-image-picker'
 import { ContactMethod } from '@/shared/types'
@@ -462,14 +460,6 @@ const EditProfileScreen = () => {
             </TouchableOpacity>
           </View>
           
-          {/* 提示資訊 */}
-          {/* <View style={styles.infoCard}>
-            <Info size={16} color={theme.colors.secondary} />
-            <Text style={styles.infoText}>
-              為保護用戶安全，註冊後無法修改性別資訊。如需修改其他重要資訊，可能需要進行身份驗證。
-            </Text>
-          </View> */}
-          
           {/* 基本資訊 */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>基本資訊</Text>
@@ -513,9 +503,6 @@ const EditProfileScreen = () => {
           
           {/* 聯絡方式 */}
           <View style={styles.section}>
-            {/* <Text style={styles.sectionTitle}>聯絡方式</Text>
-            <Text style={styles.contactHint}>選擇您偏好的聯絡方式</Text> */}
-            
             <View style={styles.preferredMethodContainer}>
               <Text style={styles.preferredMethodLabel}>聯絡方式：</Text>
               <SegmentedControl
@@ -570,20 +557,6 @@ const EditProfileScreen = () => {
           </View>
         </View>
       </ScrollView>
-      
-      {/* 底部按鈕 */}
-      {/* <View style={styles.bottomContainer}>
-        <View style={styles.bottomContent}>
-          <Button
-            variant="primary"
-            loading={loading}
-            onPress={handleSave}
-            fullWidth
-          >
-            儲存變更
-          </Button>
-        </View>
-      </View> */}
     </KeyboardAvoidingContainer>
   )
 }

@@ -10,35 +10,25 @@ import {
   Switch,
 } from 'react-native'
 import { 
-  MapPin, 
-  Clock, 
-  Calendar,
   Send,
-  Timer,
   Bell
 } from 'lucide-react-native'
-import * as Location from 'expo-location'
-import { Platform } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { useTheme } from '@/shared/theme'
-import { useAuth } from '@/shared/hooks'
-import { getCurrentLocationAddress, showAlert } from '@/shared/utils'
+import { showAlert } from '@/shared/utils'
 import { 
   Button, 
   Input, 
-  Card,
   PestSelector,
   PrioritySelector,
   BudgetSelector,
-  BudgetRange,
   GenderSelector,
   AddressSelector,
   KeyboardAvoidingContainer
 } from '@/shared/ui'
 import { PestType, TaskPriority, RootStackParamList, Gender } from '@/shared/types'
-import { CITY_OPTIONS, getCityOptionByName } from '@/shared/config/options.config'
 
 type CreateTaskNavigationProp = NativeStackNavigationProp<RootStackParamList>
 
@@ -368,31 +358,6 @@ export const CreateTaskScreen = () => {
                   : '我希望在特定時間安排處理'
                 }
               </Text>
-              
-              {!form.isImmediate && (
-                <View style={styles.scheduledInputs}>
-                  <View style={styles.scheduledInput}>
-                    <Input
-                      label="預約日期"
-                      value={form.scheduledDate || ''}
-                      onChangeText={(scheduledDate) => setForm({ ...form, scheduledDate })}
-                      placeholder="選擇日期"
-                      error={errors.scheduledDate}
-                      leftIcon={<Calendar size={16} color={theme.colors.textSecondary} />}
-                    />
-                  </View>
-                  <View style={styles.scheduledInput}>
-                    <Input
-                      label="預約時間"
-                      value={form.scheduledTime || ''}
-                      onChangeText={(scheduledTime) => setForm({ ...form, scheduledTime })}
-                      placeholder="選擇時間"
-                      error={errors.scheduledTime}
-                      leftIcon={<Clock size={16} color={theme.colors.textSecondary} />}
-                    />
-                  </View>
-                </View>
-              )}
             </View>
           </View>
           
