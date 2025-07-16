@@ -1,13 +1,8 @@
-// 預算範圍選擇器型別定義
-
-export interface BudgetRange {
-  min: number
-  max: number
-}
+// 預算選擇器型別定義
 
 export interface BudgetSelectorProps {
-  value?: BudgetRange
-  onChange: (budget: BudgetRange) => void
+  value?: number
+  onChange: (budget: number) => void
   error?: string
   label?: string
 }

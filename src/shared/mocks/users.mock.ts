@@ -63,7 +63,6 @@ export const mockUsers: User[] = [
 export const mockUserProfiles = {
   '1': {
     userId: '1',
-    bio: '我很怕蟲，需要專業的除蟲服務',
     location: '台北市大安區',
     rating: 4.5,
     totalReviews: 8,
@@ -72,7 +71,6 @@ export const mockUserProfiles = {
   },
   '2': {
     userId: '2',
-    bio: '專業除蟲師傅，15年經驗，服務範圍涵蓋大台北地區',
     location: '新北市板橋區',
     rating: 4.8,
     totalReviews: 156,
@@ -94,7 +92,6 @@ export const mockUserProfiles = {
   },
   '3': {
     userId: '3',
-    bio: '專精環保無毒除蟲，家中有小孩寵物也安心',
     location: '台北市信義區',
     rating: 4.6,
     totalReviews: 89,

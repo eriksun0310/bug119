@@ -57,7 +57,6 @@ const EditProfileScreen = () => {
       telegram: user?.contactInfo?.telegram || '',
       city: user?.location?.city || '',
       district: user?.location?.district || '',
-      bio: user?.bio || '',
       preferredMethod: user?.contactInfo?.preferredMethod || ContactMethod.PHONE,
     },
     editProfileValidationRules
@@ -91,12 +90,6 @@ const EditProfileScreen = () => {
     return true
   }
   
-  // 處理自我介紹輸入框的焦點，滾動到底部
-  const handleBioFocus = () => {
-    setTimeout(() => {
-      scrollViewRef.current?.scrollToEnd({ animated: true })
-    }, 300) // 延遲確保鍵盤已完全彈出
-  }
 
   // 處理更換頭像
   const handleChangeAvatar = () => {
@@ -383,19 +376,6 @@ const EditProfileScreen = () => {
               />
             )}
 
-             <Input
-              label='自我介紹'
-              value={form.bio}
-              onChangeText={handleInputChange('bio')}
-              onFocus={handleBioFocus}
-              placeholder={
-                user?.role === 'terminator' 
-                  ? '介紹您的除蟲經驗、專長等...'
-                  : '簡單介紹自己...'
-              }
-              multiline
-              numberOfLines={4}
-            />
           </View>
           
           

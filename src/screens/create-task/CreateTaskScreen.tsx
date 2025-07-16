@@ -29,7 +29,6 @@ import {
   KeyboardAvoidingContainer
 } from '@/shared/ui'
 import { PestType, TaskPriority, RootStackParamList, Gender } from '@/shared/types'
-import { BudgetRange } from '@/shared/ui/budget-selector/BudgetSelector.types'
 import { createStyles } from './CreateTaskScreen.styles'
 
 type CreateTaskNavigationProp = NativeStackNavigationProp<RootStackParamList>
@@ -39,7 +38,7 @@ interface CreateTaskForm {
   description: string
   pestType?: PestType
   priority: TaskPriority
-  budget?: BudgetRange
+  budget?: number
   location: {
     city: string
     district: string
@@ -95,8 +94,8 @@ export const CreateTaskScreen = () => {
       newErrors.location = '請選擇區域'
     }
     
-    if (!form.budget || form.budget.min <= 0 || form.budget.max <= 0) {
-      newErrors.budget = '請設定預算範圍'
+    if (!form.budget || form.budget <= 0) {
+      newErrors.budget = '請設定預算'
     }
     
     if (!form.isImmediate) {

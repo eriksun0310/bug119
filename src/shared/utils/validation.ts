@@ -35,7 +35,6 @@ export const fieldLabels: Record<string, string> = {
   telegram: 'Telegram',
   title: '標題',
   description: '描述',
-  bio: '自我介紹',
   location: '地點',
   city: '城市',
   district: '區域',

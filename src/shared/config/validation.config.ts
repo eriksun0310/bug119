@@ -101,7 +101,6 @@ export const editProfileValidationRules: ValidationRules<{
   telegram: string
   city: string
   district: string
-  bio: string
   preferredMethod: any
 }> = {
   name: {
@@ -132,8 +131,5 @@ export const editProfileValidationRules: ValidationRules<{
   },
   district: {
     required: true
-  },
-  bio: {
-    maxLength: 500
   }
 }

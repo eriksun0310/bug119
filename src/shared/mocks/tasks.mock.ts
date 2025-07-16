@@ -17,10 +17,7 @@ export const mockTasks: Task[] = [
     },
     status: TaskStatus.PENDING,
     priority: TaskPriority.URGENT,
-    budget: {
-      min: 1000,
-      max: 2000,
-    },
+    budget: 1500,
     isImmediate: true,
     createdBy: '1', // 小怕星 ID
     applicants: [],
@@ -40,10 +37,7 @@ export const mockTasks: Task[] = [
     },
     status: TaskStatus.PENDING_CONFIRMATION,
     priority: TaskPriority.NORMAL,
-    budget: {
-      min: 800,
-      max: 1500,
-    },
+    budget: 1200,
     scheduledTime: new Date('2024-07-03T14:00:00'),
     isImmediate: false,
     createdBy: '1', // 小怕星測試
@@ -79,10 +73,7 @@ export const mockTasks: Task[] = [
     },
     status: TaskStatus.IN_PROGRESS,
     priority: TaskPriority.NORMAL,
-    budget: {
-      min: 600,
-      max: 1200,
-    },
+    budget: 900,
     scheduledTime: new Date('2024-07-02T19:00:00'),
     isImmediate: false,
     createdBy: '1',
@@ -116,10 +107,7 @@ export const mockTasks: Task[] = [
     },
     status: TaskStatus.COMPLETED,
     priority: TaskPriority.NORMAL,
-    budget: {
-      min: 500,
-      max: 1000,
-    },
+    budget: 750,
     scheduledTime: new Date('2024-07-04T10:00:00'),
     isImmediate: false,
     createdBy: '1',

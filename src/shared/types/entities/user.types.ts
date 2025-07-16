@@ -21,7 +21,6 @@ export interface User {
 
 export interface UserProfile {
   userId: string
-  bio?: string
   location?: string
   rating: number
   totalReviews: number

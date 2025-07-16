@@ -30,10 +30,7 @@ export interface Task {
   location: TaskLocation
   status: TaskStatus
   priority: TaskPriority
-  budget: {
-    min: number
-    max: number
-  }
+  budget: number
   scheduledTime?: Date // 預約時間
   isImmediate: boolean // 是否立即處理
   createdBy: string // 小怕星 ID

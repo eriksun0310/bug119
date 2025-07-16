@@ -59,10 +59,7 @@ export const TaskCard: FC<TaskCardProps> = ({
   
   
   const formatBudget = () => {
-    if (task.budget.min === task.budget.max) {
-      return `$${task.budget.min}`
-    }
-    return `$${task.budget.min} - $${task.budget.max}`
+    return `$${task.budget}`
   }
   
   // 獲取客戶資訊

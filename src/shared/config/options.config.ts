@@ -84,19 +84,21 @@ export const PEST_TYPE_OPTIONS: PestTypeOption[] = [
 ] as const
 
 // ================================
-// 預算範圍選項配置
+// 預算選項配置
 // ================================
 export interface BudgetOption {
-  min: number
-  max: number
+  value: number
   label: string
 }
 
 export const BUDGET_PRESET_OPTIONS: BudgetOption[] = [
-  { min: 500, max: 1000, label: '$500 - $1,000' },
-  { min: 1000, max: 2000, label: '$1,000 - $2,000' },
-  { min: 2000, max: 3000, label: '$2,000 - $3,000' },
-  { min: 3000, max: 5000, label: '$3,000 - $5,000' },
+  { value: 500, label: '$500' },
+  { value: 1000, label: '$1,000' },
+  { value: 1500, label: '$1,500' },
+  { value: 2000, label: '$2,000' },
+  { value: 2500, label: '$2,500' },
+  { value: 3000, label: '$3,000' },
+  { value: 5000, label: '$5,000' },
 ] as const
 
 // ================================
@@ -225,10 +227,10 @@ export const getPriorityOption = (type: TaskPriority) => {
   return undefined
 }
 
-// 根據範圍獲取預算選項
-export const getBudgetOption = (min: number, max: number) => {
+// 根據金額獲取預算選項
+export const getBudgetOption = (value: number) => {
   for (const option of BUDGET_PRESET_OPTIONS) {
-    if (option.min === min && option.max === max) return option
+    if (option.value === value) return option
   }
   return undefined
 }

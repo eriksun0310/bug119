@@ -28,7 +28,7 @@ export const TaskSummaryCard: FC<TaskSummaryCardProps> = ({ task }) => {
       <Text style={styles.taskTitle}>{task.title}</Text>
       <Text style={styles.taskMeta}>害蟲類型：{getPestTypeDisplayName(task.pestType)}</Text>
       <Text style={styles.taskMeta}>
-        預算範圍：${task.budget.min} - ${task.budget.max}
+        預算：${task.budget}
       </Text>
       <Text style={styles.taskMeta}>
         地點：{task.location.district}, {task.location.city}
