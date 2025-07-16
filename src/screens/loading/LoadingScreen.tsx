@@ -1,31 +1,14 @@
 // 載入畫面
 
 import React from 'react'
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native'
+import { View, Text, ActivityIndicator } from 'react-native'
 import { useTheme } from '@/shared/theme'
+import { createStyles } from './LoadingScreen.styles'
 
 export const LoadingScreen = () => {
   const { theme } = useTheme()
   
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: theme.colors.background,
-    },
-    title: {
-      fontSize: theme.fontSize.xxl,
-      fontWeight: 'bold',
-      color: theme.colors.text,
-      marginBottom: theme.spacing.md,
-    },
-    subtitle: {
-      fontSize: theme.fontSize.lg,
-      color: theme.colors.textSecondary,
-      marginBottom: theme.spacing.xl,
-    },
-  })
+  const styles = createStyles(theme)
   
   return (
     <View style={styles.container}>

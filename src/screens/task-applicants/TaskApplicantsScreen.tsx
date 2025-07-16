@@ -7,10 +7,11 @@ import { useTheme } from '@/shared/theme'
 import { RootStackParamList, TaskAssignment, TaskStatus } from '@/shared/types'
 import { ApplicantCard, ScreenHeader, TaskSummaryCard } from '@/shared/ui'
 import { showAlert } from '@/shared/utils'
+import { createStyles } from './TaskApplicantsScreen.styles'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import React from 'react'
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
+import { ScrollView, Text, View } from 'react-native'
 
 type TaskApplicantsRouteProp = RouteProp<RootStackParamList, 'TaskApplicants'>
 type TaskApplicantsNavigationProp = NativeStackNavigationProp<RootStackParamList>
@@ -52,47 +53,7 @@ export const TaskApplicantsScreen = () => {
     )
   }
 
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: theme.colors.background,
-    },
-    content: {
-      paddingHorizontal: theme.spacing.lg,
-      paddingVertical: theme.spacing.lg,
-      paddingBottom: isTablet ? theme.spacing.lg : 50, // 手機版添加底部 padding 避免被導航列遮住
-      maxWidth: isTablet ? 1200 : undefined,
-      width: '100%',
-      alignSelf: 'center',
-    },
-    sectionTitle: {
-      fontSize: theme.fontSize.md,
-      fontWeight: '600',
-      color: theme.colors.text,
-      marginBottom: theme.spacing.md,
-    },
-    emptyContainer: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      paddingVertical: theme.spacing.xl,
-    },
-    emptyText: {
-      fontSize: theme.fontSize.md,
-      color: theme.colors.textSecondary,
-      textAlign: 'center',
-    },
-    applicantsList: {
-      flexDirection: isTablet ? 'row' : 'column',
-      flexWrap: isTablet ? 'wrap' : 'nowrap',
-      justifyContent: isTablet ? 'flex-start' : 'stretch',
-      alignItems: isTablet ? 'flex-start' : 'stretch',
-      gap: theme.spacing.md,
-    },
-    applicantCardTablet: {
-      width: '48%', // 每行顯示兩個卡片
-    },
-  })
+  const styles = createStyles(theme, isTablet)
 
   if (!task) {
     return (

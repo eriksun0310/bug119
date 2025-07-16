@@ -1,10 +1,11 @@
 // 啟動畫面
 
 import React, { useEffect } from 'react'
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { useTheme } from '@/shared/theme'
 import { useAuth } from '@/shared/hooks'
+import { createStyles } from './SplashScreen.styles'
 
 export const SplashScreen = () => {
   const { theme } = useTheme()
@@ -23,24 +24,7 @@ export const SplashScreen = () => {
     return () => clearTimeout(timer)
   }, [navigation, isAuthenticated])
   
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: theme.colors.background,
-    },
-    title: {
-      fontSize: theme.fontSize.xxl,
-      fontWeight: 'bold',
-      color: theme.colors.text,
-      marginBottom: theme.spacing.md,
-    },
-    subtitle: {
-      fontSize: theme.fontSize.lg,
-      color: theme.colors.textSecondary,
-    },
-  })
+  const styles = createStyles(theme)
   
   return (
     <View style={styles.container}>

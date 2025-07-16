@@ -4,8 +4,9 @@ import { getPestTypeDisplayName } from '@/shared/mocks'
 import { useTheme } from '@/shared/theme'
 import { Card } from '@/shared/ui'
 import React, { FC } from 'react'
-import { StyleSheet, Text } from 'react-native'
+import { Text } from 'react-native'
 import { TaskSummaryCardProps } from './TaskSummaryCard.types'
+import { createStyles } from './TaskSummaryCard.styles'
 
 /**
  * 任務摘要卡片元件
@@ -20,22 +21,7 @@ export const TaskSummaryCard: FC<TaskSummaryCardProps> = ({ task }) => {
     return `${date.getMonth() + 1}/${date.getDate()} ${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`
   }
 
-  const styles = StyleSheet.create({
-    card: {
-      marginBottom: theme.spacing.lg,
-    },
-    taskTitle: {
-      fontSize: theme.fontSize.lg,
-      fontWeight: '600',
-      color: theme.colors.text,
-      marginBottom: theme.spacing.sm,
-    },
-    taskMeta: {
-      fontSize: theme.fontSize.sm,
-      color: theme.colors.textSecondary,
-      marginBottom: theme.spacing.xs,
-    },
-  })
+  const styles = createStyles(theme)
 
   return (
     <Card style={styles.card}>

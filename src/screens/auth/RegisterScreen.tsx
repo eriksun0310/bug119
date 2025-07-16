@@ -1,7 +1,7 @@
 // 註冊畫面
 
 import React, { useState } from 'react'
-import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native'
+import { View, Text, ScrollView, Alert } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { useTheme } from '@/shared/theme'
 import { useResponsive } from '@/shared/hooks'
@@ -10,6 +10,7 @@ import { Button, Input, Card, SegmentedControl, KeyboardAvoidingContainer } from
 import { ContactMethod } from '@/shared/types'
 import { CONTACT_METHOD_OPTIONS } from '@/shared/config/options.config'
 import { registerValidationRules } from '@/shared/config/validation.config'
+import { createStyles } from './RegisterScreen.styles'
 
 export const RegisterScreen = () => {
   const { theme } = useTheme()
@@ -75,58 +76,8 @@ export const RegisterScreen = () => {
       setLoading(false)
     }
   }
-  
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: theme.colors.background,
-    },
-    scrollContent: {
-      flexGrow: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: theme.spacing.lg,
-      paddingTop: theme.spacing.xl,
-    },
-    formContainer: {
-      width: '100%',
-      maxWidth: isTablet ? 400 : undefined, // 電腦版最大寬度 400px
-    },
-    title: {
-      fontSize: theme.fontSize.xxl,
-      fontWeight: 'bold',
-      color: theme.colors.text,
-      textAlign: 'center',
-      marginBottom: theme.spacing.xs,
-    },
-    subtitle: {
-      fontSize: theme.fontSize.md,
-      color: theme.colors.textSecondary,
-      textAlign: 'center',
-      marginBottom: theme.spacing.xxl,
-    },
-    form: {
-      gap: theme.spacing.md,
-    },
-    sectionTitle: {
-      fontSize: theme.fontSize.lg,
-      fontWeight: '600',
-      color: theme.colors.text,
-      marginTop: theme.spacing.lg,
-      marginBottom: theme.spacing.sm,
-    },
-    optionalLabel: {
-      fontSize: theme.fontSize.sm,
-      color: theme.colors.textSecondary,
-      marginLeft: theme.spacing.xs,
-    },
-    fieldLabel: {
-      fontSize: theme.fontSize.md,
-      fontWeight: '500',
-      color: theme.colors.text,
-      marginBottom: theme.spacing.sm,
-    },
-  })
+
+  const styles = createStyles(theme, isTablet)
   
   return (
     <KeyboardAvoidingContainer style={styles.container}>

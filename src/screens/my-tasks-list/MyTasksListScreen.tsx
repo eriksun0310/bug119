@@ -1,7 +1,7 @@
 // 我的任務列表畫面 - 小怕星查看自己發布的 PENDING 狀態任務
 
 import React from 'react'
-import { View, StyleSheet, FlatList, Text } from 'react-native'
+import { View, FlatList, Text } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { useTheme } from '@/shared/theme'
@@ -9,6 +9,7 @@ import { useAuth, useResponsive } from '@/shared/hooks'
 import { mockTasks } from '@/shared/mocks'
 import { RootStackParamList, TaskStatus, UserRole } from '@/shared/types'
 import { ScreenHeader, TaskCard } from '@/shared/ui'
+import { createStyles } from './MyTasksListScreen.styles'
 
 type MyTasksListNavigationProp = NativeStackNavigationProp<RootStackParamList, 'MyTasksList'>
 
@@ -35,44 +36,7 @@ export const MyTasksListScreen: React.FC = () => {
     />
   )
 
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: theme.colors.background,
-    },
-    content: {
-      flex: 1,
-      paddingHorizontal: theme.spacing.lg,
-      paddingVertical: theme.spacing.lg,
-      maxWidth: isTablet ? 1200 : undefined,
-      width: '100%',
-      alignSelf: 'center',
-    },
-    listContainer: {
-      paddingBottom: theme.spacing.xl,
-    },
-    taskCardTablet: {
-      marginBottom: theme.spacing.md,
-    },
-    emptyContainer: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      paddingVertical: theme.spacing.xl,
-    },
-    emptyText: {
-      fontSize: theme.fontSize.lg,
-      color: theme.colors.textSecondary,
-      textAlign: 'center',
-      marginBottom: theme.spacing.sm,
-    },
-    emptySubText: {
-      fontSize: theme.fontSize.md,
-      color: theme.colors.textSecondary,
-      textAlign: 'center',
-      lineHeight: 22,
-    },
-  })
+  const styles = createStyles(theme, isTablet)
 
   // 只有小怕星能訪問此頁面
   if (user?.role !== UserRole.FEAR_STAR) {
