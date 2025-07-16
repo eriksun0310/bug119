@@ -103,15 +103,6 @@ export const createStyles = (theme: Theme, isTablet: boolean, insets: { top: num
     marginLeft: theme.spacing.sm,
     lineHeight: 20,
   },
-  disabledInput: {
-    opacity: 0.6,
-  },
-  genderNotice: {
-    fontSize: theme.fontSize.xs,
-    color: theme.colors.textSecondary,
-    marginTop: theme.spacing.xs,
-    fontStyle: 'italic',
-  },
   roleInfo: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -132,12 +123,6 @@ export const createStyles = (theme: Theme, isTablet: boolean, insets: { top: num
     fontWeight: '600',
     color: theme.colors.secondary,
   },
-  contactHint: {
-    fontSize: theme.fontSize.sm,
-    color: theme.colors.textSecondary,
-    marginBottom: theme.spacing.md,
-    fontStyle: 'italic',
-  },
   preferredMethodContainer: {
     //marginTop: theme.spacing.md,
   },
@@ -146,12 +131,6 @@ export const createStyles = (theme: Theme, isTablet: boolean, insets: { top: num
     fontWeight: '500',
     color: theme.colors.text,
     marginBottom: theme.spacing.sm,
-  },
-  inputLabel: {
-    fontSize: theme.fontSize.sm,
-    fontWeight: '600',
-    color: theme.colors.text,
-    marginBottom: theme.spacing.xs,
   },
   bottomContainer: {
     backgroundColor: theme.colors.surface,

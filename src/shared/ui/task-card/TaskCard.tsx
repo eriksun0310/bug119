@@ -6,7 +6,6 @@ import {
   MapPin, 
   DollarSign, 
   Bug, 
-  Phone,
   MessageSquare,
   User as UserIcon
 } from 'lucide-react-native'
@@ -15,8 +14,7 @@ import { TaskCardProps } from './TaskCard.types'
 import { createStyles } from './TaskCard.styles'
 import { 
   getPestTypeDisplayName, 
-  getPriorityDisplayInfo,
-  getTaskStatusDisplayName 
+  getPriorityDisplayInfo 
 } from '@/shared/mocks'
 import { mockUsers } from '@/shared/mocks/users.mock'
 import { UserRole } from '@/shared/types'
@@ -33,7 +31,6 @@ export const TaskCard: FC<TaskCardProps> = ({
   showContactInfo = false,
   currentUserRole,
   onPress,
-  onAccept,
   style,
   ...props
 }) => {
@@ -42,23 +39,12 @@ export const TaskCard: FC<TaskCardProps> = ({
   
   const priorityInfo = getPriorityDisplayInfo(task.priority)
   const pestTypeName = getPestTypeDisplayName(task.pestType)
-  const statusName = getTaskStatusDisplayName(task.status)
   
   const handlePress = () => {
     if (onPress) {
       onPress(task)
     }
   }
-  
-  const handleAccept = (e: any) => {
-    e.stopPropagation()
-    if (onAccept) {
-      onAccept(task)
-    }
-  }
-  
-
-  console.log('task 11111', task)
   
   const formatBudget = () => {
     return `${task.budget}`
@@ -164,18 +150,6 @@ export const TaskCard: FC<TaskCardProps> = ({
           <Text style={styles.budgetText}>{formatBudget()}</Text>
         </View>
         
-        {/* {task.status === 'pending' && !task.assignedTo && onAccept ? (
-          <TouchableOpacity 
-            style={styles.acceptButton}
-            onPress={handleAccept}
-          >
-            <Text style={styles.acceptButtonText}>接案</Text>
-          </TouchableOpacity>
-        ) : (
-          <View style={styles.statusBadge}>
-            <Text style={styles.statusText}>{statusName}</Text>
-          </View>
-        )} */}
       </View>
     </TouchableOpacity>
   )

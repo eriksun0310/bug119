@@ -21,22 +21,6 @@ export const createStyles = (theme: Theme) =>
       borderRadius: 30,
       backgroundColor: theme.colors.border,
     },
-    verifiedBadge: {
-      position: 'absolute',
-      top: -2,
-      right: -2,
-      backgroundColor: theme.colors.success,
-      borderRadius: 10,
-      width: 20,
-      height: 20,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    verifiedText: {
-      color: '#FFFFFF',
-      fontSize: 12,
-      fontWeight: 'bold',
-    },
     applicantInfo: {
       flex: 1,
     },
@@ -66,9 +50,6 @@ export const createStyles = (theme: Theme) =>
       paddingVertical: theme.spacing.sm,
       paddingHorizontal: theme.spacing.md,
       backgroundColor: theme.colors.surface,
-      // borderRadius: theme.borderRadius.md,
-      // borderWidth: 1,
-      // borderColor: theme.colors.border,
     },
     priceLabel: {
       fontSize: theme.fontSize.sm,
@@ -85,11 +66,6 @@ export const createStyles = (theme: Theme) =>
     },
     selectButton: {
       flex: 1,
-    },
-    taskMeta: {
-      fontSize: theme.fontSize.sm,
-      color: theme.colors.textSecondary,
-      marginBottom: theme.spacing.xs,
     },
     contactInfoRow: {
       flexDirection: 'row',

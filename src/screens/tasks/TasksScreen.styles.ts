@@ -106,37 +106,6 @@ export const createStyles = (theme: Theme, isTablet: boolean, insets: { top: num
     textAlign: 'center',
     marginTop: theme.spacing.md,
   },
-  summaryCard: {
-    backgroundColor: theme.colors.surface,
-    margin: theme.spacing.md,
-    padding: theme.spacing.md,
-    borderRadius: theme.borderRadius.lg,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-  },
-  summaryTitle: {
-    fontSize: theme.fontSize.md,
-    fontWeight: '600',
-    color: theme.colors.text,
-    marginBottom: theme.spacing.sm,
-  },
-  summaryStats: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-  statItem: {
-    alignItems: 'center',
-  },
-  statNumber: {
-    fontSize: theme.fontSize.lg,
-    fontWeight: 'bold',
-    color: theme.colors.secondary,
-  },
-  statLabel: {
-    fontSize: theme.fontSize.xs,
-    color: theme.colors.textSecondary,
-    marginTop: 2,
-  },
   taskCardTablet: {
     width: '48%', // 每行顯示兩個卡片
     marginBottom: 0, // 移除底部邊距，因為已有 gap
