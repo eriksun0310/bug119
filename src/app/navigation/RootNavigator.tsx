@@ -22,7 +22,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>()
 
 export const RootNavigator = () => {
   const { theme } = useTheme()
-  const { user, isLoading } = useAuth()
+  const { user } = useAuth()
   
   // 根據用戶角色選擇導航器
   const getMainNavigator = () => {

@@ -49,7 +49,6 @@ export const ApplicantCard: FC<ApplicantCardProps> = ({
       } else {
         // PENDING 或 PENDING_CONFIRMATION 狀態
         const foundUser = mockUsers.find(u => u.id === application.terminatorId)
-        console.log('foundUser:', foundUser)
         return foundUser
       }
     }

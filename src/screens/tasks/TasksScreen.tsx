@@ -82,7 +82,6 @@ export const TasksScreen = () => {
 
   const currentTasks = getTasksByTab(activeTab)
 
-  console.log('currentTasks', currentTasks)
 
   // 處理任務詳情
   const handleTaskPress = (task: Task) => {
@@ -135,7 +134,6 @@ export const TasksScreen = () => {
             const IconComponent = tab.icon
             const isActive = activeTab === tab.key
 
-            console.log('isActive', isActive)
             return (
               <TouchableOpacity
                 key={tab.key}

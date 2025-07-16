@@ -24,10 +24,8 @@ export const TaskDetailScreen: React.FC = () => {
   const navigation = useNavigation<TaskDetailNavigationProp>()
 
   // 根據 taskId 獲取任務資料
-  const { taskId, fromTab } = route.params
+  const { taskId } = route.params
   const task = mockTasks.find(t => t.id === taskId) || mockTasks[0]
-
-  // 根據 fromTab 來調整顯示邏輯
 
   // 獲取客戶資料
   const customer = mockUsers.find(u => u.id === task.createdBy)
@@ -58,7 +56,7 @@ export const TaskDetailScreen: React.FC = () => {
             onPress: () => {
               // 更新任務狀態為已指派
               // 這裡實際會呼叫 API 更新狀態
-              console.log('任務狀態更新為已指派')
+              // 任務狀態更新為已指派
             },
           },
         ]

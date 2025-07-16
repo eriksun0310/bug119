@@ -2,7 +2,7 @@
 
 import { useResponsive } from '@/shared/hooks'
 import { getAssignmentsByTaskId, mockTasks } from '@/shared/mocks/tasks.mock'
-import { mockUserProfiles, mockUsers } from '@/shared/mocks/users.mock'
+import { mockUsers } from '@/shared/mocks/users.mock'
 import { useTheme } from '@/shared/theme'
 import { RootStackParamList, TaskAssignment, TaskStatus } from '@/shared/types'
 import { ApplicantCard, ScreenHeader, TaskSummaryCard } from '@/shared/ui'
@@ -65,7 +65,7 @@ export const TaskApplicantsScreen = () => {
 
   return (
     <View style={styles.container}>
-      <ScreenHeader title="選擇終結者12" showBackButton onBackPress={() => navigation.goBack()} />
+      <ScreenHeader title="選擇終結者" showBackButton onBackPress={() => navigation.goBack()} />
 
       <ScrollView contentContainerStyle={styles.content}>
         <TaskSummaryCard task={task} />

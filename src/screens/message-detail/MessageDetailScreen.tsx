@@ -112,7 +112,6 @@ export const MessageDetailScreen: React.FC = () => {
   ])
   
   // 從路由參數獲取聊天對象信息
-  const { conversationId } = route.params || { conversationId: 'default' }
   const otherUser = user?.role === 'terminator' ? '小怕星用戶' : '李師傅除蟲專家'
   
   // 發送訊息
@@ -159,7 +158,7 @@ export const MessageDetailScreen: React.FC = () => {
   
   // 處理撥打電話
   const handleCall = () => {
-    console.log('撥打電話給', otherUser)
+    // 撥打電話給對方用戶
   }
   
   // 處理檢舉

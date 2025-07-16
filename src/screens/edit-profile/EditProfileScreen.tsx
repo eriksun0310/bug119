@@ -72,21 +72,17 @@ const EditProfileScreen = () => {
   const validateFormWithContactMethod = (): boolean => {
     // 先進行基本驗證
     if (!validateForm()) {
-      console.log('基本驗證失敗，錯誤：', errors)
       return false
     }
     
     // 根據偵好聯絡方式驗證對應欄位
     if (form.preferredMethod === ContactMethod.PHONE && !form.phone.trim()) {
-      console.log('手機號碼驗證失敗')
       return false
     }
     if (form.preferredMethod === ContactMethod.LINE && !form.line.trim()) {
-      console.log('LINE ID 驗證失敗')
       return false
     }
     
-    console.log('所有驗證通過')
     return true
   }
   
@@ -207,12 +203,8 @@ const EditProfileScreen = () => {
 
   // 處理儲存
   const handleSave = async () => {
-    console.log('表單資料：', form)
-    console.log('表單錯誤：', errors)
     
     if (!validateFormWithContactMethod()) {
-      console.log('驗證失敗，表單資料：', form)
-      console.log('驗證失敗，錯誤訊息：', errors)
       showAlert('表單有誤', '請檢查並修正錯誤')
       return
     }
@@ -226,7 +218,6 @@ const EditProfileScreen = () => {
       // 如果有新的頭像，這裡會上傳到伺服器
       if (avatarUri && avatarUri !== user?.avatar) {
         // 模擬頭像上傳
-        console.log('上傳頭像:', avatarUri)
         // 實際實作時會呼叫 API 上傳圖片
       }
       
