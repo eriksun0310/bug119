@@ -66,9 +66,9 @@ export const createStyles = (theme: Theme) =>
       paddingVertical: theme.spacing.sm,
       paddingHorizontal: theme.spacing.md,
       backgroundColor: theme.colors.surface,
-      borderRadius: theme.borderRadius.md,
-      borderWidth: 1,
-      borderColor: theme.colors.border,
+      // borderRadius: theme.borderRadius.md,
+      // borderWidth: 1,
+      // borderColor: theme.colors.border,
     },
     priceLabel: {
       fontSize: theme.fontSize.sm,

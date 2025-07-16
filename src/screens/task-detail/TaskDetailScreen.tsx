@@ -5,11 +5,11 @@ import { getAssignmentsByTaskId, mockTasks } from '@/shared/mocks'
 import { mockUserProfiles, mockUsers } from '@/shared/mocks/users.mock'
 import { useTheme } from '@/shared/theme'
 import { RootStackParamList, TaskAssignment, TaskStatus, UserRole } from '@/shared/types'
-import { ApplicantCard, Button, ScreenHeader, TaskSummaryCard } from '@/shared/ui'
+import { ApplicantCard, ScreenHeader, TaskSummaryCard } from '@/shared/ui'
 import { showAlert } from '@/shared/utils'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
-import React, { useState } from 'react'
+import React from 'react'
 import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native'
 
 type TaskDetailRouteProp = RouteProp<RootStackParamList, 'TaskDetail'>
@@ -19,7 +19,6 @@ export const TaskDetailScreen: React.FC = () => {
   const { theme } = useTheme()
   const { user } = useAuth()
   const { isTablet } = useResponsive()
-  const [accepting, setAccepting] = useState(false)
   const route = useRoute<TaskDetailRouteProp>()
   const navigation = useNavigation<TaskDetailNavigationProp>()
 
@@ -29,32 +28,22 @@ export const TaskDetailScreen: React.FC = () => {
 
   // 根據 fromTab 來調整顯示邏輯
 
-  console.log('fromTab', fromTab)
-
   // 獲取客戶資料
   const customer = mockUsers.find(u => u.id === task.createdBy)
-  const customerProfile = mockUserProfiles[task.createdBy as keyof typeof mockUserProfiles]
 
   // 獲取終結者資訊
   const terminator = task.assignedTo ? mockUsers.find(u => u.id === task.assignedTo) : null
-  const terminatorProfile = task.assignedTo
-    ? mockUserProfiles[task.assignedTo as keyof typeof mockUserProfiles]
-    : null
 
   // 獲取申請者列表（小怕星待確認任務時使用）
   const assignments = getAssignmentsByTaskId(taskId)
 
   // 根據當前用戶身份決定顯示哪個聯絡資訊
   const contactPerson = user?.role === UserRole.FEAR_STAR ? terminator : customer
-  const contactProfile = user?.role === UserRole.FEAR_STAR ? terminatorProfile : customerProfile
-  const contactTitle = user?.role === UserRole.FEAR_STAR ? '終結者資訊' : '客戶資訊'
-  const contactLabel = user?.role === UserRole.FEAR_STAR ? '終結者' : '客戶'
 
-  console.log('contactPerson', contactPerson)
+  const contactTitle = user?.role === UserRole.FEAR_STAR ? '終結者資訊' : '小怕星資訊'
+
   // 處理接案
   const handleAcceptTask = async () => {
-    setAccepting(true)
-
     try {
       // 模擬 API 呼叫
       await new Promise(resolve => setTimeout(resolve, 1500))
@@ -75,8 +64,6 @@ export const TaskDetailScreen: React.FC = () => {
       )
     } catch (error) {
       Alert.alert('接案失敗', '請稍後再試')
-    } finally {
-      setAccepting(false)
     }
   }
 
@@ -102,12 +89,6 @@ export const TaskDetailScreen: React.FC = () => {
     )
   }
 
-  // 格式化時間
-  const formatDateTime = (dateString: string) => {
-    const date = new Date(dateString)
-    return `${date.getMonth() + 1}/${date.getDate()} ${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`
-  }
-
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -121,18 +102,7 @@ export const TaskDetailScreen: React.FC = () => {
       width: '100%',
       alignSelf: 'center',
     },
-    section: {
-      // backgroundColor: theme.colors.background, // 白色卡片
-      // marginHorizontal: theme.spacing.md,
-      // marginBottom: theme.spacing.md,
-      // padding: theme.spacing.md,
-      // borderRadius: theme.borderRadius.lg,
-      // shadowColor: '#000',
-      // shadowOffset: { width: 0, height: 2 },
-      // shadowOpacity: 0.05,
-      // shadowRadius: 4,
-      // elevation: 2,
-    },
+
     sectionTitle: {
       fontSize: theme.fontSize.md,
       fontWeight: '600',
@@ -328,7 +298,48 @@ export const TaskDetailScreen: React.FC = () => {
 
         <Text style={styles.sectionTitle}>{contactTitle}</Text>
 
-        <ApplicantCard assignment={contactPerson} taskStatus={task.status} />
+        {/* 根據用戶角色和任務狀態顯示不同內容 */}
+        {task.status === TaskStatus.PENDING_CONFIRMATION &&
+        user?.role === UserRole.FEAR_STAR &&
+        task?.applicants?.length > 0 ? (
+          // 小怕星在 PENDING_CONFIRMATION 狀態：顯示所有申請者
+          <View style={styles.applicantsList}>
+            {task.applicants.map(application => {
+              return (
+                <ApplicantCard
+                  key={application.id}
+                  application={application}
+                  taskStatus={task.status}
+                  currentUserRole={user?.role || UserRole.FEAR_STAR}
+                  currentUserId={user?.id || '1'}
+                  taskCreatedBy={task.createdBy}
+                  onSelect={() => handleSelectTerminator(application)}
+                  style={isTablet ? styles.applicantCardTablet : {}}
+                />
+              )
+            })}
+          </View>
+        ) : (
+          // 其他情況：顯示對方聯絡人資訊
+          <ApplicantCard
+            application={{
+              id: `contact-${contactPerson?.id}`,
+              taskId: task.id,
+              terminatorId: contactPerson?.id || '',
+              appliedAt: task.createdAt,
+              status: 'pending',
+            }}
+            taskStatus={task.status}
+            currentUserRole={user?.role || UserRole.FEAR_STAR}
+            currentUserId={user?.id || '1'}
+            taskCreatedBy={task.createdBy}
+            onSelect={() => {
+              if (user?.role === UserRole.TERMINATOR && task.status === TaskStatus.PENDING) {
+                handleAcceptTask()
+              }
+            }}
+          />
+        )}
 
         {/* 小怕星的待確認任務但沒有申請者 */}
         {user?.role === UserRole.FEAR_STAR &&
@@ -337,25 +348,6 @@ export const TaskDetailScreen: React.FC = () => {
             <Text style={styles.emptyApplicants}>目前還沒有終結者申請這個任務</Text>
           )}
       </ScrollView>
-
-      {/* 行動按鈕 */}
-      {task.status === TaskStatus.PENDING && (
-        <View style={styles.actionButtons}>
-          <Button
-            variant="primary"
-            loading={accepting}
-            onPress={handleAcceptTask}
-            fullWidth
-            style={{
-              backgroundColor: theme.colors.background,
-              borderWidth: 1,
-              borderColor: theme.colors.text,
-            }}
-          >
-            <Text style={{ color: theme.colors.text }}>接受任務</Text>
-          </Button>
-        </View>
-      )}
     </View>
   )
 }

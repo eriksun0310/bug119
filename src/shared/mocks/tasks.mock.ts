@@ -1,6 +1,6 @@
 // 任務假資料
 
-import { PestType, Task, TaskAssignment, TaskPriority, TaskStatus } from '@/shared/types'
+import { PestType, Task, TaskApplication, TaskAssignment, TaskPriority, TaskStatus } from '@/shared/types'
 
 export const mockTasks: Task[] = [
   {
@@ -23,79 +23,134 @@ export const mockTasks: Task[] = [
     },
     isImmediate: true,
     createdBy: '1', // 小怕星 ID
+    applicants: [],
+    completionStatus: {
+      fearStarConfirmed: false,
+      terminatorConfirmed: false,
+    },
     createdAt: new Date('2024-07-02T10:30:00'),
     updatedAt: new Date('2024-07-02T10:30:00'),
   },
-  // {
-  //   id: '2',
-  //   title: '廚房螞蟻入侵',
-  //   description: '廚房地板和牆角出現螞蟻行軍，影響食物衛生，希望能徹底清除。',
-  //   pestType: PestType.ANT,
-  //   location: {
-  //     latitude: 25.0078,
-  //     longitude: 121.4626,
-  //     city: '新北市',
-  //     district: '板橋區',
-  //   },
-  //   status: TaskStatus.PENDING_CONFIRMATION,
-  //   priority: TaskPriority.NORMAL,
-  //   budget: {
-  //     min: 800,
-  //     max: 1500,
-  //   },
-  //   scheduledTime: new Date('2024-07-03T14:00:00'),
-  //   isImmediate: false,
-  //   createdBy: '1',
-  //   createdAt: new Date('2024-07-02T08:15:00'),
-  //   updatedAt: new Date('2024-07-02T08:15:00'),
-  // },
-  // {
-  //   id: '3',
-  //   title: '臥室蚊子太多影響睡眠',
-  //   description: '每晚都有蚊子嗡嗡叫，嚴重影響睡眠品質，需要專業處理。',
-  //   pestType: PestType.MOSQUITO,
-  //   location: {
-  //     latitude: 25.0571,
-  //     longitude: 121.555,
-  //     city: '台北市',
-  //     district: '松山區',
-  //   },
-  //   status: TaskStatus.IN_PROGRESS,
-  //   priority: TaskPriority.NORMAL,
-  //   budget: {
-  //     min: 600,
-  //     max: 1200,
-  //   },
-  //   scheduledTime: new Date('2024-07-02T19:00:00'),
-  //   isImmediate: false,
-  //   createdBy: '1',
-  //   assignmentId: '2', // 已指派給蟲蟲終結者
-  //   createdAt: new Date('2024-07-01T16:20:00'),
-  //   updatedAt: new Date('2024-07-02T09:00:00'),
-  // },
-  // {
-  //   id: '4',
-  //   title: '陽台蜘蛛網清理',
-  //   description: '陽台角落有多個大型蜘蛛網，需要清理並預防再次出現。',
-  //   pestType: PestType.SPIDER,
-  //   location: {
-  //     latitude: 25.0415,
-  //     longitude: 121.5187,
-  //     city: '台北市',
-  //     district: '中正區',
-  //   },
-  //   status: TaskStatus.COMPLETED,
-  //   priority: TaskPriority.NORMAL,
-  //   budget: {
-  //     min: 500,
-  //     max: 1000,
-  //   },
-  //   scheduledTime: new Date('2024-07-04T10:00:00'),
-  //   isImmediate: false,
-  //   createdBy: '1',
-  //   createdAt: new Date('2024-07-02T11:45:00'),
-  //   updatedAt: new Date('2024-07-02T11:45:00'),
-  // },
+  {
+    id: '2',
+    title: '廚房螞蟻入侵',
+    description: '廚房地板和牆角出現螞蟻行軍，影響食物衛生，希望能徹底清除。',
+    pestType: PestType.ANT,
+    location: {
+      latitude: 25.0078,
+      longitude: 121.4626,
+      city: '新北市',
+      district: '板橋區',
+    },
+    status: TaskStatus.PENDING_CONFIRMATION,
+    priority: TaskPriority.NORMAL,
+    budget: {
+      min: 800,
+      max: 1500,
+    },
+    scheduledTime: new Date('2024-07-03T14:00:00'),
+    isImmediate: false,
+    createdBy: '1', // 小怕星測試
+    applicants: [
+      {
+        id: 'app1',
+        taskId: '2',
+        terminatorId: '2', // 李師傅除蟲專家申請
+        appliedAt: new Date('2024-07-02T09:00:00'),
+        status: 'pending',
+      },
+      {
+        id: 'app2',
+        taskId: '2',
+        terminatorId: '3', // 陳師傅專業除蟲申請
+        appliedAt: new Date('2024-07-02T09:15:00'),
+        status: 'pending',
+      },
+    ],
+    completionStatus: {
+      fearStarConfirmed: false,
+      terminatorConfirmed: false,
+    },
+    createdAt: new Date('2024-07-02T08:15:00'),
+    updatedAt: new Date('2024-07-02T08:15:00'),
+  },
+  {
+    id: '3',
+    title: '臥室蚊子太多影響睡眠',
+    description: '每晚都有蚊子嗡嗡叫，嚴重影響睡眠品質，需要專業處理。',
+    pestType: PestType.MOSQUITO,
+    location: {
+      latitude: 25.0571,
+      longitude: 121.555,
+      city: '台北市',
+      district: '松山區',
+    },
+    status: TaskStatus.IN_PROGRESS,
+    priority: TaskPriority.NORMAL,
+    budget: {
+      min: 600,
+      max: 1200,
+    },
+    scheduledTime: new Date('2024-07-02T19:00:00'),
+    isImmediate: false,
+    createdBy: '1',
+    assignedTo: '2', // 已指派給蟲蟲終結者
+    selectedTerminator: '2',
+    applicants: [
+      {
+        id: 'app3',
+        taskId: '3',
+        terminatorId: '2',
+        appliedAt: new Date('2024-07-01T17:00:00'),
+        status: 'selected',
+      },
+    ],
+    completionStatus: {
+      fearStarConfirmed: false,
+      terminatorConfirmed: false,
+    },
+    createdAt: new Date('2024-07-01T16:20:00'),
+    updatedAt: new Date('2024-07-02T09:00:00'),
+  },
+  {
+    id: '4',
+    title: '陽台蜘蛛網清理',
+    description: '陽台角落有多個大型蜘蛛網，需要清理並預防再次出現。',
+    pestType: PestType.SPIDER,
+    location: {
+      latitude: 25.0415,
+      longitude: 121.5187,
+      city: '台北市',
+      district: '中正區',
+    },
+    status: TaskStatus.COMPLETED,
+    priority: TaskPriority.NORMAL,
+    budget: {
+      min: 500,
+      max: 1000,
+    },
+    scheduledTime: new Date('2024-07-04T10:00:00'),
+    isImmediate: false,
+    createdBy: '1',
+    assignedTo: '2', // 李師傅除蟲專家
+    selectedTerminator: '2',
+    applicants: [
+      {
+        id: 'app4',
+        taskId: '4',
+        terminatorId: '2', // 李師傅除蟲專家
+        appliedAt: new Date('2024-07-02T12:00:00'),
+        status: 'selected',
+      },
+    ],
+    completionStatus: {
+      fearStarConfirmed: true,
+      terminatorConfirmed: true,
+    },
+    completedAt: new Date('2024-07-04T12:00:00'),
+    createdAt: new Date('2024-07-02T11:45:00'),
+    updatedAt: new Date('2024-07-04T12:00:00'),
+  },
 ]
 
 // 依據狀態篩選任務
@@ -120,7 +175,19 @@ export const getAvailableTasks = () => {
 
 // 取得已指派給特定終結者的任務
 export const getAssignedTasks = (terminatorId: string) => {
-  return mockTasks.filter(task => task.assignedTo === terminatorId)
+  return mockTasks.filter(task => {
+    // 已指派的任務 (IN_PROGRESS, COMPLETED)
+    if (task.assignedTo === terminatorId) {
+      return true
+    }
+    
+    // PENDING_CONFIRMATION 狀態下，終結者已申請的任務
+    if (task.status === TaskStatus.PENDING_CONFIRMATION && task.applicants) {
+      return task.applicants.some(applicant => applicant.terminatorId === terminatorId)
+    }
+    
+    return false
+  })
 }
 
 // 害蟲類型顯示名稱
@@ -171,50 +238,83 @@ export const getTaskStatusDisplayName = (status: TaskStatus): string => {
   }
 }
 
-// 任務申請假資料
-export const mockTaskAssignments: TaskAssignment[] = [
+// 任務申請假資料（TaskApplication）
+export const mockTaskApplications: TaskApplication[] = [
   {
-    taskId: '1', // 客廳蟑螂問題急需處理
-    assignmentId: '2',
-    proposedPrice: 1500,
-    estimatedDuration: 120,
-    message: '我有5年蟑螂防治經驗，保證徹底解決問題！',
+    id: 'app1',
+    taskId: '2',
+    terminatorId: '2', // 李師傅除蟲專家
+    appliedAt: new Date('2024-07-02T09:00:00'),
     status: 'pending',
-    createdAt: new Date('2024-07-02T11:00:00'),
   },
   {
-    taskId: '1',
-    assignmentId: '3',
-    proposedPrice: 1800,
-    estimatedDuration: 90,
-    message: '專業級設備，快速有效處理，無毒環保',
+    id: 'app2',
+    taskId: '2',
+    terminatorId: '3', // 陳師傅專業除蟲
+    appliedAt: new Date('2024-07-02T09:15:00'),
     status: 'pending',
-    createdAt: new Date('2024-07-02T11:15:00'),
   },
   {
-    taskId: '1',
-    assignmentId: '4',
-    proposedPrice: 1200,
-    estimatedDuration: 150,
-    message: '經濟實惠，效果保證，提供一個月保固',
-    status: 'pending',
-    createdAt: new Date('2024-07-02T11:30:00'),
+    id: 'app3',
+    taskId: '3',
+    terminatorId: '2',
+    appliedAt: new Date('2024-07-01T17:00:00'),
+    status: 'selected',
+  },
+  {
+    id: 'app4',
+    taskId: '4',
+    terminatorId: '2', // 李師傅除蟲專家
+    appliedAt: new Date('2024-07-02T12:00:00'),
+    status: 'selected',
   },
 ]
 
-// 依據任務ID取得所有申請
+// 任務指派假資料（TaskAssignment - 用於進行中的任務詳細資訊）
+export const mockTaskAssignments: TaskAssignment[] = [
+  {
+    taskId: '3', // 臥室蚊子太多影響睡眠
+    terminatorId: '2',
+    proposedPrice: 800,
+    estimatedDuration: 90,
+    message: '專業除蚊服務，使用環保藥劑',
+    status: 'accepted',
+    createdAt: new Date('2024-07-01T17:30:00'),
+  },
+  {
+    taskId: '4', // 陽台蜘蛛網清理
+    terminatorId: '2', // 李師傅除蟲專家
+    proposedPrice: 600,
+    estimatedDuration: 60,
+    message: '專業清理蜘蛛網，預防再次出現',
+    status: 'accepted',
+    createdAt: new Date('2024-07-02T12:30:00'),
+  },
+]
+
+// 依據任務ID取得所有申請（TaskApplication）
+export const getApplicationsByTaskId = (taskId: string) => {
+  return mockTaskApplications.filter(application => application.taskId === taskId)
+}
+
+// 依據終結者ID取得所有申請（TaskApplication）
+export const getApplicationsByTerminatorId = (terminatorId: string) => {
+  return mockTaskApplications.filter(application => application.terminatorId === terminatorId)
+}
+
+// 取得特定任務的申請數量
+export const getTaskApplicationCount = (taskId: string) => {
+  return mockTaskApplications.filter(
+    application => application.taskId === taskId && application.status === 'pending'
+  ).length
+}
+
+// 依據任務ID取得指派資訊（TaskAssignment）
 export const getAssignmentsByTaskId = (taskId: string) => {
   return mockTaskAssignments.filter(assignment => assignment.taskId === taskId)
 }
 
-// 依據終結者ID取得所有申請
-export const getAssignmentsByTerminatorId = (id: string) => {
-  return mockTaskAssignments.filter(assignment => assignment.terminatorId === id)
-}
-
-// 取得特定任務的申請數量
-export const getTaskAssignmentCount = (taskId: string) => {
-  return mockTaskAssignments.filter(
-    assignment => assignment.taskId === taskId && assignment.status === 'pending'
-  ).length
+// 依據終結者ID取得所有指派（TaskAssignment）
+export const getAssignmentsByTerminatorId = (terminatorId: string) => {
+  return mockTaskAssignments.filter(assignment => assignment.terminatorId === terminatorId)
 }

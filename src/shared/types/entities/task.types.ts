@@ -38,9 +38,23 @@ export interface Task {
   isImmediate: boolean // 是否立即處理
   createdBy: string // 小怕星 ID
   assignedTo?: string // 終結者 ID
+  applicants: TaskApplication[] // 申請此任務的終結者列表
+  selectedTerminator?: string // 被選中的終結者 ID
+  completionStatus: {
+    fearStarConfirmed: boolean // 小怕星是否確認完成
+    terminatorConfirmed: boolean // 終結者是否確認完成
+  }
   createdAt: Date
   updatedAt: Date
   completedAt?: Date
+}
+
+export interface TaskApplication {
+  id: string
+  taskId: string
+  terminatorId: string
+  appliedAt: Date
+  status: 'pending' | 'selected' | 'rejected'
 }
 
 export interface TaskAssignment {

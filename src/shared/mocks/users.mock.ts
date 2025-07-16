@@ -39,37 +39,22 @@ export const mockUsers: User[] = [
     createdAt: new Date('2023-06-01'),
     updatedAt: new Date('2024-07-01'),
   },
-  // 更多終結者
+  // 第三位終結者
   {
     id: '3',
-    email: 'terminator2@test.com',
-    name: '環保除蟲王小明',
+    email: 'terminator3@test.com',
+    name: '陳師傅專業除蟲',
     phone: '0956789123',
     avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150',
     role: UserRole.TERMINATOR,
     isVerified: true,
     contactInfo: {
       phone: '0956789123',
-      line: 'eco_pest_ming',
+      line: 'chen_pest_expert',
+      telegram: '@chen_pest',
       preferredMethod: ContactMethod.LINE,
     },
-    createdAt: new Date('2023-08-15'),
-    updatedAt: new Date('2024-07-01'),
-  },
-  {
-    id: '4',
-    email: 'terminator3@test.com',
-    name: '快速除蟲阿華',
-    phone: '0923456789',
-    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150',
-    role: UserRole.TERMINATOR,
-    isVerified: true,
-    contactInfo: {
-      phone: '0923456789',
-      telegram: '@fast_pest_hua',
-      preferredMethod: ContactMethod.PHONE,
-    },
-    createdAt: new Date('2023-12-01'),
+    createdAt: new Date('2023-08-01'),
     updatedAt: new Date('2024-07-01'),
   },
 ]
@@ -114,8 +99,8 @@ export const mockUserProfiles = {
     rating: 4.6,
     totalReviews: 89,
     totalTasks: 112,
-    joinDate: new Date('2023-08-15'),
-    specialties: [PestType.COCKROACH, PestType.ANT, PestType.OTHER],
+    joinDate: new Date('2023-08-01'),
+    specialties: [PestType.ANT, PestType.COCKROACH, PestType.OTHER],
     serviceArea: {
       center: {
         latitude: 25.033,
@@ -127,27 +112,6 @@ export const mockUserProfiles = {
     isAvailable: true,
     hourlyRate: 900,
     experienceYears: 8,
-  },
-  '4': {
-    userId: '4',
-    bio: '快速到場，當天解決蟲害問題，價格實惠',
-    location: '新北市中和區',
-    rating: 4.3,
-    totalReviews: 67,
-    totalTasks: 89,
-    joinDate: new Date('2023-12-01'),
-    specialties: [PestType.SPIDER, PestType.MOSQUITO, PestType.OTHER],
-    serviceArea: {
-      center: {
-        latitude: 25.0078,
-        longitude: 121.4626,
-      },
-      radius: 25,
-      cities: ['新北市', '台北市'],
-    },
-    isAvailable: true,
-    hourlyRate: 650,
-    experienceYears: 5,
   },
 }
 

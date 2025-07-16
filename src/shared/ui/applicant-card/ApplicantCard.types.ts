@@ -1,13 +1,13 @@
-import { TaskAssignment, TaskStatus } from '@/shared/types'
+import { TaskApplication, TaskAssignment, TaskStatus, UserRole } from '@/shared/types'
 import { ViewStyle } from 'react-native'
 
 export interface ApplicantCardProps {
-  assignment: TaskAssignment
-  onSelect: (assignment: TaskAssignment) => void
-  // showSelectButton?: boolean
+  application?: TaskApplication // 申請記錄（用於 PENDING_CONFIRMATION 狀態）
+  assignment?: TaskAssignment // 指派記錄（用於 IN_PROGRESS 狀態）
+  onSelect: (data: TaskApplication | TaskAssignment) => void
   style?: ViewStyle
-  taskStatus:
-    | TaskStatus.PENDING // 發布中 (接受任務 btn)
-    | TaskStatus.IN_PROGRESS // 進行中 (顯示聯絡資訊)
-    | TaskStatus.PENDING_CONFIRMATION // 待確認 (選擇委託 btn)
+  taskStatus: TaskStatus
+  currentUserRole: UserRole // 當前使用者角色
+  currentUserId: string // 當前使用者 ID
+  taskCreatedBy?: string // 任務創建者ID（小怕星ID）
 }
