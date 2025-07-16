@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native'
-import { User, LogOut, Sun, Moon, Bell } from 'lucide-react-native'
+import { User, LogOut, Sun, Moon, Bell, List } from 'lucide-react-native'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -27,6 +27,10 @@ export const ProfileScreen = () => {
 
   const handleEditProfile = () => {
     navigation.navigate('EditProfile')
+  }
+
+  const handleMyTasksList = () => {
+    navigation.navigate('MyTasksList')
   }
   
   const handleLogout = () => {
@@ -205,6 +209,16 @@ export const ProfileScreen = () => {
                 <Text style={styles.menuText}>編輯個人資料</Text>
               </View>
             </TouchableOpacity>
+            
+            {/* 只有小怕星才顯示我的任務列表 */}
+            {user?.role === UserRole.FEAR_STAR && (
+              <TouchableOpacity style={styles.menuItem} onPress={handleMyTasksList}>
+                <View style={styles.menuItemLeft}>
+                  <List size={20} color={theme.colors.text} />
+                  <Text style={styles.menuText}>我的任務列表</Text>
+                </View>
+              </TouchableOpacity>
+            )}
             {/* 暫時註解帳號設定
             <TouchableOpacity style={styles.menuItem}>
               <View style={styles.menuItemLeft}>

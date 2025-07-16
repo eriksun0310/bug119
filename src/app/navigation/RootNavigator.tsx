@@ -16,6 +16,7 @@ import { TaskApplicantsScreen } from '@/screens/task-applicants'
 import { EditProfileScreen } from '@/screens/edit-profile'
 import { MessageDetailScreen } from '@/screens/message-detail'
 import { NotificationsScreen } from '@/screens/notifications'
+import { MyTasksListScreen } from '@/screens/my-tasks-list'
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
 
@@ -152,6 +153,14 @@ export const RootNavigator = () => {
         <Stack.Screen 
           name="Notifications" 
           component={NotificationsScreen}
+          options={{
+            headerShown: false,
+            presentation: 'card',
+          }}
+        />
+        <Stack.Screen 
+          name="MyTasksList" 
+          component={MyTasksListScreen}
           options={{
             headerShown: false,
             presentation: 'card',

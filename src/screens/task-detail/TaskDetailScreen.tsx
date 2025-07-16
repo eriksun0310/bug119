@@ -2,7 +2,7 @@
 
 import { useAuth, useResponsive } from '@/shared/hooks'
 import { getAssignmentsByTaskId, mockTasks } from '@/shared/mocks'
-import { mockUserProfiles, mockUsers } from '@/shared/mocks/users.mock'
+import { mockUsers } from '@/shared/mocks/users.mock'
 import { useTheme } from '@/shared/theme'
 import { RootStackParamList, TaskAssignment, TaskStatus, UserRole } from '@/shared/types'
 import { ApplicantCard, ScreenHeader, TaskSummaryCard } from '@/shared/ui'
@@ -68,14 +68,12 @@ export const TaskDetailScreen: React.FC = () => {
   }
 
   // 處理選擇終結者（小怕星選擇申請者）
-  const handleSelectTerminator = (assignment: TaskAssignment) => {
-    const selectedTerminator = mockUsers.find(u => u.id === assignment.terminatorId)
-    const terminatorProfile =
-      mockUserProfiles[assignment.terminatorId as keyof typeof mockUserProfiles]
+  const handleSelectTerminator = (application: any) => {
+    const selectedTerminator = mockUsers.find(u => u.id === application.terminatorId)
 
     showAlert(
       '確認委託',
-      `確定要委託「${selectedTerminator?.name}」處理這個任務嗎？\n\n提議價格：$${assignment.proposedPrice}`,
+      `確定要委託「${selectedTerminator?.name}」處理這個任務嗎？`,
       [
         { text: '取消', style: 'cancel' },
         {
@@ -290,7 +288,7 @@ export const TaskDetailScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <ScreenHeader title="任務詳情0000" showBackButton onBackPress={() => navigation.goBack()} />
+      <ScreenHeader title="任務詳情" showBackButton onBackPress={() => navigation.goBack()} />
 
       <ScrollView style={styles.content}>
         {/* 頂部任務摘要卡片 */}

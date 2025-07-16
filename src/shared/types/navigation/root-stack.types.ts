@@ -12,4 +12,5 @@ export type RootStackParamList = {
   Profile: { userId: string }
   Settings: undefined
   Notifications: undefined
+  MyTasksList: undefined
 }
