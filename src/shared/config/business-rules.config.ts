@@ -327,3 +327,71 @@ export const isFieldVisible = (
   return visibility.visibleFields.includes(field) && 
          !visibility.hiddenFields.includes(field)
 }
+
+/**
+ * 驗證任務資料是否符合狀態要求
+ */
+export const validateTaskByStatus = (task: any): boolean => {
+  switch (task.status) {
+    case TaskStatus.PENDING:
+      // PENDING 狀態不應該有 assignedTo, completionStatus, completedAt
+      return !task.assignedTo && !task.completionStatus && !task.completedAt
+    
+    case TaskStatus.PENDING_CONFIRMATION:
+      // PENDING_CONFIRMATION 狀態應該有申請者，但沒有 assignedTo, completionStatus, completedAt
+      return !task.assignedTo && 
+             !task.completionStatus && 
+             !task.completedAt && 
+             Array.isArray(task.applicants) && 
+             task.applicants.length > 0
+    
+    case TaskStatus.IN_PROGRESS:
+      // IN_PROGRESS 狀態應該有 assignedTo, completionStatus，但沒有 completedAt
+      return !!task.assignedTo && 
+             !!task.completionStatus && 
+             !task.completedAt
+    
+    case TaskStatus.COMPLETED:
+      // COMPLETED 狀態應該有 assignedTo, completionStatus, completedAt
+      return !!task.assignedTo && 
+             !!task.completionStatus && 
+             !!task.completedAt
+    
+    default:
+      return false
+  }
+}
+
+/**
+ * 清理任務資料中不符合狀態的欄位
+ */
+export const sanitizeTaskByStatus = (task: any): any => {
+  const sanitized = { ...task }
+  
+  switch (task.status) {
+    case TaskStatus.PENDING:
+      // 移除 PENDING 狀態不應該有的欄位
+      delete sanitized.assignedTo
+      delete sanitized.completionStatus
+      delete sanitized.completedAt
+      break
+    
+    case TaskStatus.PENDING_CONFIRMATION:
+      // 移除 PENDING_CONFIRMATION 狀態不應該有的欄位
+      delete sanitized.assignedTo
+      delete sanitized.completionStatus
+      delete sanitized.completedAt
+      break
+    
+    case TaskStatus.IN_PROGRESS:
+      // 移除 IN_PROGRESS 狀態不應該有的欄位
+      delete sanitized.completedAt
+      break
+    
+    case TaskStatus.COMPLETED:
+      // COMPLETED 狀態保留所有欄位
+      break
+  }
+  
+  return sanitized
+}

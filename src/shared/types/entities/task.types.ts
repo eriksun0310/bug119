@@ -37,16 +37,20 @@ export interface Task {
   scheduledTime?: Date // 預約時間
   isImmediate: boolean // 是否立即處理
   createdBy: string // 小怕星 ID
-  assignedTo?: string // 終結者 ID
   applicants: TaskApplication[] // 申請此任務的終結者列表
-  selectedTerminator?: string // 被選中的終結者 ID
-  completionStatus: {
+  
+  // 只在 IN_PROGRESS 和 COMPLETED 狀態下存在
+  assignedTo?: string // 終結者 ID
+  completionStatus?: {
     fearStarConfirmed: boolean // 小怕星是否確認完成
     terminatorConfirmed: boolean // 終結者是否確認完成
   }
+  
+  // 只在 COMPLETED 狀態下存在
+  completedAt?: Date
+  
   createdAt: Date
   updatedAt: Date
-  completedAt?: Date
 }
 
 export interface TaskApplication {

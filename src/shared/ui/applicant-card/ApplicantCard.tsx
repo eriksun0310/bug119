@@ -142,14 +142,6 @@ export const ApplicantCard: FC<ApplicantCardProps> = ({
               </View>
             )} */}
 
-            {/* 顯示 Telegram（如果有的話） */}
-            {/* {displayUser.contactInfo.telegram && (
-              <View style={styles.contactInfoRow}>
-                <MessageCircle size={16} color="#0088cc" style={styles.contactIcon} />
-                <Text style={styles.contactInfoLabel}>Telegram：</Text>
-                <Text style={styles.contactInfoValue}>{displayUser.contactInfo.telegram}</Text>
-              </View>
-            )} */}
           </View>
           {buttonConfig.show && (
             <Button variant="primary" onPress={handlePress} style={styles.selectButton}>

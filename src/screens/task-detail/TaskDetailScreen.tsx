@@ -98,57 +98,59 @@ export const TaskDetailScreen: React.FC = () => {
         {/* 頂部任務摘要卡片 */}
         <TaskSummaryCard task={task} />
 
-        <Text style={styles.sectionTitle}>{contactTitle}</Text>
-
         {/* 根據用戶角色和任務狀態顯示不同內容 */}
         {task.status === TaskStatus.PENDING_CONFIRMATION &&
         user?.role === UserRole.FEAR_STAR &&
         task?.applicants?.length > 0 ? (
           // 小怕星在 PENDING_CONFIRMATION 狀態：顯示所有申請者
-          <View style={styles.applicantsList}>
-            {task.applicants.map(application => {
-              return (
-                <ApplicantCard
-                  key={application.id}
-                  application={application}
-                  taskStatus={task.status}
-                  currentUserRole={user?.role || UserRole.FEAR_STAR}
-                  currentUserId={user?.id || '1'}
-                  taskCreatedBy={task.createdBy}
-                  onSelect={() => handleSelectTerminator(application)}
-                  style={isTablet ? styles.applicantCardTablet : {}}
-                />
-              )
-            })}
+          <View>
+            <Text style={styles.sectionTitle}>{contactTitle}</Text>
+            <View style={styles.applicantsList}>
+              {task.applicants.map(application => {
+                return (
+                  <ApplicantCard
+                    key={application.id}
+                    application={application}
+                    taskStatus={task.status}
+                    currentUserRole={user?.role || UserRole.FEAR_STAR}
+                    currentUserId={user?.id || '1'}
+                    taskCreatedBy={task.createdBy}
+                    onSelect={() => handleSelectTerminator(application)}
+                    style={isTablet ? styles.applicantCardTablet : {}}
+                  />
+                )
+              })}
+            </View>
+          </View>
+        ) : task.status !== TaskStatus.PENDING || 
+            (user?.role === UserRole.TERMINATOR) ||
+            (user?.role === UserRole.FEAR_STAR && assignments.length > 0) ? (
+          // 其他情況：顯示對方聯絡人資訊（除了小怕星的 PENDING 狀態且沒有申請者）
+          <View>
+            <Text style={styles.sectionTitle}>{contactTitle}</Text>
+            <ApplicantCard
+              application={{
+                id: `contact-${contactPerson?.id}`,
+                taskId: task.id,
+                terminatorId: contactPerson?.id || '',
+                appliedAt: task.createdAt,
+                status: 'pending',
+              }}
+              taskStatus={task.status}
+              currentUserRole={user?.role || UserRole.FEAR_STAR}
+              currentUserId={user?.id || '1'}
+              taskCreatedBy={task.createdBy}
+              onSelect={() => {
+                if (user?.role === UserRole.TERMINATOR && task.status === TaskStatus.PENDING) {
+                  handleAcceptTask()
+                }
+              }}
+            />
           </View>
         ) : (
-          // 其他情況：顯示對方聯絡人資訊
-          <ApplicantCard
-            application={{
-              id: `contact-${contactPerson?.id}`,
-              taskId: task.id,
-              terminatorId: contactPerson?.id || '',
-              appliedAt: task.createdAt,
-              status: 'pending',
-            }}
-            taskStatus={task.status}
-            currentUserRole={user?.role || UserRole.FEAR_STAR}
-            currentUserId={user?.id || '1'}
-            taskCreatedBy={task.createdBy}
-            onSelect={() => {
-              if (user?.role === UserRole.TERMINATOR && task.status === TaskStatus.PENDING) {
-                handleAcceptTask()
-              }
-            }}
-          />
+          // 小怕星的 PENDING 狀態且沒有申請者
+          <Text style={styles.emptyApplicants}>目前還沒有終結者申請這個任務</Text>
         )}
-
-        {/* 小怕星的待確認任務但沒有申請者 */}
-        {user?.role === UserRole.FEAR_STAR &&
-          task.status === TaskStatus.PENDING &&
-          assignments.length === 0 && (
-            <Text style={styles.emptyApplicants}>目前還沒有終結者申請這個任務</Text>
-          )}
       </ScrollView>
     </View>
   )

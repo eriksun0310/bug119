@@ -24,10 +24,6 @@ export const mockTasks: Task[] = [
     isImmediate: true,
     createdBy: '1', // 小怕星 ID
     applicants: [],
-    completionStatus: {
-      fearStarConfirmed: false,
-      terminatorConfirmed: false,
-    },
     createdAt: new Date('2024-07-02T10:30:00'),
     updatedAt: new Date('2024-07-02T10:30:00'),
   },
@@ -67,10 +63,6 @@ export const mockTasks: Task[] = [
         status: 'pending',
       },
     ],
-    completionStatus: {
-      fearStarConfirmed: false,
-      terminatorConfirmed: false,
-    },
     createdAt: new Date('2024-07-02T08:15:00'),
     updatedAt: new Date('2024-07-02T08:15:00'),
   },
@@ -95,7 +87,6 @@ export const mockTasks: Task[] = [
     isImmediate: false,
     createdBy: '1',
     assignedTo: '2', // 已指派給蟲蟲終結者
-    selectedTerminator: '2',
     applicants: [
       {
         id: 'app3',
@@ -133,7 +124,6 @@ export const mockTasks: Task[] = [
     isImmediate: false,
     createdBy: '1',
     assignedTo: '2', // 李師傅除蟲專家
-    selectedTerminator: '2',
     applicants: [
       {
         id: 'app4',
