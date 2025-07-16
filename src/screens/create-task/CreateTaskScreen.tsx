@@ -17,6 +17,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { useTheme } from '@/shared/theme'
+import { useAuth } from '@/shared/hooks'
 import { showAlert } from '@/shared/utils'
 import { 
   Button, 
@@ -29,6 +30,7 @@ import {
   KeyboardAvoidingContainer
 } from '@/shared/ui'
 import { PestType, TaskPriority, RootStackParamList, Gender } from '@/shared/types'
+import { BudgetRange } from '@/shared/ui/budget-selector/BudgetSelector.types'
 
 type CreateTaskNavigationProp = NativeStackNavigationProp<RootStackParamList>
 

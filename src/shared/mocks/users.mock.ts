@@ -1,6 +1,6 @@
 // 測試用戶假資料
 
-import { User, UserRole, PestType, ContactMethod } from '@/shared/types'
+import { ContactMethod, PestType, User, UserRole } from '@/shared/types'
 
 export const mockUsers: User[] = [
   // 小怕星測試帳號
@@ -15,10 +15,11 @@ export const mockUsers: User[] = [
     contactInfo: {
       phone: '0912345678',
       line: 'fearstar_line',
-      preferredMethod: ContactMethod.LINE
+      preferredMethod: ContactMethod.LINE,
     },
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date('2024-07-01'),
+   
   },
   // 蟲蟲終結者測試帳號
   {
@@ -33,7 +34,7 @@ export const mockUsers: User[] = [
       phone: '0987654321',
       line: 'master_lee_pest',
       telegram: '@masterlee_pest',
-      preferredMethod: ContactMethod.PHONE
+      preferredMethod: ContactMethod.PHONE,
     },
     createdAt: new Date('2023-06-01'),
     updatedAt: new Date('2024-07-01'),
@@ -50,7 +51,7 @@ export const mockUsers: User[] = [
     contactInfo: {
       phone: '0956789123',
       line: 'eco_pest_ming',
-      preferredMethod: ContactMethod.LINE
+      preferredMethod: ContactMethod.LINE,
     },
     createdAt: new Date('2023-08-15'),
     updatedAt: new Date('2024-07-01'),
@@ -66,11 +67,11 @@ export const mockUsers: User[] = [
     contactInfo: {
       phone: '0923456789',
       telegram: '@fast_pest_hua',
-      preferredMethod: ContactMethod.PHONE
+      preferredMethod: ContactMethod.PHONE,
     },
     createdAt: new Date('2023-12-01'),
     updatedAt: new Date('2024-07-01'),
-  }
+  },
 ]
 
 // 測試用戶的詳細資料
@@ -96,7 +97,7 @@ export const mockUserProfiles = {
     specialties: [PestType.COCKROACH, PestType.ANT, PestType.MOSQUITO, PestType.SPIDER],
     serviceArea: {
       center: {
-        latitude: 25.0330,
+        latitude: 25.033,
         longitude: 121.5654,
       },
       radius: 20,
@@ -117,7 +118,7 @@ export const mockUserProfiles = {
     specialties: [PestType.COCKROACH, PestType.ANT, PestType.OTHER],
     serviceArea: {
       center: {
-        latitude: 25.0330,
+        latitude: 25.033,
         longitude: 121.5654,
       },
       radius: 15,
@@ -147,7 +148,7 @@ export const mockUserProfiles = {
     isAvailable: true,
     hourlyRate: 650,
     experienceYears: 5,
-  }
+  },
 }
 
 // 測試登入憑證
@@ -155,11 +156,11 @@ export const testCredentials = {
   fearStar: {
     email: 'fearstar@test.com',
     password: '123456',
-    user: mockUsers[0]
+    user: mockUsers[0],
   },
   terminator: {
-    email: 'terminator@test.com', 
+    email: 'terminator@test.com',
     password: '123456',
-    user: mockUsers[1]
-  }
+    user: mockUsers[1],
+  },
 }

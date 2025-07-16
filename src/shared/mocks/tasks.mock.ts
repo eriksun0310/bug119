@@ -1,15 +1,16 @@
 // 任務假資料
 
-import { Task, TaskStatus, TaskPriority, PestType, TaskAssignment } from '@/shared/types'
+import { PestType, Task, TaskAssignment, TaskPriority, TaskStatus } from '@/shared/types'
 
 export const mockTasks: Task[] = [
   {
     id: '1',
     title: '客廳蟑螂問題急需處理',
-    description: '家中客廳發現大量蟑螂，特別是晚上時間，需要專業除蟲服務。已嘗試市售殺蟲劑但效果不佳。',
+    description:
+      '家中客廳發現大量蟑螂，特別是晚上時間，需要專業除蟲服務。已嘗試市售殺蟲劑但效果不佳。',
     pestType: PestType.COCKROACH,
     location: {
-      latitude: 25.0330,
+      latitude: 25.033,
       longitude: 121.5654,
       city: '台北市',
       district: '大安區',
@@ -25,171 +26,76 @@ export const mockTasks: Task[] = [
     createdAt: new Date('2024-07-02T10:30:00'),
     updatedAt: new Date('2024-07-02T10:30:00'),
   },
-  {
-    id: '2',
-    title: '廚房螞蟻入侵',
-    description: '廚房地板和牆角出現螞蟻行軍，影響食物衛生，希望能徹底清除。',
-    pestType: PestType.ANT,
-    location: {
-      latitude: 25.0078,
-      longitude: 121.4626,
-      city: '新北市',
-      district: '板橋區',
-    },
-    status: TaskStatus.PENDING,
-    priority: TaskPriority.NORMAL,
-    budget: {
-      min: 800,
-      max: 1500,
-    },
-    scheduledTime: new Date('2024-07-03T14:00:00'),
-    isImmediate: false,
-    createdBy: '1',
-    createdAt: new Date('2024-07-02T08:15:00'),
-    updatedAt: new Date('2024-07-02T08:15:00'),
-  },
-  {
-    id: '3',
-    title: '臥室蚊子太多影響睡眠',
-    description: '每晚都有蚊子嗡嗡叫，嚴重影響睡眠品質，需要專業處理。',
-    pestType: PestType.MOSQUITO,
-    location: {
-      latitude: 25.0571,
-      longitude: 121.5550,
-      city: '台北市',
-      district: '松山區',
-    },
-    status: TaskStatus.IN_PROGRESS,
-    priority: TaskPriority.NORMAL,
-    budget: {
-      min: 600,
-      max: 1200,
-    },
-    scheduledTime: new Date('2024-07-02T19:00:00'),
-    isImmediate: false,
-    createdBy: '1',
-    assignedTo: '2', // 已指派給蟲蟲終結者
-    createdAt: new Date('2024-07-01T16:20:00'),
-    updatedAt: new Date('2024-07-02T09:00:00'),
-  },
-  {
-    id: '4',
-    title: '陽台蜘蛛網清理',
-    description: '陽台角落有多個大型蜘蛛網，需要清理並預防再次出現。',
-    pestType: PestType.SPIDER,
-    location: {
-      latitude: 25.0415,
-      longitude: 121.5187,
-      city: '台北市',
-      district: '中正區',
-    },
-    status: TaskStatus.PENDING,
-    priority: TaskPriority.NORMAL,
-    budget: {
-      min: 500,
-      max: 1000,
-    },
-    scheduledTime: new Date('2024-07-04T10:00:00'),
-    isImmediate: false,
-    createdBy: '1',
-    createdAt: new Date('2024-07-02T11:45:00'),
-    updatedAt: new Date('2024-07-02T11:45:00'),
-  },
-  {
-    id: '5',
-    title: '辦公室蟑螂防治',
-    description: '小型辦公室發現蟑螂，需要在不影響工作的情況下進行防治。',
-    pestType: PestType.COCKROACH,
-    location: {
-      latitude: 25.0370,
-      longitude: 121.5638,
-      city: '台北市',
-      district: '信義區',
-    },
-    status: TaskStatus.PENDING,
-    priority: TaskPriority.VERY_URGENT,
-    budget: {
-      min: 1500,
-      max: 3000,
-    },
-    isImmediate: true,
-    createdBy: '1',
-    createdAt: new Date('2024-07-02T13:20:00'),
-    updatedAt: new Date('2024-07-02T13:20:00'),
-  },
-  {
-    id: '6',
-    title: '浴室小蟲清除',
-    description: '浴室排水孔附近發現不明小蟲，需要專業判斷蟲種並處理。',
-    pestType: PestType.OTHER,
-    location: {
-      latitude: 24.9677,
-      longitude: 121.5430,
-      city: '新北市',
-      district: '新店區',
-    },
-    status: TaskStatus.PENDING,
-    priority: TaskPriority.NORMAL,
-    budget: {
-      min: 800,
-      max: 1600,
-    },
-    scheduledTime: new Date('2024-07-05T16:00:00'),
-    isImmediate: false,
-    createdBy: '1',
-    createdAt: new Date('2024-07-02T14:10:00'),
-    updatedAt: new Date('2024-07-02T14:10:00'),
-  },
-  {
-    id: '7',
-    title: '車庫白蟻防治',
-    description: '發現車庫木頭被白蟻蛀蝕，需要專業防治服務。',
-    pestType: PestType.OTHER,
-    location: {
-      latitude: 24.9537,
-      longitude: 121.2274,
-      city: '桃園市',
-      district: '中壢區',
-    },
-    status: TaskStatus.COMPLETED,
-    priority: TaskPriority.URGENT,
-    budget: {
-      min: 2000,
-      max: 4000,
-    },
-    isImmediate: false,
-    scheduledTime: new Date('2024-07-01T14:00:00'),
-    createdBy: '3',
-    assignedTo: '2', // 終結者已完成，等待小怕星確認
-    createdAt: new Date('2024-06-30T10:00:00'),
-    updatedAt: new Date('2024-07-01T16:00:00'),
-    completedAt: new Date('2024-07-01T16:00:00'),
-  },
-  {
-    id: '8',
-    title: '客廳果蠅清除',
-    description: '客廳和廚房有很多果蠅，影響居住品質。',
-    pestType: PestType.OTHER,
-    location: {
-      latitude: 24.1611,
-      longitude: 120.6447,
-      city: '台中市',
-      district: '西屯區',
-    },
-    status: TaskStatus.REVIEWED,
-    priority: TaskPriority.NORMAL,
-    budget: {
-      min: 800,
-      max: 1500,
-    },
-    isImmediate: false,
-    scheduledTime: new Date('2024-06-28T10:00:00'),
-    createdBy: '4',
-    assignedTo: '2', // 終結者已完成並已被評價
-    createdAt: new Date('2024-06-27T09:00:00'),
-    updatedAt: new Date('2024-06-28T15:00:00'),
-    completedAt: new Date('2024-06-28T14:30:00'),
-  },
+  // {
+  //   id: '2',
+  //   title: '廚房螞蟻入侵',
+  //   description: '廚房地板和牆角出現螞蟻行軍，影響食物衛生，希望能徹底清除。',
+  //   pestType: PestType.ANT,
+  //   location: {
+  //     latitude: 25.0078,
+  //     longitude: 121.4626,
+  //     city: '新北市',
+  //     district: '板橋區',
+  //   },
+  //   status: TaskStatus.PENDING_CONFIRMATION,
+  //   priority: TaskPriority.NORMAL,
+  //   budget: {
+  //     min: 800,
+  //     max: 1500,
+  //   },
+  //   scheduledTime: new Date('2024-07-03T14:00:00'),
+  //   isImmediate: false,
+  //   createdBy: '1',
+  //   createdAt: new Date('2024-07-02T08:15:00'),
+  //   updatedAt: new Date('2024-07-02T08:15:00'),
+  // },
+  // {
+  //   id: '3',
+  //   title: '臥室蚊子太多影響睡眠',
+  //   description: '每晚都有蚊子嗡嗡叫，嚴重影響睡眠品質，需要專業處理。',
+  //   pestType: PestType.MOSQUITO,
+  //   location: {
+  //     latitude: 25.0571,
+  //     longitude: 121.555,
+  //     city: '台北市',
+  //     district: '松山區',
+  //   },
+  //   status: TaskStatus.IN_PROGRESS,
+  //   priority: TaskPriority.NORMAL,
+  //   budget: {
+  //     min: 600,
+  //     max: 1200,
+  //   },
+  //   scheduledTime: new Date('2024-07-02T19:00:00'),
+  //   isImmediate: false,
+  //   createdBy: '1',
+  //   assignmentId: '2', // 已指派給蟲蟲終結者
+  //   createdAt: new Date('2024-07-01T16:20:00'),
+  //   updatedAt: new Date('2024-07-02T09:00:00'),
+  // },
+  // {
+  //   id: '4',
+  //   title: '陽台蜘蛛網清理',
+  //   description: '陽台角落有多個大型蜘蛛網，需要清理並預防再次出現。',
+  //   pestType: PestType.SPIDER,
+  //   location: {
+  //     latitude: 25.0415,
+  //     longitude: 121.5187,
+  //     city: '台北市',
+  //     district: '中正區',
+  //   },
+  //   status: TaskStatus.COMPLETED,
+  //   priority: TaskPriority.NORMAL,
+  //   budget: {
+  //     min: 500,
+  //     max: 1000,
+  //   },
+  //   scheduledTime: new Date('2024-07-04T10:00:00'),
+  //   isImmediate: false,
+  //   createdBy: '1',
+  //   createdAt: new Date('2024-07-02T11:45:00'),
+  //   updatedAt: new Date('2024-07-02T11:45:00'),
+  // },
 ]
 
 // 依據狀態篩選任務
@@ -209,9 +115,7 @@ export const getTasksByPriority = (priority: TaskPriority) => {
 
 // 取得可接的任務（未指派且狀態為 PENDING）
 export const getAvailableTasks = () => {
-  return mockTasks.filter(task => 
-    task.status === TaskStatus.PENDING && !task.assignedTo
-  )
+  return mockTasks.filter(task => task.status === TaskStatus.PENDING && !task.assignedTo)
 }
 
 // 取得已指派給特定終結者的任務
@@ -256,16 +160,12 @@ export const getTaskStatusDisplayName = (status: TaskStatus): string => {
   switch (status) {
     case TaskStatus.PENDING:
       return '待接案'
-    case TaskStatus.ASSIGNED:
-      return '已接案'
     case TaskStatus.IN_PROGRESS:
       return '進行中'
     case TaskStatus.COMPLETED:
       return '已完成'
-    case TaskStatus.CANCELLED:
-      return '已取消'
-    case TaskStatus.REVIEWED:
-      return '已評價'
+    case TaskStatus.PENDING_CONFIRMATION:
+      return '待確認'
     default:
       return '未知狀態'
   }
@@ -275,7 +175,7 @@ export const getTaskStatusDisplayName = (status: TaskStatus): string => {
 export const mockTaskAssignments: TaskAssignment[] = [
   {
     taskId: '1', // 客廳蟑螂問題急需處理
-    terminatorId: '2',
+    assignmentId: '2',
     proposedPrice: 1500,
     estimatedDuration: 120,
     message: '我有5年蟑螂防治經驗，保證徹底解決問題！',
@@ -284,7 +184,7 @@ export const mockTaskAssignments: TaskAssignment[] = [
   },
   {
     taskId: '1',
-    terminatorId: '3',
+    assignmentId: '3',
     proposedPrice: 1800,
     estimatedDuration: 90,
     message: '專業級設備，快速有效處理，無毒環保',
@@ -293,39 +193,12 @@ export const mockTaskAssignments: TaskAssignment[] = [
   },
   {
     taskId: '1',
-    terminatorId: '4',
+    assignmentId: '4',
     proposedPrice: 1200,
     estimatedDuration: 150,
     message: '經濟實惠，效果保證，提供一個月保固',
     status: 'pending',
     createdAt: new Date('2024-07-02T11:30:00'),
-  },
-  {
-    taskId: '2', // 廚房螞蟻入侵
-    terminatorId: '2',
-    proposedPrice: 1000,
-    estimatedDuration: 60,
-    message: '螞蟻防治專家，使用天然無害藥劑',
-    status: 'pending',
-    createdAt: new Date('2024-07-02T08:30:00'),
-  },
-  {
-    taskId: '4', // 陽台蜘蛛網清理
-    terminatorId: '3',
-    proposedPrice: 800,
-    estimatedDuration: 45,
-    message: '專業清潔蜘蛛網，並做預防處理',
-    status: 'pending',
-    createdAt: new Date('2024-07-02T12:00:00'),
-  },
-  {
-    taskId: '4',
-    terminatorId: '4',
-    proposedPrice: 600,
-    estimatedDuration: 60,
-    message: '仔細清理，價格實惠',
-    status: 'pending',
-    createdAt: new Date('2024-07-02T12:20:00'),
   },
 ]
 
@@ -335,13 +208,13 @@ export const getAssignmentsByTaskId = (taskId: string) => {
 }
 
 // 依據終結者ID取得所有申請
-export const getAssignmentsByTerminatorId = (terminatorId: string) => {
-  return mockTaskAssignments.filter(assignment => assignment.terminatorId === terminatorId)
+export const getAssignmentsByTerminatorId = (id: string) => {
+  return mockTaskAssignments.filter(assignment => assignment.terminatorId === id)
 }
 
 // 取得特定任務的申請數量
 export const getTaskAssignmentCount = (taskId: string) => {
-  return mockTaskAssignments.filter(assignment => 
-    assignment.taskId === taskId && assignment.status === 'pending'
+  return mockTaskAssignments.filter(
+    assignment => assignment.taskId === taskId && assignment.status === 'pending'
   ).length
 }
