@@ -306,7 +306,195 @@ export const styles = StyleSheet.create({
 })
 ```
 
-### 5. 主題系統管理
+### 5. 樣式管理系統
+
+#### 樣式分離原則
+**重要：嚴格禁止在元件檔案中定義內聯樣式**
+
+❌ **錯誤寫法**：
+```typescript
+// 在元件檔案中定義內聯樣式
+export const MyComponent = () => {
+  const { theme } = useTheme()
+  
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background,
+    },
+    // ... 更多樣式
+  })
+  
+  return <View style={styles.container}>...</View>
+}
+```
+
+✅ **正確寫法**：
+```typescript
+// MyComponent.tsx - 主元件檔案
+import React from 'react'
+import { View } from 'react-native'
+import { useTheme, useResponsive } from '@/shared/hooks'
+import { createStyles } from './MyComponent.styles'
+
+export const MyComponent = () => {
+  const { theme } = useTheme()
+  const { isTablet } = useResponsive()
+  
+  const styles = createStyles(theme, isTablet)
+  
+  return <View style={styles.container}>...</View>
+}
+```
+
+```typescript
+// MyComponent.styles.ts - 樣式檔案
+import { StyleSheet } from 'react-native'
+import { Theme } from '@/shared/theme/types'
+
+export const createStyles = (theme: Theme, isTablet: boolean) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background,
+    },
+    // ... 更多樣式
+  })
+```
+
+#### 樣式檔案命名規範
+- **檔案名稱**: `ComponentName.styles.ts`
+- **函數名稱**: `createStyles`
+- **導出方式**: 具名導出
+- **參數順序**: `theme` 永遠是第一個參數
+
+#### 標準參數組合
+```typescript
+// 基本樣式檔案
+export const createStyles = (theme: Theme) => StyleSheet.create({...})
+
+// 包含響應式設計
+export const createStyles = (theme: Theme, isTablet: boolean) => StyleSheet.create({...})
+
+// 包含安全區域
+export const createStyles = (theme: Theme, insets: EdgeInsets) => StyleSheet.create({...})
+
+// 完整參數組合
+export const createStyles = (theme: Theme, isTablet: boolean, insets: EdgeInsets) => StyleSheet.create({...})
+```
+
+#### 樣式檔案結構範例
+```typescript
+// 完整的樣式檔案範例
+import { StyleSheet } from 'react-native'
+import { Theme } from '@/shared/theme/types'
+import { EdgeInsets } from 'react-native-safe-area-context'
+
+export const createStyles = (theme: Theme, isTablet: boolean, insets: EdgeInsets) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background,
+    },
+    content: {
+      paddingHorizontal: theme.spacing.lg,
+      paddingTop: insets.top,
+      maxWidth: isTablet ? 1200 : undefined,
+    },
+    title: {
+      fontSize: theme.fontSize.xl,
+      fontWeight: 'bold',
+      color: theme.colors.text,
+    },
+    // 響應式樣式
+    grid: {
+      flexDirection: isTablet ? 'row' : 'column',
+      flexWrap: isTablet ? 'wrap' : 'nowrap',
+    },
+  })
+```
+
+#### 主元件檔案更新步驟
+1. **移除 StyleSheet import**：
+   ```typescript
+   // ❌ 移除
+   import { StyleSheet } from 'react-native'
+   
+   // ✅ 新增
+   import { createStyles } from './ComponentName.styles'
+   ```
+
+2. **替換樣式定義**：
+   ```typescript
+   // ❌ 移除內聯樣式
+   const styles = StyleSheet.create({...})
+   
+   // ✅ 使用外部樣式
+   const styles = createStyles(theme, isTablet, insets)
+   ```
+
+3. **保持參數一致性**：
+   - 確保傳遞的參數與樣式檔案中定義的一致
+   - 按照標準順序傳遞參數
+
+#### 樣式重構檢查清單
+**每次開發時必須檢查**：
+- [ ] 是否有新的內聯 StyleSheet.create
+- [ ] 所有樣式是否已抽取為獨立檔案
+- [ ] 樣式檔案是否使用正確的命名規範
+- [ ] createStyles 函數是否使用正確的參數
+- [ ] 主題色彩是否正確使用
+- [ ] 響應式設計是否正確實作
+
+#### 現有專案樣式檔案結構
+```
+src/
+├── screens/
+│   ├── auth/
+│   │   ├── LoginScreen.tsx
+│   │   ├── LoginScreen.styles.ts
+│   │   ├── RegisterScreen.tsx
+│   │   └── RegisterScreen.styles.ts
+│   ├── task-detail/
+│   │   ├── TaskDetailScreen.tsx
+│   │   └── TaskDetailScreen.styles.ts
+│   └── ... (其他畫面)
+├── shared/
+│   └── ui/
+│       ├── button/
+│       │   ├── Button.tsx
+│       │   ├── Button.styles.ts
+│       │   └── Button.types.ts
+│       └── ... (其他UI元件)
+```
+
+#### 樣式檔案最佳實踐
+1. **使用主題色彩**：
+   ```typescript
+   // ✅ 使用主題色彩
+   color: theme.colors.text
+   
+   // ❌ 硬編碼顏色
+   color: '#000000'
+   ```
+
+2. **使用主題間距**：
+   ```typescript
+   // ✅ 使用主題間距
+   margin: theme.spacing.md
+   
+   // ❌ 硬編碼數值
+   margin: 16
+   ```
+
+3. **響應式設計**：
+   ```typescript
+   // ✅ 根據設備類型調整
+   maxWidth: isTablet ? 1200 : undefined
+   flexDirection: isTablet ? 'row' : 'column'
+   ```
+
+### 6. 主題系統管理
 
 #### 主題切換功能
 - 支援亮色主題（Light Mode）和暗色主題（Dark Mode）
@@ -975,14 +1163,16 @@ type LocalType = ...
 1. **需求分析** - 確認實際需要的功能
 2. **設計元件結構** - 遵循 FSD 架構，按需建立資料夾
 3. **定義 TypeScript 型別** - 按功能分類管理
-4. **撰寫共用元件** - 放在 src/shared/ui/（僅建立實際需要的）
-5. **設定導航結構** - 配置實際使用的畫面
-6. **實作畫面功能** - 在 screens/ 中實作具體功能
-7. **統一配置管理** - 所有選項配置放在 options.config.ts
-8. **表單狀態管理** - 使用統一的物件管理表單狀態
-9. **加入測試** - 確保功能正確性
-10. **執行 lint 和 type-check** - 確保程式碼品質
-11. **清理未使用的 import 和空資料夾** - 保持程式碼整潔
+4. **建立樣式檔案** - 嚴格遵循樣式分離原則，建立 .styles.ts 檔案
+5. **撰寫共用元件** - 放在 src/shared/ui/（僅建立實際需要的）
+6. **設定導航結構** - 配置實際使用的畫面
+7. **實作畫面功能** - 在 screens/ 中實作具體功能
+8. **統一配置管理** - 所有選項配置放在 options.config.ts
+9. **表單狀態管理** - 使用統一的物件管理表單狀態
+10. **樣式品質檢查** - 確保無內聯樣式，遵循 createStyles 模式
+11. **加入測試** - 確保功能正確性
+12. **執行 lint 和 type-check** - 確保程式碼品質
+13. **清理未使用的 import 和空資料夾** - 保持程式碼整潔
 
 ## 技術棧
 - **前端框架**: React Native + Expo SDK 50+
@@ -1007,13 +1197,14 @@ type LocalType = ...
 6. **配置統一** - 所有選項配置集中在 `src/shared/config/options.config.ts`
 7. **表單狀態** - 絕對不允許分開定義多個 useState，必須用物件統一管理
 8. **假資料管理** - 集中在 `src/shared/mocks/` 管理
-9. **樣式系統** - 使用 StyleSheet.create 並遵循主題系統
+9. **樣式分離** - 嚴格禁止內聯樣式，必須使用 .styles.ts 檔案和 createStyles 模式
 10. **主題支援** - 支援亮暗主題切換，所有元件必須使用主題系統的顏色
 11. **Import 管理** - 保持 import 語句整潔，移除未使用的 import，遵循標準順序
 12. **資料夾管理** - 基於實際功能需求建立資料夾，定期清理空資料夾
 13. **程式碼複雜度** - 單一檔案最多 300 行，函數最多 50 行，強制抽取重複程式碼
 14. **元件抽取** - 重複程式碼超過 20 行必須抽取，內聯渲染函數超過 30 行必須抽取
-15. **重構檢查** - 每次提交前必須檢查檔案複雜度、重複程式碼、未使用 import
+15. **樣式品質** - 每次開發必須檢查無內聯 StyleSheet.create，遵循 createStyles 模式
+16. **重構檢查** - 每次提交前必須檢查檔案複雜度、重複程式碼、未使用 import
 
 ## 聯絡資訊
 如有任何問題，請參考專案文件或聯繫技術負責人。
