@@ -55,41 +55,6 @@ export const createStyles = (theme: Theme, insets: { top: number }) => StyleShee
     color: theme.colors.text,
     marginBottom: theme.spacing.sm,
   },
-  timeOptionContainer: {
-    backgroundColor: theme.colors.surface,
-    borderRadius: theme.borderRadius.lg,
-    padding: theme.spacing.md,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-  },
-  timeOptionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: theme.spacing.sm,
-  },
-  timeOptionTitle: {
-    fontSize: theme.fontSize.md,
-    fontWeight: '600',
-    color: theme.colors.text,
-  },
-  timeOptionDescription: {
-    fontSize: theme.fontSize.sm,
-    color: theme.colors.textSecondary,
-    marginBottom: theme.spacing.md,
-  },
-  scheduledInputs: {
-    flexDirection: 'row',
-    gap: theme.spacing.sm,
-  },
-  scheduledInput: {
-    flex: 1,
-  },
-  errorText: {
-    fontSize: theme.fontSize.xs,
-    color: theme.colors.error,
-    marginTop: theme.spacing.xs,
-  },
   submitSection: {
     padding: theme.spacing.md,
     borderTopWidth: 1,

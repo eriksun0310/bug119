@@ -198,4 +198,16 @@ export const createStyles = (theme: Theme, isTablet: boolean) =>
       backgroundColor: '#F0F0F0',
       padding: theme.spacing.md,
     },
+    // TaskCard 在詳情頁面的樣式調整
+    taskCardContainer: {
+      marginBottom: theme.spacing.lg, // 增加底部間距
+      maxWidth: isTablet ? 1000 : undefined, // 平板限制寬度
+      alignSelf: 'center',
+    },
+    // 聯絡人資訊區域的樣式調整
+    contactSectionContainer: {
+      maxWidth: isTablet ? 1000 : undefined, // 平板限制寬度
+      alignSelf: 'center',
+      width: '100%',
+    },
   })

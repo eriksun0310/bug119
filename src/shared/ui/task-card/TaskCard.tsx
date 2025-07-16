@@ -57,9 +57,11 @@ export const TaskCard: FC<TaskCardProps> = ({
     }
   }
   
+
+  console.log('task 11111', task)
   
   const formatBudget = () => {
-    return `$${task.budget}`
+    return `${task.budget}`
   }
   
   // 獲取客戶資訊

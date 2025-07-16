@@ -5,7 +5,7 @@ import { getAssignmentsByTaskId, mockTasks } from '@/shared/mocks'
 import { mockUsers } from '@/shared/mocks/users.mock'
 import { useTheme } from '@/shared/theme'
 import { RootStackParamList, TaskAssignment, TaskStatus, UserRole } from '@/shared/types'
-import { ApplicantCard, ScreenHeader, TaskSummaryCard } from '@/shared/ui'
+import { ApplicantCard, ScreenHeader, TaskCard } from '@/shared/ui'
 import { showAlert } from '@/shared/utils'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
@@ -96,14 +96,16 @@ export const TaskDetailScreen: React.FC = () => {
 
       <ScrollView style={styles.content}>
         {/* 頂部任務摘要卡片 */}
-        <TaskSummaryCard task={task} />
+        <View style={styles.taskCardContainer}>
+          <TaskCard task={task} />
+        </View>
 
         {/* 根據用戶角色和任務狀態顯示不同內容 */}
         {task.status === TaskStatus.PENDING_CONFIRMATION &&
         user?.role === UserRole.FEAR_STAR &&
         task?.applicants?.length > 0 ? (
           // 小怕星在 PENDING_CONFIRMATION 狀態：顯示所有申請者
-          <View>
+          <View style={styles.contactSectionContainer}>
             <Text style={styles.sectionTitle}>{contactTitle}</Text>
             <View style={styles.applicantsList}>
               {task.applicants.map(application => {
@@ -126,7 +128,7 @@ export const TaskDetailScreen: React.FC = () => {
             (user?.role === UserRole.TERMINATOR) ||
             (user?.role === UserRole.FEAR_STAR && assignments.length > 0) ? (
           // 其他情況：顯示對方聯絡人資訊（除了小怕星的 PENDING 狀態且沒有申請者）
-          <View>
+          <View style={styles.contactSectionContainer}>
             <Text style={styles.sectionTitle}>{contactTitle}</Text>
             <ApplicantCard
               application={{
@@ -149,7 +151,9 @@ export const TaskDetailScreen: React.FC = () => {
           </View>
         ) : (
           // 小怕星的 PENDING 狀態且沒有申請者
-          <Text style={styles.emptyApplicants}>目前還沒有終結者申請這個任務</Text>
+          <View style={styles.contactSectionContainer}>
+            <Text style={styles.emptyApplicants}>目前還沒有終結者申請這個任務</Text>
+          </View>
         )}
       </ScrollView>
     </View>
