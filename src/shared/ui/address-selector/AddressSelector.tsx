@@ -58,7 +58,7 @@ export const AddressSelector: FC<AddressSelectorProps> = ({
       <View style={styles.locationRow}>
         <View style={styles.citySelect}>
           <Select
-            label=""
+            // label=""
             value={value.city}
             placeholder={cityPlaceholder}
             options={CITY_SELECT_OPTIONS}
@@ -69,7 +69,7 @@ export const AddressSelector: FC<AddressSelectorProps> = ({
         
         <View style={styles.districtSelect}>
           <Select
-            label=""
+            // label=""
             value={value.district}
             placeholder={districtPlaceholder}
             options={getDistrictOptions(value.city)}
@@ -80,7 +80,6 @@ export const AddressSelector: FC<AddressSelectorProps> = ({
         </View>
       </View>
       
-      {/* 快速設定按鈕 */}
       {showQuickSet && (
         <View style={styles.quickSetRow}>
           <TouchableOpacity 
