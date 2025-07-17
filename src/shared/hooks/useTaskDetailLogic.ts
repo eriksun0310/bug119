@@ -6,6 +6,9 @@ import { User, UserRole } from '@/shared/types'
  * 任務詳情邏輯 Hook
  * 負責處理任務資料查找和相關用戶資訊
  */
+
+
+// TODO:這個改成 RTK Query 的方式
 export const useTaskDetailLogic = (taskId: string, currentUser: User | null) => {
   // 使用 state 來強制重新渲染
   const [refreshTrigger, setRefreshTrigger] = useState(0)
