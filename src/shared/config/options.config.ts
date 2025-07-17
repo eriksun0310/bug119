@@ -157,10 +157,9 @@ export const TASK_WALL_PEST_FILTER_OPTIONS: FilterOption[] = [
 
 // 任務牆優先程度篩選選項（簡化版）
 export const TASK_WALL_PRIORITY_FILTER_OPTIONS: FilterOption[] = [
-  { key: 'urgent', label: '緊急' },
-  { key: 'high', label: '高' },
-  { key: 'normal', label: '一般' },
-  { key: 'low', label: '低' },
+  { key: TaskPriority.VERY_URGENT, label: '非常緊急' },
+  { key: TaskPriority.URGENT, label: '緊急' },
+  { key: TaskPriority.NORMAL, label: '一般' },
 ] as const
 
 // ================================
