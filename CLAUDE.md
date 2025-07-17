@@ -952,7 +952,102 @@ pnpm type-check  # TypeScript 型別檢查
 }
 ```
 
-### 13. 程式碼品質與複雜度管理
+### 13. 編碼準則與程式碼品質
+
+#### 核心編碼準則
+**重要：所有程式碼必須遵循以下基本原則**
+
+##### 1. 單一職責原則
+```
+一個函數 → 一個功能
+一個類別 → 一個責任
+一個模組 → 一個主題
+```
+
+**實踐指南**：
+- **函數職責**：每個函數只做一件事，函數名稱明確表達其功能
+- **元件職責**：使用者介面元件只負責渲染，業務邏輯分離到自訂勾子或服務
+- **模組職責**：每個檔案/模組只處理一個主題域的功能
+- **資料夾職責**：按功能分組，避免雜亂無章的結構
+
+##### 2. 可讀性優於聰明
+```
+清楚 > 簡潔
+明確 > 隱晦
+維護性 > 炫技
+```
+
+**實踐指南**：
+- **命名明確**：變數、函數、類別名稱必須一看就懂其用途
+- **註解適度**：複雜邏輯必須有註解，但程式碼本身應該是自我解釋的
+- **避免炫技**：不使用過於複雜的語法糖或技巧，優先考慮團隊維護
+- **結構清晰**：程式碼組織結構讓任何人都能快速理解
+
+##### 3. 業務邏輯與 UI 分離
+```
+Hook 處理業務邏輯
+元件專注 UI 渲染
+工具函數處理純邏輯
+```
+
+**實踐指南**：
+- **自訂 Hook**：將業務邏輯抽取為可重複使用的 Hook
+- **元件純化**：元件只負責接收 props 和渲染 UI
+- **工具函數**：純函數處理資料轉換和驗證
+- **狀態管理**：複雜狀態邏輯使用 Hook 封裝
+
+##### 4. 強制性重構標準
+**重要：以下情況必須立即重構**
+
+✅ **必須重構的情況**：
+- **函數超過 50 行**：必須拆分為多個函數
+- **元件超過 200 行**：必須拆分為子元件
+- **檔案超過 300 行**：必須拆分為多個檔案
+- **重複程式碼超過 20 行**：必須抽取為共用函數或 Hook
+- **內聯渲染函數超過 30 行**：必須抽取為獨立元件
+
+**重構範例**：
+```typescript
+// ❌ 錯誤：複雜的業務邏輯混在元件中
+export const TaskDetailScreen = () => {
+  const [task, setTask] = useState(null)
+  const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(false)
+  
+  // 50+ 行的複雜邏輯
+  const handleAcceptTask = async () => {
+    // 大量業務邏輯...
+  }
+  
+  // 100+ 行的複雜條件渲染
+  return (
+    <View>
+      {/* 複雜的條件判斷和渲染邏輯 */}
+    </View>
+  )
+}
+
+// ✅ 正確：業務邏輯分離，元件職責單一
+export const TaskDetailScreen = () => {
+  const { task, contactInfo } = useTaskDetailLogic(taskId, user)
+  const { handleAcceptTask, handleSelectTerminator } = useTaskActions()
+  
+  return (
+    <View>
+      <TaskCard task={task} />
+      <TaskStatusRenderer
+        task={task}
+        user={user}
+        contactInfo={contactInfo}
+        onAcceptTask={handleAcceptTask}
+        onSelectTerminator={handleSelectTerminator}
+      />
+    </View>
+  )
+}
+```
+
+#### 程式碼品質與複雜度管理
 
 #### 檔案複雜度限制
 **重要：嚴格控制檔案複雜度，確保程式碼可讀性和可維護性**
@@ -1159,20 +1254,128 @@ import { UserRole, RootStackParamList } from '@/shared/types'
 type LocalType = ...
 ```
 
+#### Hook 抽取最佳實踐
+**重要：遵循 Hook 抽取規範，確保業務邏輯重複使用**
+
+##### Hook 分類與命名
+```typescript
+// 1. 資料邏輯 Hook - 處理資料查找和計算
+const useTaskDetailLogic = (taskId: string, user: User | null) => {
+  // 任務資料查找和相關計算
+  return { task, customer, terminator, contactInfo }
+}
+
+// 2. 顯示邏輯 Hook - 處理 UI 顯示狀態
+const useApplicantDisplayData = (props) => {
+  // 決定要顯示哪些資料
+  return { displayUser, userProfile, shouldShowContactInfo }
+}
+
+// 3. 操作邏輯 Hook - 處理用戶操作和事件
+const useTaskActions = () => {
+  // 統一的操作處理
+  return { handleAcceptTask, handleSelectTerminator, handleMarkCompleted }
+}
+
+// 4. 狀態邏輯 Hook - 處理複雜的狀態管理
+const useFormValidation = (initialValues, rules) => {
+  // 表單狀態和驗證邏輯
+  return { form, errors, handleInputChange, validateForm }
+}
+```
+
+##### 元件抽取最佳實踐
+```typescript
+// ❌ 錯誤：在主元件中內聯複雜的渲染邏輯
+export const TaskDetailScreen = () => {
+  return (
+    <View>
+      {/* 50+ 行的複雜條件渲染 */}
+      {task.status === 'pending_confirmation' && user?.role === 'fear_star' ? (
+        <View>
+          {/* 大量的 JSX 邏輯 */}
+        </View>
+      ) : task.status === 'in_progress' ? (
+        <View>
+          {/* 更多複雜的 JSX */}
+        </View>
+      ) : null}
+    </View>
+  )
+}
+
+// ✅ 正確：抽取為專責的渲染元件
+export const TaskDetailScreen = () => {
+  const { task, contactInfo } = useTaskDetailLogic(taskId, user)
+  const { handleAcceptTask, handleSelectTerminator } = useTaskActions()
+  
+  return (
+    <View>
+      <TaskCard task={task} />
+      <TaskStatusRenderer
+        task={task}
+        user={user}
+        contactInfo={contactInfo}
+        onAcceptTask={handleAcceptTask}
+        onSelectTerminator={handleSelectTerminator}
+      />
+    </View>
+  )
+}
+```
+
+##### 工具函數抽取規範
+```typescript
+// ❌ 錯誤：在多個地方重複相同的驗證邏輯
+const canAcceptTask = taskStatus === 'pending' && userRole === 'terminator'
+const canSelectTerminator = taskStatus === 'pending_confirmation' && userRole === 'fear_star'
+
+// ✅ 正確：抽取為統一的工具函數
+import { taskStatusValidator } from '@/shared/utils'
+
+const canAcceptTask = taskStatusValidator.canAcceptTask(taskStatus, userRole)
+const canSelectTerminator = taskStatusValidator.canSelectTerminator(taskStatus, userRole)
+```
+
+#### 程式碼審查標準
+**重要：每次 PR 前必須通過以下檢查**
+
+✅ **程式碼品質檢查清單**：
+- [ ] 所有函數行數 ≤ 50 行
+- [ ] 所有元件行數 ≤ 200 行
+- [ ] 所有檔案行數 ≤ 300 行
+- [ ] 無重複程式碼超過 20 行
+- [ ] 業務邏輯與 UI 邏輯分離
+- [ ] 函數名稱語義清晰
+- [ ] 無未使用的 import
+- [ ] 無內聯的 StyleSheet.create
+- [ ] 遵循 Hook 抽取規範
+- [ ] 遵循單一職責原則
+
+✅ **架構檢查清單**：
+- [ ] Hook 按功能分類正確
+- [ ] 元件職責單一明確
+- [ ] 工具函數為純函數
+- [ ] 樣式檔案遵循 createStyles 模式
+- [ ] 型別定義按分類管理
+- [ ] 無空的資料夾結構
+
 ### 14. 開發流程
-1. **需求分析** - 確認實際需要的功能
+1. **需求分析** - 確認實際需要的功能，遵循單一職責原則
 2. **設計元件結構** - 遵循 FSD 架構，按需建立資料夾
 3. **定義 TypeScript 型別** - 按功能分類管理
 4. **建立樣式檔案** - 嚴格遵循樣式分離原則，建立 .styles.ts 檔案
-5. **撰寫共用元件** - 放在 src/shared/ui/（僅建立實際需要的）
-6. **設定導航結構** - 配置實際使用的畫面
-7. **實作畫面功能** - 在 screens/ 中實作具體功能
-8. **統一配置管理** - 所有選項配置放在 options.config.ts
-9. **表單狀態管理** - 使用統一的物件管理表單狀態
-10. **樣式品質檢查** - 確保無內聯樣式，遵循 createStyles 模式
-11. **加入測試** - 確保功能正確性
-12. **執行 lint 和 type-check** - 確保程式碼品質
-13. **清理未使用的 import 和空資料夾** - 保持程式碼整潔
+5. **抽取業務邏輯 Hook** - 將業務邏輯抽取為可重複使用的 Hook
+6. **撰寫共用元件** - 放在 src/shared/ui/（僅建立實際需要的）
+7. **設定導航結構** - 配置實際使用的畫面
+8. **實作畫面功能** - 在 screens/ 中實作具體功能，遵循編碼準則
+9. **統一配置管理** - 所有選項配置放在 options.config.ts
+10. **表單狀態管理** - 使用統一的物件管理表單狀態
+11. **樣式品質檢查** - 確保無內聯樣式，遵循 createStyles 模式
+12. **程式碼品質審查** - 檢查檔案複雜度、函數行數、重複程式碼
+13. **加入測試** - 確保功能正確性
+14. **執行 lint 和 type-check** - 確保程式碼品質
+15. **清理未使用的 import 和空資料夾** - 保持程式碼整潔
 
 ## 技術棧
 - **前端框架**: React Native + Expo SDK 50+
@@ -1190,21 +1393,24 @@ type LocalType = ...
 
 ## 重要提醒
 1. **語言要求** - 所有回覆必須使用繁體中文
-2. **程式碼整潔** - 避免重複程式碼，抽取共用元件
-3. **架構原則** - 遵循 Feature-Sliced Design，但只建立實際需要的資料夾
-4. **型別管理** - TypeScript 型別按功能分類管理
-5. **元件管理** - `src/shared/ui/` 下的所有元件都是全域共用元件
-6. **配置統一** - 所有選項配置集中在 `src/shared/config/options.config.ts`
-7. **表單狀態** - 絕對不允許分開定義多個 useState，必須用物件統一管理
-8. **假資料管理** - 集中在 `src/shared/mocks/` 管理
-9. **樣式分離** - 嚴格禁止內聯樣式，必須使用 .styles.ts 檔案和 createStyles 模式
-10. **主題支援** - 支援亮暗主題切換，所有元件必須使用主題系統的顏色
-11. **Import 管理** - 保持 import 語句整潔，移除未使用的 import，遵循標準順序
-12. **資料夾管理** - 基於實際功能需求建立資料夾，定期清理空資料夾
-13. **程式碼複雜度** - 單一檔案最多 300 行，函數最多 50 行，強制抽取重複程式碼
-14. **元件抽取** - 重複程式碼超過 20 行必須抽取，內聯渲染函數超過 30 行必須抽取
-15. **樣式品質** - 每次開發必須檢查無內聯 StyleSheet.create，遵循 createStyles 模式
-16. **重構檢查** - 每次提交前必須檢查檔案複雜度、重複程式碼、未使用 import
+2. **編碼準則** - 嚴格遵循單一職責原則、可讀性優於聰明、業務邏輯與 UI 分離
+3. **程式碼整潔** - 避免重複程式碼，抽取共用元件和 Hook
+4. **架構原則** - 遵循 Feature-Sliced Design，但只建立實際需要的資料夾
+5. **型別管理** - TypeScript 型別按功能分類管理
+6. **元件管理** - `src/shared/ui/` 下的所有元件都是全域共用元件
+7. **Hook 抽取** - 業務邏輯必須抽取為 Hook，遵循分類命名規範
+8. **配置統一** - 所有選項配置集中在 `src/shared/config/options.config.ts`
+9. **表單狀態** - 絕對不允許分開定義多個 useState，必須用物件統一管理
+10. **假資料管理** - 集中在 `src/shared/mocks/` 管理
+11. **樣式分離** - 嚴格禁止內聯樣式，必須使用 .styles.ts 檔案和 createStyles 模式
+12. **主題支援** - 支援亮暗主題切換，所有元件必須使用主題系統的顏色
+13. **Import 管理** - 保持 import 語句整潔，移除未使用的 import，遵循標準順序
+14. **資料夾管理** - 基於實際功能需求建立資料夾，定期清理空資料夾
+15. **程式碼複雜度** - 單一檔案最多 300 行，函數最多 50 行，強制抽取重複程式碼
+16. **元件抽取** - 重複程式碼超過 20 行必須抽取，內聯渲染函數超過 30 行必須抽取
+17. **樣式品質** - 每次開發必須檢查無內聯 StyleSheet.create，遵循 createStyles 模式
+18. **重構檢查** - 每次提交前必須檢查檔案複雜度、重複程式碼、未使用 import
+19. **程式碼審查** - 必須通過程式碼品質檢查清單和架構檢查清單
 
 ## 聯絡資訊
 如有任何問題，請參考專案文件或聯繫技術負責人。
