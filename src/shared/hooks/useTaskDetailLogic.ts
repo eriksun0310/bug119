@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { mockTasks, mockUsers } from '@/shared/mocks'
 import { User, UserRole } from '@/shared/types'
 
@@ -7,10 +7,22 @@ import { User, UserRole } from '@/shared/types'
  * 負責處理任務資料查找和相關用戶資訊
  */
 export const useTaskDetailLogic = (taskId: string, currentUser: User | null) => {
-  // 查找任務資料
+  // 使用 state 來強制重新渲染
+  const [refreshTrigger, setRefreshTrigger] = useState(0)
+  
+  // 設定定期檢查任務狀態更新
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setRefreshTrigger(prev => prev + 1)
+    }, 1000) // 每秒檢查一次
+    
+    return () => clearInterval(interval)
+  }, [])
+  
+  // 查找任務資料（加入 refreshTrigger 依賴）
   const task = useMemo(() => 
     mockTasks.find(t => t.id === taskId) || mockTasks[0], 
-    [taskId]
+    [taskId, refreshTrigger]
   )
 
   // 查找客戶資料

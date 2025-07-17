@@ -11,4 +11,5 @@ export interface TaskCardProps extends Omit<TouchableOpacityProps, 'onPress'> {
   showContactInfo?: boolean
   currentUserRole?: UserRole
   onPress?: (task: Task) => void
+  onAccept?: (task: Task) => void
 }

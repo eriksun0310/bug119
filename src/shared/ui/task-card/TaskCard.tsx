@@ -17,7 +17,7 @@ import {
   getPriorityDisplayInfo 
 } from '@/shared/mocks'
 import { mockUsers } from '@/shared/mocks/users.mock'
-import { UserRole } from '@/shared/types'
+import { UserRole, TaskStatus } from '@/shared/types'
 
 /**
  * 任務卡片元件
@@ -31,6 +31,7 @@ export const TaskCard: FC<TaskCardProps> = ({
   showContactInfo = false,
   currentUserRole,
   onPress,
+  onAccept,
   style,
   ...props
 }) => {
@@ -45,6 +46,19 @@ export const TaskCard: FC<TaskCardProps> = ({
       onPress(task)
     }
   }
+  
+  const handleAcceptPress = (event: any) => {
+    event.stopPropagation() // 阻止事件冒泡，避免觸發卡片的 onPress
+    if (onAccept) {
+      onAccept(task)
+    }
+  }
+  
+  // 判斷是否顯示接受任務按鈕
+  const shouldShowAcceptButton = 
+    onAccept && // 有傳入 onAccept 回調函數（表示在任務牆使用）
+    task.status === TaskStatus.PENDING && // 任務狀態為待發布
+    currentUserRole === UserRole.TERMINATOR // 當前用戶是終結者
   
   const formatBudget = () => {
     return `${task.budget}`
@@ -150,6 +164,16 @@ export const TaskCard: FC<TaskCardProps> = ({
           <Text style={styles.budgetText}>{formatBudget()}</Text>
         </View>
         
+        {/* 接受任務按鈕 - 只在任務牆中顯示 */}
+        {shouldShowAcceptButton && (
+          <TouchableOpacity
+            style={styles.acceptButton}
+            onPress={handleAcceptPress}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.acceptButtonText}>接受任務</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </TouchableOpacity>
   )

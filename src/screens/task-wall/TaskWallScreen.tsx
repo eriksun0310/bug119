@@ -1,6 +1,6 @@
 // 任務牆畫面 - 蟲蟲終結者專用
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { 
   View, 
   Text, 
@@ -20,7 +20,7 @@ import {
   X
 } from 'lucide-react-native'
 import { useTheme } from '@/shared/theme'
-import { useAuth, useResponsive } from '@/shared/hooks'
+import { useAuth, useResponsive, useTaskActions } from '@/shared/hooks'
 import { TaskCard, Input, FilterModal, ScreenHeader } from '@/shared/ui'
 import { 
   getAvailableTasks, 
@@ -42,6 +42,7 @@ export const TaskWallScreen = () => {
   const { isTablet, screenWidth } = useResponsive()
   const navigation = useNavigation<TaskWallNavigationProp>()
   const insets = useSafeAreaInsets()
+  const { handleAcceptTask: acceptTask } = useTaskActions()
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedFilters, setSelectedFilters] = useState<FilterModalFilters>({
     pestType: null,
@@ -50,9 +51,18 @@ export const TaskWallScreen = () => {
   })
   const [showFilterModal, setShowFilterModal] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
+  const [lastUpdate, setLastUpdate] = useState(0)
   
+  // 設定自動重新整理
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setLastUpdate(Date.now())
+    }, 2000) // 每2秒檢查一次
+    
+    return () => clearInterval(interval)
+  }, [])
   
-  // 取得可接的任務
+  // 取得可接的任務（加入 lastUpdate 依賴）
   const availableTasks = getAvailableTasks()
   
   // 篩選任務
@@ -96,9 +106,17 @@ export const TaskWallScreen = () => {
         { text: '取消', style: 'cancel' },
         { 
           text: '接案', 
-          onPress: () => {
-            // 這裡實際會呼叫 API
-            Alert.alert('成功', '已成功接案！接下來請與客戶聯繫確認詳細資訊。')
+          onPress: async () => {
+            // 使用 useTaskActions Hook 的接案功能（不顯示內建 Alert）
+            const success = await acceptTask(task.id, false)
+            
+            if (success) {
+              Alert.alert('接案成功！', '已成功接案！接下來請與客戶聯繫確認詳細資訊。')
+              // 手動觸發更新
+              setLastUpdate(Date.now())
+            } else {
+              Alert.alert('接案失敗', '請稍後再試')
+            }
           }
         }
       ]

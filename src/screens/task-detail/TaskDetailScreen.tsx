@@ -25,7 +25,7 @@ export const TaskDetailScreen: React.FC = () => {
   const { task, contactInfo } = useTaskDetailLogic(taskId, user)
 
   // 使用 Hook 獲取任務操作函數
-  const { handleAcceptTask, handleSelectTerminator } = useTaskActions()
+  const { handleAcceptTask, handleSelectTerminator, handleMarkCompleted } = useTaskActions()
 
   const styles = createStyles(theme, isTablet)
 
@@ -48,6 +48,7 @@ export const TaskDetailScreen: React.FC = () => {
             contactTitle={contactInfo?.title || ''}
             onAcceptTask={handleAcceptTask}
             onSelectTerminator={handleSelectTerminator}
+            onMarkCompleted={handleMarkCompleted}
             isTablet={isTablet}
           />
         </View>

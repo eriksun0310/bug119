@@ -87,6 +87,21 @@ export const createStyles = (theme: Theme) => StyleSheet.create({
     marginLeft: theme.spacing.xs,
   },
   
+  acceptButton: {
+    backgroundColor: theme.colors.secondary,
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
+    borderRadius: theme.borderRadius.md,
+    borderWidth: 1,
+    borderColor: theme.colors.primary,
+  },
+  
+  acceptButtonText: {
+    color: theme.colors.primary,
+    fontSize: theme.fontSize.sm,
+    fontWeight: '600',
+  },
+  
   
   // Compact 變體樣式
   compactContainer: {

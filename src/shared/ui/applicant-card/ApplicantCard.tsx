@@ -39,6 +39,7 @@ export const ApplicantCard: FC<ApplicantCardProps> = ({
 
   // 處理按鈕點擊
   const handlePress = () => {
+    console.log('1111111')
     onSelect(application || assignment!)
   }
 

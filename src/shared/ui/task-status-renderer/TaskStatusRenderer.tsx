@@ -11,8 +11,9 @@ interface TaskStatusRendererProps {
   user: User | null
   contactPerson: User | null
   contactTitle: string
-  onAcceptTask: () => void
+  onAcceptTask: (taskId?: string) => void
   onSelectTerminator: (application: any) => void
+  onMarkCompleted?: (taskId: string) => void
   isTablet: boolean
 }
 
@@ -27,6 +28,7 @@ export const TaskStatusRenderer: FC<TaskStatusRendererProps> = ({
   contactTitle,
   onAcceptTask,
   onSelectTerminator,
+  onMarkCompleted,
   isTablet
 }) => {
   const { theme } = useTheme()
@@ -78,8 +80,13 @@ export const TaskStatusRenderer: FC<TaskStatusRendererProps> = ({
           currentUserId={user?.id || '1'}
           taskCreatedBy={task.createdBy}
           onSelect={() => {
+            console.log('接受任務   1111111')
             if (user?.role === UserRole.TERMINATOR && task.status === TaskStatus.PENDING) {
-              onAcceptTask()
+
+              console.log('接受任務 2222222', task.id)
+              onAcceptTask(task.id)
+            } else if (task.status === TaskStatus.IN_PROGRESS && onMarkCompleted) {
+              onMarkCompleted(task.id)
             }
           }}
         />
