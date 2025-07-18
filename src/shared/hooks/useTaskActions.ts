@@ -1,9 +1,10 @@
-import { mockTasks, mockUsers } from '@/shared/mocks'
+import { mockUsers } from '@/shared/mocks'
 import { TaskStatus } from '@/shared/types'
 import { showAlert } from '@/shared/utils'
 import { useCallback } from 'react'
 import { Alert } from 'react-native'
 import { useAuthRedux } from './useAuthRedux'
+import { useTasksRedux } from './useTasksRedux'
 
 /**
  * 任務操作邏輯 Hook
@@ -11,182 +12,205 @@ import { useAuthRedux } from './useAuthRedux'
  */
 export const useTaskActions = () => {
   const { user } = useAuthRedux()
+  const { 
+    applyForTask, 
+    acceptTask, 
+    selectTerminator, 
+    completeTask, 
+    cancelTask,
+    removeTaskData 
+  } = useTasksRedux()
   /**
-   * 處理接受任務
+   * 處理接受任務（終結者申請任務，需要小怕星確認）
    */
   const handleAcceptTask = useCallback(
-    (taskId?: string) => {
+    async (taskId?: string, onSuccess?: () => void) => {
       if (!taskId || !user) return false
+
+      const executeAccept = async () => {
+        try {
+          await applyForTask(taskId, user.id)
+          // 操作成功後觸發回調 - 不顯示 Alert，讓 UI 直接顯示成功狀態
+          if (onSuccess) {
+            onSuccess()
+          }
+          return true
+        } catch (error) {
+          Alert.alert('接案失敗', error instanceof Error ? error.message : '請稍後再試')
+          return false
+        }
+      }
 
       showAlert('確認接案', '確定要接受這個任務嗎？', [
         { text: '取消', style: 'cancel' },
         {
           text: '確定接受',
+          onPress: executeAccept,
+        },
+      ])
+      return true // 返回 true 表示開始處理
+    },
+    [user, applyForTask]
+  )
+
+  /**
+   * 處理申請任務（終結者申請任務，需要小怕星確認）
+   */
+  const handleApplyForTask = useCallback(
+    async (taskId: string, onSuccess?: () => void) => {
+      if (!user) return false
+
+      showAlert('確認申請', '確定要申請這個任務嗎？', [
+        { text: '取消', style: 'cancel' },
+        {
+          text: '確定申請',
           onPress: async () => {
             try {
-              // 更新任務狀態：新增申請者
-              const taskIndex = mockTasks.findIndex(t => t.id === taskId)
-              if (taskIndex !== -1) {
-                const task = mockTasks[taskIndex]
-
-                // 檢查是否已經申請過
-                const hasApplied = task.applicants?.some(app => app.terminatorId === user.id)
-                if (hasApplied) {
-                  Alert.alert('提示', '您已經申請過此任務了')
-                  return
-                }
-
-                // 新增申請者
-                const newApplication = {
-                  id: `app_${Date.now()}`,
-                  taskId: taskId,
-                  terminatorId: user.id,
-                  appliedAt: new Date(),
-                  status: 'pending' as const,
-                }
-
-                mockTasks[taskIndex] = {
-                  ...task,
-                  applicants: [...(task.applicants || []), newApplication],
-                  status: TaskStatus.PENDING_CONFIRMATION,
-                  updatedAt: new Date(),
-                }
-
-                // 不顯示 Alert，讓 UI 直接顯示成功狀態
+              await applyForTask(taskId, user.id)
+              // 操作成功後觸發回調 - 不顯示 Alert，讓 UI 直接顯示成功狀態
+              if (onSuccess) {
+                onSuccess()
               }
             } catch (error) {
-              Alert.alert('接案失敗', '請稍後再試')
+              Alert.alert('申請失敗', error instanceof Error ? error.message : '請稍後再試')
             }
           },
         },
       ])
     },
-    [user]
+    [user, applyForTask]
   )
 
   /**
    * 處理選擇終結者
    */
-  const handleSelectTerminator = useCallback((application: any) => {
+  const handleSelectTerminator = useCallback((application: any, onSuccess?: () => void) => {
     const selectedTerminator = mockUsers.find(u => u.id === application.terminatorId)
 
     showAlert('確認委託', `確定要委託「${selectedTerminator?.name}」處理這個任務嗎？`, [
       { text: '取消', style: 'cancel' },
       {
         text: '確定委託',
-        onPress: () => {
+        onPress: async () => {
           try {
-            // 更新任務狀態
-            const taskIndex = mockTasks.findIndex(t => t.id === application.taskId)
-            if (taskIndex !== -1) {
-              mockTasks[taskIndex] = {
-                ...mockTasks[taskIndex],
-                status: TaskStatus.IN_PROGRESS,
-                assignedTo: application.terminatorId,
-                updatedAt: new Date(),
-              }
+            await selectTerminator(application.taskId, application.terminatorId)
+            // 操作成功後觸發回調 - 不顯示 Alert，讓 UI 直接顯示成功狀態
+            if (onSuccess) {
+              onSuccess()
             }
-
-            showAlert('委託成功', '已成功委託給終結者，請等待開始處理。')
           } catch (error) {
-            showAlert('委託失敗', '請稍後再試')
+            Alert.alert('委託失敗', error instanceof Error ? error.message : '請稍後再試')
           }
         },
       },
     ])
-  }, [])
+  }, [selectTerminator])
 
   /**
    * 處理標記任務完成
    */
-  const handleMarkCompleted = useCallback(async (taskId: string) => {
+  const handleMarkCompleted = useCallback(async (taskId: string, onSuccess?: () => void) => {
+    if (!user) return
+
+    const completedBy = user.role === 'fear_star' ? 'fear_star' : 'terminator'
+
     showAlert('確認完成', '確定要標記此任務為完成嗎？', [
       { text: '取消', style: 'cancel' },
       {
         text: '確定完成',
         onPress: async () => {
           try {
-            // 模擬 API 呼叫
-            await new Promise(resolve => setTimeout(resolve, 1000))
-
-            // 不顯示 Alert，讓 UI 直接顯示成功狀態
+            await completeTask(taskId, completedBy)
+            // 操作成功後觸發回調 - 不顯示 Alert，讓 UI 直接顯示成功狀態
+            if (onSuccess) {
+              onSuccess()
+            }
           } catch (error) {
-            Alert.alert('操作失敗', '請稍後再試')
+            Alert.alert('操作失敗', error instanceof Error ? error.message : '請稍後再試')
           }
         },
       },
     ])
-  }, [])
+  }, [user, completeTask])
 
   /**
    * 處理刪除任務 (PENDING 狀態)
    */
-  const handleDeleteTask = useCallback((taskId: string) => {
-    try {
-      // 從任務列表中移除任務
-      const taskIndex = mockTasks.findIndex(t => t.id === taskId)
-      if (taskIndex !== -1) {
-        mockTasks.splice(taskIndex, 1)
-      }
-    } catch (error) {
-      Alert.alert('刪除失敗', '請稍後再試')
-    }
-  }, [])
+  const handleDeleteTask = useCallback((taskId: string, onSuccess?: () => void) => {
+    showAlert('確認刪除', '確定要刪除這個任務嗎？此操作無法復原。', [
+      { text: '取消', style: 'cancel' },
+      {
+        text: '確定刪除',
+        style: 'destructive',
+        onPress: () => {
+          try {
+            // 操作成功後觸發回調 - 不顯示 Alert，讓 UI 直接顯示成功狀態
+            if (onSuccess) {
+              onSuccess()
+            } else {
+              removeTaskData(taskId)
+            }
+          } catch (error) {
+            Alert.alert('刪除失敗', '請稍後再試')
+          }
+        },
+      },
+    ])
+  }, [removeTaskData])
 
   /**
    * 處理取消任務 (PENDING_CONFIRMATION 狀態)
    */
-  const handleCancelTask = useCallback((taskId: string) => {
+  const handleCancelTask = useCallback((taskId: string, onSuccess?: () => void) => {
     showAlert('確認取消', '確定要取消這個任務嗎？將通知所有申請者。', [
       { text: '取消', style: 'cancel' },
       {
         text: '確定取消',
         style: 'destructive',
-        onPress: () => {
+        onPress: async () => {
           try {
-            // 更新任務狀態為取消
-            const taskIndex = mockTasks.findIndex(t => t.id === taskId)
-            if (taskIndex !== -1) {
-              mockTasks[taskIndex] = {
-                ...mockTasks[taskIndex],
-                status: TaskStatus.CANCELLED,
-                cancelledAt: new Date(),
-                updatedAt: new Date(),
-              }
-
-              // 通知所有申請者
-              const task = mockTasks[taskIndex]
-              const applicantCount = task.applicants?.length || 0
-              
-              // 不顯示 Alert，讓 UI 直接顯示成功狀態
+            await cancelTask(taskId)
+            // 操作成功後觸發回調 - 不顯示 Alert，讓 UI 直接顯示成功狀態
+            if (onSuccess) {
+              onSuccess()
             }
           } catch (error) {
-            Alert.alert('取消失敗', '請稍後再試')
+            Alert.alert('取消失敗', error instanceof Error ? error.message : '請稍後再試')
           }
         },
       },
     ])
-  }, [])
+  }, [cancelTask])
 
   /**
    * 處理刪除任務記錄 (COMPLETED 狀態)
    */
-  const handleDeleteRecord = useCallback((taskId: string) => {
-    try {
-      // 從任務列表中移除任務記錄
-      const taskIndex = mockTasks.findIndex(t => t.id === taskId)
-      if (taskIndex !== -1) {
-        mockTasks.splice(taskIndex, 1)
-      }
-    } catch (error) {
-      Alert.alert('刪除失敗', '請稍後再試')
-    }
-  }, [])
+  const handleDeleteRecord = useCallback((taskId: string, onSuccess?: () => void) => {
+    showAlert('確認刪除記錄', '確定要刪除這個任務記錄嗎？此操作無法復原。', [
+      { text: '取消', style: 'cancel' },
+      {
+        text: '確定刪除',
+        style: 'destructive',
+        onPress: () => {
+          try {
+            // 操作成功後觸發回調 - 不顯示 Alert，讓 UI 直接顯示成功狀態
+            if (onSuccess) {
+              onSuccess()
+            } else {
+              removeTaskData(taskId)
+            }
+          } catch (error) {
+            Alert.alert('刪除失敗', '請稍後再試')
+          }
+        },
+      },
+    ])
+  }, [removeTaskData])
 
   /**
    * 處理撤回申請 (PENDING_CONFIRMATION 狀態)
    */
-  const handleWithdrawApplication = useCallback((applicationId: string) => {
+  const handleWithdrawApplication = useCallback((applicationId: string, onSuccess?: () => void) => {
     showAlert('確認撤回', '確定要撤回這個申請嗎？', [
       { text: '取消', style: 'cancel' },
       {
@@ -194,28 +218,13 @@ export const useTaskActions = () => {
         style: 'destructive',
         onPress: () => {
           try {
-            // 找到包含此申請的任務
-            const taskIndex = mockTasks.findIndex(task => 
-              task.applicants?.some(app => app.id === applicationId)
-            )
-            
-            if (taskIndex !== -1) {
-              const task = mockTasks[taskIndex]
-              
-              // 移除申請者
-              const updatedApplicants = task.applicants?.filter(app => app.id !== applicationId) || []
-              
-              // 如果沒有其他申請者，將任務狀態改回 PENDING
-              const newStatus = updatedApplicants.length === 0 ? TaskStatus.PENDING : TaskStatus.PENDING_CONFIRMATION
-              
-              mockTasks[taskIndex] = {
-                ...task,
-                applicants: updatedApplicants,
-                status: newStatus,
-                updatedAt: new Date(),
-              }
-              
-              // 不顯示 Alert，讓 UI 直接顯示成功狀態
+            // 操作成功後觸發回調 - 不顯示 Alert，讓 UI 直接顯示成功狀態
+            if (onSuccess) {
+              onSuccess()
+            } else {
+              // 注意：這裡需要實作撤回申請的 Redux action
+              // 目前先顯示提示訊息
+              Alert.alert('功能開發中', '撤回申請功能還在開發中，請稍後使用')
             }
           } catch (error) {
             Alert.alert('撤回失敗', '請稍後再試')
@@ -227,6 +236,7 @@ export const useTaskActions = () => {
 
   return {
     handleAcceptTask,
+    handleApplyForTask,
     handleSelectTerminator,
     handleMarkCompleted,
     handleDeleteTask,

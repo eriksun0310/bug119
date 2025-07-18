@@ -20,10 +20,9 @@ import {
   X
 } from 'lucide-react-native'
 import { useTheme } from '@/shared/theme'
-import { useAuthRedux, useResponsive, useTaskActions } from '@/shared/hooks'
+import { useAuthRedux, useTasksRedux, useResponsive, useTaskActions } from '@/shared/hooks'
 import { TaskCard, Input, FilterModal, ScreenHeader } from '@/shared/ui'
 import { 
-  getAvailableTasks, 
   getPestTypeDisplayName
 } from '@/shared/mocks'
 import { Task, PestType, TaskPriority, RootStackParamList } from '@/shared/types'
@@ -39,6 +38,12 @@ type TaskWallNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Tas
 export const TaskWallScreen = () => {
   const { theme } = useTheme()
   const { user } = useAuthRedux()
+  const { 
+    availableTasks, 
+    tasksLoading, 
+    tasksError, 
+    loadTasks 
+  } = useTasksRedux()
   const { isTablet, screenWidth } = useResponsive()
   const navigation = useNavigation<TaskWallNavigationProp>()
   const insets = useSafeAreaInsets()
@@ -50,23 +55,23 @@ export const TaskWallScreen = () => {
     isImmediate: false,
   })
   const [showFilterModal, setShowFilterModal] = useState(false)
-  const [refreshing, setRefreshing] = useState(false)
-  const [lastUpdate, setLastUpdate] = useState(0)
   
-  // 設定自動重新整理
+  // 載入任務資料
+  useEffect(() => {
+    loadTasks()
+  }, [loadTasks])
+  
+  // 設定定期重新整理（每30秒）
   useEffect(() => {
     const interval = setInterval(() => {
-      setLastUpdate(Date.now())
-    }, 2000) // 每2秒檢查一次
+      loadTasks()
+    }, 30000) // 每30秒重新載入一次
     
     return () => clearInterval(interval)
-  }, [])
-  
-  // 取得可接的任務（加入 lastUpdate 依賴）
-  const availableTasks = getAvailableTasks()
+  }, [loadTasks])
   
   // 篩選任務
-  const filteredTasks = availableTasks.filter(task => {
+  const filteredTasks = (availableTasks || []).filter(task => {
     // 搜尋篩選
     if (searchQuery) {
       const query = searchQuery.toLowerCase()
@@ -99,28 +104,11 @@ export const TaskWallScreen = () => {
   
   // 處理接案
   const handleAcceptTask = (task: Task) => {
-    Alert.alert(
-      '確認接案',
-      `您確定要接受「${task.title}」這個任務嗎？`,
-      [
-        { text: '取消', style: 'cancel' },
-        { 
-          text: '接案', 
-          onPress: async () => {
-            // 使用 useTaskActions Hook 的接案功能（不顯示內建 Alert）
-            const success = await acceptTask(task.id, false)
-            
-            if (success) {
-              Alert.alert('接案成功！', '已成功接案！接下來請與客戶聯繫確認詳細資訊。')
-              // 手動觸發更新
-              setLastUpdate(Date.now())
-            } else {
-              Alert.alert('接案失敗', '請稍後再試')
-            }
-          }
-        }
-      ]
-    )
+    // 使用 useTaskActions Hook 的接案功能
+    acceptTask(task.id, () => {
+      // 接案成功後重新載入任務資料 - 不顯示 Alert，讓用戶導航到任務詳情看結果
+      loadTasks()
+    })
   }
   
   // 處理任務詳情
@@ -130,12 +118,8 @@ export const TaskWallScreen = () => {
   }
   
   // 處理重新整理
-  const handleRefresh = () => {
-    setRefreshing(true)
-    // 模擬重新載入資料
-    setTimeout(() => {
-      setRefreshing(false)
-    }, 1000)
+  const handleRefresh = async () => {
+    await loadTasks()
   }
   
   // 清除篩選
@@ -222,7 +206,7 @@ export const TaskWallScreen = () => {
           contentContainerStyle={styles.taskListContainer}
           refreshControl={
             <RefreshControl
-              refreshing={refreshing}
+              refreshing={tasksLoading === 'loading'}
               onRefresh={handleRefresh}
               colors={[theme.colors.secondary]}
               tintColor={theme.colors.secondary}
@@ -230,7 +214,13 @@ export const TaskWallScreen = () => {
           }
         >
           <View style={styles.taskList}>
-            {filteredTasks.length > 0 ? (
+            {tasksError ? (
+              <View style={styles.emptyState}>
+                <Search size={48} color={theme.colors.error} />
+                <Text style={styles.emptyStateText}>載入任務失敗</Text>
+                <Text style={styles.emptyStateSubtext}>{tasksError}</Text>
+              </View>
+            ) : filteredTasks.length > 0 ? (
               filteredTasks.map(task => (
                 <TaskCard
                   key={task.id}

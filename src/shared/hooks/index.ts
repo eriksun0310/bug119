@@ -3,6 +3,7 @@
 export * from './useAuth'
 export * from './useAuthRedux'
 export * from './AuthReduxProvider'
+export * from './useTasksRedux'
 export * from './useFormValidation'
 export * from './useResponsive'
 export * from './useTaskDetailLogic'

@@ -12,13 +12,13 @@ interface TaskStatusRendererProps {
   user: User | null
   contactPerson: User | null
   contactTitle: string
-  onAcceptTask: (taskId?: string) => void
-  onSelectTerminator: (application: any) => void
-  onMarkCompleted?: (taskId: string) => void
-  onDeleteTask?: (taskId: string) => void
-  onCancelTask?: (taskId: string) => void
-  onDeleteRecord?: (taskId: string) => void
-  onWithdrawApplication?: (applicationId: string) => void
+  onAcceptTask: (taskId?: string, onSuccess?: () => void) => void
+  onSelectTerminator: (application: any, onSuccess?: () => void) => void
+  onMarkCompleted?: (taskId: string, onSuccess?: () => void) => void
+  onDeleteTask?: (taskId: string, onSuccess?: () => void) => void
+  onCancelTask?: (taskId: string, onSuccess?: () => void) => void
+  onDeleteRecord?: (taskId: string, onSuccess?: () => void) => void
+  onWithdrawApplication?: (applicationId: string, onSuccess?: () => void) => void
   isTablet: boolean
   navigation?: NativeStackNavigationProp<any>
 }
@@ -50,50 +50,60 @@ export const TaskStatusRenderer: FC<TaskStatusRendererProps> = ({
   
   // 處理接受任務
   const handleAcceptTaskWithUI = (taskId?: string) => {
-    onAcceptTask(taskId)
-    setActionType('accept')
-    setShowActionResult(true)
+    onAcceptTask(taskId, () => {
+      setActionType('accept')
+      setShowActionResult(true)
+    })
   }
   
   // 處理撤回申請
   const handleWithdrawWithUI = (applicationId: string) => {
     if (onWithdrawApplication) {
-      onWithdrawApplication(applicationId)
-      setActionType('withdraw')
-      setShowActionResult(true)
+      onWithdrawApplication(applicationId, () => {
+        setActionType('withdraw')
+        setShowActionResult(true)
+      })
     }
   }
   
   // 處理標記完成
   const handleCompleteWithUI = (taskId: string) => {
     if (onMarkCompleted) {
-      onMarkCompleted(taskId)
-      setActionType('complete')
-      setShowActionResult(true)
+      onMarkCompleted(taskId, () => {
+        setActionType('complete')
+        setShowActionResult(true)
+      })
     }
   }
   
   // 處理刪除記錄
   const handleDeleteRecordWithUI = (taskId: string) => {
-    // 先顯示 UI，不立即刪除記錄
-    setActionType('delete')
-    setShowActionResult(true)
+    if (onDeleteRecord) {
+      onDeleteRecord(taskId, () => {
+        setActionType('delete')
+        setShowActionResult(true)
+      })
+    }
   }
   
   // 處理取消任務
   const handleCancelTaskWithUI = (taskId: string) => {
     if (onCancelTask) {
-      onCancelTask(taskId)
-      setActionType('cancel')
-      setShowActionResult(true)
+      onCancelTask(taskId, () => {
+        setActionType('cancel')
+        setShowActionResult(true)
+      })
     }
   }
   
   // 處理刪除任務
   const handleDeleteTaskWithUI = (taskId: string) => {
-    // 先顯示 UI，不立即刪除任務
-    setActionType('delete')
-    setShowActionResult(true)
+    if (onDeleteTask) {
+      onDeleteTask(taskId, () => {
+        setActionType('delete')
+        setShowActionResult(true)
+      })
+    }
   }
 
   // 顯示撤回申請的結果 UI（終結者和小怕星共用）
@@ -112,29 +122,47 @@ export const TaskStatusRenderer: FC<TaskStatusRendererProps> = ({
     )
   }
 
+  // 顯示接受任務的結果 UI（終結者申請任務成功）
+  if (showActionResult && actionType === 'accept') {
+    return (
+      <TaskActionResult
+        type="accept"
+        message="已成功申請任務"
+        buttonText="查看任務"
+        onViewTask={() => {
+          setShowActionResult(false)
+          // 接受任務後跳轉到 TaskList 的 pending_confirmation tab
+          navigation?.navigate('Main', { 
+            screen: 'TaskList',
+            params: { initialTab: 'pending_confirmation' }
+          })
+        }}
+      />
+    )
+  }
+
+  // 顯示取消任務的結果 UI（移到前面，和接受任務一樣的位置）
+  if (showActionResult && actionType === 'cancel') {
+    return (
+      <TaskActionResult
+        type="cancel"
+        message="任務已取消"
+        buttonText="確定"
+        onViewTask={() => {
+          setShowActionResult(false)
+          // 取消任務後返回上一頁
+          navigation?.goBack()
+        }}
+      />
+    )
+  }
+
   // PENDING_CONFIRMATION 狀態：小怕星顯示所有申請者，終結者只顯示自己的申請
   if (task.status === TaskStatus.PENDING_CONFIRMATION && task?.applicants?.length > 0) {
     // 終結者只看到自己的申請，顯示簡潔的成功 UI
     if (user?.role === UserRole.TERMINATOR) {
       const myApplication = task.applicants.find(app => app.terminatorId === user.id)
-      if (myApplication && showActionResult) {
-        // 根據操作類型顯示不同的結果
-        return (
-          <TaskActionResult
-            type="accept"
-            message="已成功申請任務"
-            buttonText="查看任務"
-            onViewTask={() => {
-              setShowActionResult(false)
-              // 接受任務後跳轉到 TaskList 的 pending_confirmation tab
-              navigation?.navigate('Main', { 
-                screen: 'TaskList',
-                params: { initialTab: 'pending_confirmation' }
-              })
-            }}
-          />
-        )
-      } else if (myApplication) {
+      if (myApplication) {
         return (
           <View style={styles.container}>
             <Text style={styles.sectionTitle}>{contactTitle}</Text>
@@ -144,7 +172,10 @@ export const TaskStatusRenderer: FC<TaskStatusRendererProps> = ({
               currentUserRole={user.role}
               currentUserId={user.id}
               taskCreatedBy={task.createdBy}
-              onSelect={() => onSelectTerminator(myApplication)}
+              onSelect={() => onSelectTerminator(myApplication, () => {
+                setActionType('accept')
+                setShowActionResult(true)
+              })}
               style={isTablet ? styles.applicantCardTablet : {}}
             />
             {onWithdrawApplication && (
@@ -177,12 +208,16 @@ export const TaskStatusRenderer: FC<TaskStatusRendererProps> = ({
                 currentUserRole={user.role}
                 currentUserId={user.id}
                 taskCreatedBy={task.createdBy}
-                onSelect={() => onSelectTerminator(application)}
+                onSelect={() => onSelectTerminator(application, () => {
+                  setActionType('accept')
+                  setShowActionResult(true)
+                })}
                 onWithdraw={(appId) => {
                   if (onWithdrawApplication) {
-                    onWithdrawApplication(appId)
-                    setActionType('withdraw')
-                    setShowActionResult(true)
+                    onWithdrawApplication(appId, () => {
+                      setActionType('withdraw')
+                      setShowActionResult(true)
+                    })
                   }
                 }}
                 style={isTablet ? styles.applicantCardTablet : {}}
@@ -252,19 +287,14 @@ export const TaskStatusRenderer: FC<TaskStatusRendererProps> = ({
     )
   }
 
-  // 顯示取消任務的 UI
-  if (showActionResult && actionType === 'cancel') {
+
+  // 如果任務已取消，且不是顯示結果UI，顯示已取消狀態
+  if (task.status === TaskStatus.CANCELLED && !showActionResult) {
     return (
-      <TaskActionResult
-        type="cancel"
-        message="任務已取消"
-        buttonText="確定"
-        onViewTask={() => {
-          setShowActionResult(false)
-          // 取消任務後返回上一頁（確保回到 pending_confirmation tab）
-          navigation?.goBack()
-        }}
-      />
+      <View style={styles.container}>
+        <Text style={styles.sectionTitle}>任務狀態</Text>
+        <Text style={styles.emptyApplicants}>此任務已被取消</Text>
+      </View>
     )
   }
 
@@ -291,7 +321,7 @@ export const TaskStatusRenderer: FC<TaskStatusRendererProps> = ({
           taskCreatedBy={task.createdBy}
           onSelect={() => {}}
         />
-        {task.status === TaskStatus.PENDING && user?.role === UserRole.TERMINATOR && onAcceptTask ? (
+        {task.status === TaskStatus.PENDING && user?.role === UserRole.TERMINATOR && (
           <View style={styles.buttonContainer}>
             <Button 
               variant="secondary" 
@@ -301,7 +331,7 @@ export const TaskStatusRenderer: FC<TaskStatusRendererProps> = ({
               接受任務
             </Button>
           </View>
-        ) : null}
+        )}
         {task.status === TaskStatus.IN_PROGRESS && onMarkCompleted && (
             <View style={styles.buttonContainer}>
               <Button variant="secondary" onPress={() => handleCompleteWithUI(task.id)} fullWidth>

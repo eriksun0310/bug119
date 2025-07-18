@@ -2,13 +2,14 @@
 
 import { configureStore } from '@reduxjs/toolkit'
 import authReducer from './slices/authSlice'
+import tasksReducer from './slices/tasksSlice'
 
 // 配置 Redux Store
 export const store = configureStore({
   reducer: {
     auth: authReducer,
+    tasks: tasksReducer,
     // 未來將添加更多 reducers:
-    // tasks: tasksReducer,
     // ui: uiReducer,
   },
   middleware: (getDefaultMiddleware) =>
