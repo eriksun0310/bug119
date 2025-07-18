@@ -1,12 +1,11 @@
 // 我的任務列表畫面 - 小怕星查看自己發布的 PENDING 狀態任務
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import { View, FlatList, Text } from 'react-native'
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { useTheme } from '@/shared/theme'
-import { useAuthRedux, useResponsive } from '@/shared/hooks'
-import { mockTasks } from '@/shared/mocks'
+import { useAuthRedux, useResponsive, useTasksRedux } from '@/shared/hooks'
 import { RootStackParamList, TaskStatus, UserRole } from '@/shared/types'
 import { ScreenHeader, TaskCard } from '@/shared/ui'
 import { createStyles } from './MyTasksListScreen.styles'
@@ -20,17 +19,23 @@ export const MyTasksListScreen: React.FC = () => {
   const { isTablet } = useResponsive()
   const navigation = useNavigation<MyTasksListNavigationProp>()
   const route = useRoute<MyTasksListRouteProp>()
+  const { tasks, tasksLoading, loadTasks } = useTasksRedux()
+
+  // 載入任務資料
+  useEffect(() => {
+    loadTasks()
+  }, [loadTasks])
 
   // 只顯示小怕星發布的 PENDING 狀態任務
-  const pendingTasks = mockTasks.filter(
+  const pendingTasks = tasks ? tasks.filter(
     task => task.createdBy === user?.id && task.status === TaskStatus.PENDING
-  )
+  ) : []
 
   const handleTaskPress = (taskId: string) => {
     navigation.navigate('TaskDetail', { taskId })
   }
 
-  const renderTaskItem = ({ item: task }: { item: typeof mockTasks[0] }) => (
+  const renderTaskItem = ({ item: task }: { item: typeof tasks[0] }) => (
     <TaskCard
       task={task}
       onPress={() => handleTaskPress(task.id)}

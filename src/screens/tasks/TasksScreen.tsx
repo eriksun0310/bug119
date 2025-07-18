@@ -79,9 +79,16 @@ export const TasksScreen = () => {
       // 小怕星的狀態映射
       switch (tab) {
         case 'in_progress':
-          return allMyTasks.filter(task => task.status === TaskStatus.IN_PROGRESS)
+          return allMyTasks.filter(task => 
+            task.status === TaskStatus.IN_PROGRESS || 
+            task.status === TaskStatus.PENDING_COMPLETION
+          )
         case 'pending_confirmation':
-          return allMyTasks.filter(task => task.status === TaskStatus.PENDING_CONFIRMATION)
+          // 包含 PENDING（剛發布）和 PENDING_CONFIRMATION（有人申請）
+          return allMyTasks.filter(task => 
+            task.status === TaskStatus.PENDING || 
+            task.status === TaskStatus.PENDING_CONFIRMATION
+          )
         case 'completed':
           return allMyTasks.filter(task => task.status === TaskStatus.COMPLETED)
         default:
@@ -91,8 +98,12 @@ export const TasksScreen = () => {
       // 終結者的狀態映射
       switch (tab) {
         case 'in_progress':
-          return allMyTasks.filter(task => task.status === TaskStatus.IN_PROGRESS)
+          return allMyTasks.filter(task => 
+            task.status === TaskStatus.IN_PROGRESS || 
+            task.status === TaskStatus.PENDING_COMPLETION
+          )
         case 'pending_confirmation':
+          // 終結者只看 PENDING_CONFIRMATION（有人申請待確認的任務）
           return allMyTasks.filter(task => task.status === TaskStatus.PENDING_CONFIRMATION)
         case 'completed':
           return allMyTasks.filter(task => task.status === TaskStatus.COMPLETED)

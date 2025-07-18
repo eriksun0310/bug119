@@ -6,6 +6,7 @@ export enum TaskStatus {
   PENDING = 'pending', // 發布中
   PENDING_CONFIRMATION = 'pending_confirmation', // 待確認
   IN_PROGRESS = 'in_progress', // 進行中
+  PENDING_COMPLETION = 'pending_completion', // 待完成確認
   COMPLETED = 'completed', // 已完成
   CANCELLED = 'cancelled', // 已取消
 }

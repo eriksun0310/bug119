@@ -1,7 +1,7 @@
 // 任務申請者列表畫面 - 小怕星選擇終結者
 
-import { useResponsive } from '@/shared/hooks'
-import { getAssignmentsByTaskId, mockTasks } from '@/shared/mocks/tasks.mock'
+import { useResponsive, useTasksRedux } from '@/shared/hooks'
+import { getAssignmentsByTaskId } from '@/shared/mocks/tasks.mock'
 import { mockUsers } from '@/shared/mocks/users.mock'
 import { useTheme } from '@/shared/theme'
 import { RootStackParamList, TaskAssignment, TaskStatus } from '@/shared/types'
@@ -10,7 +10,7 @@ import { showAlert } from '@/shared/utils'
 import { createStyles } from './TaskApplicantsScreen.styles'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { ScrollView, Text, View } from 'react-native'
 
 type TaskApplicantsRouteProp = RouteProp<RootStackParamList, 'TaskApplicants'>
@@ -21,11 +21,17 @@ export const TaskApplicantsScreen = () => {
   const navigation = useNavigation<TaskApplicantsNavigationProp>()
   const route = useRoute<TaskApplicantsRouteProp>()
   const { isTablet } = useResponsive()
+  const { tasks, loadTasks } = useTasksRedux()
 
   const { taskId } = route.params
 
+  // 載入任務資料
+  useEffect(() => {
+    loadTasks()
+  }, [loadTasks])
+
   // 獲取任務資訊
-  const task = mockTasks.find(t => t.id === taskId)
+  const task = tasks ? tasks.find(t => t.id === taskId) : null
 
   // 獲取申請者列表
   const assignments = getAssignmentsByTaskId(taskId)

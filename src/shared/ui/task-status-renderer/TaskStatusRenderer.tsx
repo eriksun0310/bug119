@@ -46,7 +46,7 @@ export const TaskStatusRenderer: FC<TaskStatusRendererProps> = ({
   const styles = createStyles(theme)
   const assignments = getAssignmentsByTaskId(task.id)
   const [showActionResult, setShowActionResult] = useState(false)
-  const [actionType, setActionType] = useState<'accept' | 'withdraw' | 'complete' | 'delete' | 'cancel'>('accept')
+  const [actionType, setActionType] = useState<'accept' | 'withdraw' | 'complete' | 'delete' | 'cancel' | 'select'>('accept')
   
   // 處理接受任務
   const handleAcceptTaskWithUI = (taskId?: string) => {
@@ -122,6 +122,25 @@ export const TaskStatusRenderer: FC<TaskStatusRendererProps> = ({
     )
   }
 
+  // 顯示選擇終結者的結果 UI（小怕星選擇終結者成功）
+  if (showActionResult && actionType === 'select') {
+    return (
+      <TaskActionResult
+        type="accept"
+        message="已成功選擇終結者"
+        buttonText="查看任務"
+        onViewTask={() => {
+          setShowActionResult(false)
+          // 選擇終結者後跳轉到 TaskList 的 in_progress tab
+          navigation?.navigate('Main', { 
+            screen: 'TaskList',
+            params: { initialTab: 'in_progress' }
+          })
+        }}
+      />
+    )
+  }
+
   // 顯示接受任務的結果 UI（終結者申請任務成功）
   if (showActionResult && actionType === 'accept') {
     return (
@@ -173,7 +192,7 @@ export const TaskStatusRenderer: FC<TaskStatusRendererProps> = ({
               currentUserId={user.id}
               taskCreatedBy={task.createdBy}
               onSelect={() => onSelectTerminator(myApplication, () => {
-                setActionType('accept')
+                setActionType('select')
                 setShowActionResult(true)
               })}
               style={isTablet ? styles.applicantCardTablet : {}}
@@ -209,7 +228,7 @@ export const TaskStatusRenderer: FC<TaskStatusRendererProps> = ({
                 currentUserId={user.id}
                 taskCreatedBy={task.createdBy}
                 onSelect={() => onSelectTerminator(application, () => {
-                  setActionType('accept')
+                  setActionType('select')
                   setShowActionResult(true)
                 })}
                 onWithdraw={(appId) => {

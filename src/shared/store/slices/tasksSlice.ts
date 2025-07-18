@@ -301,6 +301,9 @@ const tasksSlice = createSlice({
         if (updatedTask.completionStatus.fearStarConfirmed && updatedTask.completionStatus.terminatorConfirmed) {
           updatedTask.status = TaskStatus.COMPLETED
           updatedTask.completedAt = new Date()
+        } else if (updatedTask.completionStatus.fearStarConfirmed || updatedTask.completionStatus.terminatorConfirmed) {
+          // 如果只有一方確認完成，設為待完成確認狀態
+          updatedTask.status = TaskStatus.PENDING_COMPLETION
         }
         
         updatedTask.updatedAt = new Date()

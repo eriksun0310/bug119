@@ -23,7 +23,7 @@ export const taskStatusValidator = {
    * 判斷是否可以標記任務完成
    */
   canMarkCompleted: (taskStatus: TaskStatus): boolean => {
-    return taskStatus === TaskStatus.IN_PROGRESS
+    return taskStatus === TaskStatus.IN_PROGRESS || taskStatus === TaskStatus.PENDING_COMPLETION
   },
 
   /**
@@ -71,6 +71,8 @@ export const taskStatusValidator = {
         return '待確認'
       case TaskStatus.IN_PROGRESS:
         return '進行中'
+      case TaskStatus.PENDING_COMPLETION:
+        return '待完成確認'
       case TaskStatus.COMPLETED:
         return '已完成'
       case TaskStatus.CANCELLED:
