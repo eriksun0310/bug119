@@ -269,13 +269,7 @@ export const TaskStatusRenderer: FC<TaskStatusRendererProps> = ({
         message={message}
         buttonText="確定"
         onViewTask={() => {
-          // 在返回前執行實際的刪除操作
-          if (isDeleteRecord && onDeleteRecord) {
-            onDeleteRecord(task.id)
-          } else if (!isDeleteRecord && onDeleteTask) {
-            onDeleteTask(task.id)
-          }
-          
+          // 不需要再次執行刪除操作，因為已經在 handleDeleteRecordWithUI 中完成了
           setShowActionResult(false)
           
           // 刪除後返回上一頁（刪除記錄回到 completed tab，刪除任務回到上一頁）
