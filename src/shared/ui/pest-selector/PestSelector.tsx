@@ -15,14 +15,18 @@ export const PestSelector: FC<PestSelectorProps> = ({
   value,
   onChange,
   error,
-  label = '害蟲類型'
+  label = '害蟲類型',
+  required = false
 }) => {
   const { theme } = useTheme()
   const styles = createStyles(theme)
   
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>{label}</Text>
+      <Text style={styles.label}>
+        {label}
+        {required && <Text style={styles.requiredStar}> *</Text>}
+      </Text>
       
       <View style={styles.grid}>
         {PEST_TYPE_OPTIONS.map(pest => {

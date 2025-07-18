@@ -7,4 +7,5 @@ export interface PestSelectorProps {
   onChange: (pestType: PestType) => void
   error?: string
   label?: string
+  required?: boolean
 }

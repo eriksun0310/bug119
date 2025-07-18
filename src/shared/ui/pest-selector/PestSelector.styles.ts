@@ -57,4 +57,11 @@ export const createStyles = (theme: Theme) => StyleSheet.create({
     color: theme.colors.error,
     marginTop: theme.spacing.xs,
   },
+  
+  // 必填星號
+  requiredStar: {
+    color: theme.colors.error,
+    fontSize: theme.fontSize.sm,
+    fontWeight: '500',
+  },
 })

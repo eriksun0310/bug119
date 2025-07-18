@@ -5,4 +5,5 @@ export interface BudgetSelectorProps {
   onChange: (budget: number) => void
   error?: string
   label?: string
+  required?: boolean
 }

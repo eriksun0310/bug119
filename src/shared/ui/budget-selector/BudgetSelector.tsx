@@ -15,7 +15,8 @@ export const BudgetSelector: FC<BudgetSelectorProps> = ({
   value,
   onChange,
   error,
-  label = '預算'
+  label = '預算',
+  required = false
 }) => {
   const { theme } = useTheme()
   
@@ -39,11 +40,19 @@ export const BudgetSelector: FC<BudgetSelectorProps> = ({
       color: theme.colors.error,
       marginTop: theme.spacing.xs,
     },
+    requiredStar: {
+      color: theme.colors.error,
+      fontSize: theme.fontSize.sm,
+      fontWeight: '500' as const,
+    },
   }
   
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>{label}</Text>
+      <Text style={styles.label}>
+        {label}
+        {required && <Text style={styles.requiredStar}> *</Text>}
+      </Text>
       
       {/* 預算輸入框 */}
       <Input

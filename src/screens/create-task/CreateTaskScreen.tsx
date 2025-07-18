@@ -181,6 +181,7 @@ export const CreateTaskScreen = () => {
               onChangeText={title => setForm({ ...form, title })}
               placeholder="例：客廳蟑螂問題急需處理"
               error={errors.title}
+              required
             />
 
             <Input
@@ -191,6 +192,7 @@ export const CreateTaskScreen = () => {
               multiline
               numberOfLines={4}
               error={errors.description}
+              required
             />
           </View>
 
@@ -200,6 +202,7 @@ export const CreateTaskScreen = () => {
               value={form.pestType}
               onChange={pestType => setForm({ ...form, pestType })}
               error={errors.pestType}
+              required
             />
           </View>
 
@@ -217,6 +220,7 @@ export const CreateTaskScreen = () => {
             onChange={location => setForm({ ...form, location })}
             errors={typeof errors.location === 'string' ? { city: errors.location } : undefined}
             showQuickSet={true} // 發布任務頁面顯示快速設定
+            required
           />
 
           {/* 緊急程度 */}
@@ -234,6 +238,7 @@ export const CreateTaskScreen = () => {
               value={form.budget}
               onChange={budget => setForm({ ...form, budget })}
               error={errors.budget}
+              required
             />
           </View>
         </View>
