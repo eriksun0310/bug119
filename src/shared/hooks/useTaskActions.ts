@@ -3,14 +3,14 @@ import { TaskStatus } from '@/shared/types'
 import { showAlert } from '@/shared/utils'
 import { useCallback } from 'react'
 import { Alert } from 'react-native'
-import { useAuth } from './useAuth'
+import { useAuthRedux } from './useAuthRedux'
 
 /**
  * 任務操作邏輯 Hook
  * 統一處理任務相關的操作
  */
 export const useTaskActions = () => {
-  const { user } = useAuth()
+  const { user } = useAuthRedux()
   /**
    * 處理接受任務
    */

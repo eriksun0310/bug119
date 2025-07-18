@@ -20,7 +20,7 @@ import {
   X
 } from 'lucide-react-native'
 import { useTheme } from '@/shared/theme'
-import { useAuth, useResponsive, useTaskActions } from '@/shared/hooks'
+import { useAuthRedux, useResponsive, useTaskActions } from '@/shared/hooks'
 import { TaskCard, Input, FilterModal, ScreenHeader } from '@/shared/ui'
 import { 
   getAvailableTasks, 
@@ -38,7 +38,7 @@ type TaskWallNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Tas
 
 export const TaskWallScreen = () => {
   const { theme } = useTheme()
-  const { user } = useAuth()
+  const { user } = useAuthRedux()
   const { isTablet, screenWidth } = useResponsive()
   const navigation = useNavigation<TaskWallNavigationProp>()
   const insets = useSafeAreaInsets()

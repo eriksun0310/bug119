@@ -4,12 +4,12 @@ import React, { useEffect } from 'react'
 import { View, Text } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { useTheme } from '@/shared/theme'
-import { useAuth } from '@/shared/hooks'
+import { useAuthRedux } from '@/shared/hooks'
 import { createStyles } from './SplashScreen.styles'
 
 export const SplashScreen = () => {
   const { theme } = useTheme()
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated } = useAuthRedux()
   const navigation = useNavigation<any>()
   
   useEffect(() => {

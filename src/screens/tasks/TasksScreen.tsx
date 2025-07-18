@@ -1,7 +1,7 @@
 // 我的任務畫面 - 支援小怕星和終結者
 
 import { TASK_TAB_OPTIONS } from '@/shared/config/options.config'
-import { useAuth, useResponsive } from '@/shared/hooks'
+import { useAuthRedux, useResponsive } from '@/shared/hooks'
 import { getAssignedTasks, mockTasks } from '@/shared/mocks'
 import { useTheme } from '@/shared/theme'
 import { RootStackParamList, Task, TaskStatus, UserRole } from '@/shared/types'
@@ -21,7 +21,7 @@ type TaskTab = 'pending_confirmation' | 'in_progress' | 'completed'
 
 export const TasksScreen = () => {
   const { theme } = useTheme()
-  const { user } = useAuth()
+  const { user } = useAuthRedux()
   const { isTablet } = useResponsive()
   const insets = useSafeAreaInsets()
   const navigation = useNavigation<TasksNavigationProp>()

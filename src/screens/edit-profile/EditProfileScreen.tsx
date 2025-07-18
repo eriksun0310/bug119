@@ -21,7 +21,7 @@ import {
   MessageCircle
 } from 'lucide-react-native'
 import { useTheme } from '@/shared/theme'
-import { useAuth, useResponsive } from '@/shared/hooks'
+import { useAuthRedux, useResponsive } from '@/shared/hooks'
 import { useFormValidation } from '@/shared/hooks/useFormValidation'
 import { Input, SegmentedControl, AddressSelector, KeyboardAvoidingContainer } from '@/shared/ui'
 import { showAlert } from '@/shared/utils'
@@ -33,7 +33,7 @@ import { createStyles } from './EditProfileScreen.styles'
 
 const EditProfileScreen = () => {
   const { theme } = useTheme()
-  const { user } = useAuth()
+  const { user } = useAuthRedux()
   const { isTablet } = useResponsive()
   const navigation = useNavigation()
   const insets = useSafeAreaInsets()

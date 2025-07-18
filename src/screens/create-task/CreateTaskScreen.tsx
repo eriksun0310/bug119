@@ -1,6 +1,6 @@
 // 發布任務畫面 - 小怕星專用
 
-import { useAuth } from '@/shared/hooks'
+import { useAuthRedux } from '@/shared/hooks'
 import { useTheme } from '@/shared/theme'
 import { Gender, PestType, RootStackParamList, TaskPriority } from '@/shared/types'
 import {
@@ -40,7 +40,7 @@ interface CreateTaskForm {
 
 export const CreateTaskScreen = () => {
   const { theme } = useTheme()
-  const { user } = useAuth()
+  const { user } = useAuthRedux()
   const insets = useSafeAreaInsets()
   const navigation = useNavigation<CreateTaskNavigationProp>()
   const [loading, setLoading] = useState(false)

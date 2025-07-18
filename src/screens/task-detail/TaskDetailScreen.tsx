@@ -4,7 +4,7 @@ import React from 'react'
 import { ScrollView, View } from 'react-native'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
-import { useAuth, useResponsive, useTaskDetailLogic, useTaskActions } from '@/shared/hooks'
+import { useAuthRedux, useResponsive, useTaskDetailLogic, useTaskActions } from '@/shared/hooks'
 import { useTheme } from '@/shared/theme'
 import { RootStackParamList } from '@/shared/types'
 import { ScreenHeader, TaskCard, TaskStatusRenderer } from '@/shared/ui'
@@ -16,7 +16,7 @@ type TaskDetailNavigationProp = NativeStackNavigationProp<RootStackParamList, 'T
 
 export const TaskDetailScreen: React.FC = () => {
   const { theme } = useTheme()
-  const { user } = useAuth()
+  const { user } = useAuthRedux()
   const { isTablet } = useResponsive()
   const route = useRoute<TaskDetailRouteProp>()
   const navigation = useNavigation<TaskDetailNavigationProp>()

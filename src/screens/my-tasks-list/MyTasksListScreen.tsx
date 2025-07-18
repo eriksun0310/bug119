@@ -5,7 +5,7 @@ import { View, FlatList, Text } from 'react-native'
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { useTheme } from '@/shared/theme'
-import { useAuth, useResponsive } from '@/shared/hooks'
+import { useAuthRedux, useResponsive } from '@/shared/hooks'
 import { mockTasks } from '@/shared/mocks'
 import { RootStackParamList, TaskStatus, UserRole } from '@/shared/types'
 import { ScreenHeader, TaskCard } from '@/shared/ui'
@@ -16,7 +16,7 @@ type MyTasksListRouteProp = RouteProp<RootStackParamList, 'MyTasksList'>
 
 export const MyTasksListScreen: React.FC = () => {
   const { theme } = useTheme()
-  const { user } = useAuth()
+  const { user } = useAuthRedux()
   const { isTablet } = useResponsive()
   const navigation = useNavigation<MyTasksListNavigationProp>()
   const route = useRoute<MyTasksListRouteProp>()

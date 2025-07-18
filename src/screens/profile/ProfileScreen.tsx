@@ -1,6 +1,6 @@
 // 個人檔案畫面
 
-import { useAuth } from '@/shared/hooks'
+import { useAuthRedux } from '@/shared/hooks'
 import { useTheme } from '@/shared/theme'
 import { RootStackParamList, UserRole } from '@/shared/types'
 import { Card } from '@/shared/ui'
@@ -17,7 +17,7 @@ type ProfileNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Edit
 
 export const ProfileScreen = () => {
   const { theme, toggleTheme, themeMode } = useTheme()
-  const { user, logout } = useAuth()
+  const { user, logout } = useAuthRedux()
   const navigation = useNavigation<ProfileNavigationProp>()
   const insets = useSafeAreaInsets()
 

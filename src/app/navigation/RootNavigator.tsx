@@ -5,7 +5,7 @@ import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { RootStackParamList, UserRole } from '@/shared/types'
 import { useTheme } from '@/shared/theme'
-import { useAuth } from '@/shared/hooks'
+import { useAuthRedux } from '@/shared/hooks'
 
 // 導入畫面組件
 import { AuthNavigator } from './AuthNavigator'
@@ -22,7 +22,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>()
 
 export const RootNavigator = () => {
   const { theme } = useTheme()
-  const { user } = useAuth()
+  const { user } = useAuthRedux()
   
   // 根據用戶角色選擇導航器
   const getMainNavigator = () => {

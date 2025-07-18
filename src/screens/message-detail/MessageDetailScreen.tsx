@@ -26,7 +26,7 @@ import {
   X
 } from 'lucide-react-native'
 import { useTheme } from '@/shared/theme'
-import { useAuth } from '@/shared/hooks'
+import { useAuthRedux } from '@/shared/hooks'
 import { KeyboardAvoidingContainer } from '@/shared/ui'
 import { RootStackParamList } from '@/shared/types'
 import { createStyles } from './MessageDetailScreen.styles'
@@ -46,7 +46,7 @@ interface Message {
 
 export const MessageDetailScreen: React.FC = () => {
   const { theme } = useTheme()
-  const { user } = useAuth()
+  const { user } = useAuthRedux()
   const insets = useSafeAreaInsets()
   const route = useRoute<MessageDetailRouteProp>()
   const navigation = useNavigation<MessageDetailNavigationProp>()
