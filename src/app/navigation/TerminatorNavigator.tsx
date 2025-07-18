@@ -29,7 +29,7 @@ export const TerminatorNavigator = () => {
           switch (route.name) {
             case 'TaskWall':
               return <Search {...iconProps} />
-            case 'MyTasks':
+            case 'TaskList':
               return <CheckSquare {...iconProps} />
             case 'Profile':
               return <User {...iconProps} />
@@ -59,7 +59,7 @@ export const TerminatorNavigator = () => {
         options={{ title: '任務牆' }}
       />
       <Tab.Screen 
-        name="MyTasks" 
+        name="TaskList" 
         component={TasksScreen}
         options={{ title: '任務' }}
       />

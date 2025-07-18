@@ -7,7 +7,7 @@ import { useTheme } from '@/shared/theme'
 import { RootStackParamList, Task, TaskStatus, UserRole } from '@/shared/types'
 import { TaskCard } from '@/shared/ui'
 import { createStyles } from './TasksScreen.styles'
-import { useNavigation } from '@react-navigation/native'
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { AlertCircle, Bell, CheckCircle, Clock } from 'lucide-react-native'
 import React, { useEffect, useRef, useState } from 'react'
@@ -15,6 +15,7 @@ import { RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 type TasksNavigationProp = NativeStackNavigationProp<RootStackParamList>
+type TasksRouteProp = RouteProp<{ Tasks: { initialTab?: TaskTab } }, 'Tasks'>
 
 type TaskTab = 'pending_confirmation' | 'in_progress' | 'completed'
 
@@ -24,14 +25,25 @@ export const TasksScreen = () => {
   const { isTablet } = useResponsive()
   const insets = useSafeAreaInsets()
   const navigation = useNavigation<TasksNavigationProp>()
-  const [activeTab, setActiveTab] = useState<TaskTab>('pending_confirmation')
+  const route = useRoute<TasksRouteProp>()
+  
+  // 從路由參數獲取初始 tab，如果沒有則預設為 pending_confirmation
+  const initialTab = route.params?.initialTab || 'pending_confirmation'
+  const [activeTab, setActiveTab] = useState<TaskTab>(initialTab)
   const [refreshing, setRefreshing] = useState(false)
-  const activeTabRef = useRef<TaskTab>('pending_confirmation')
+  const activeTabRef = useRef<TaskTab>(initialTab)
 
   // 監聽 activeTab 變化並同步到 ref
   useEffect(() => {
     activeTabRef.current = activeTab
   }, [activeTab])
+  
+  // 監聽路由參數變化，更新 activeTab
+  useEffect(() => {
+    if (route.params?.initialTab) {
+      setActiveTab(route.params.initialTab)
+    }
+  }, [route.params?.initialTab])
   // 根據用戶角色獲取任務列表
   const getAllMyTasks = () => {
     if (!user) return []

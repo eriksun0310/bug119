@@ -52,10 +52,7 @@ export const useTaskActions = () => {
                   updatedAt: new Date(),
                 }
 
-                Alert.alert(
-                  '接案成功！',
-                  '您已成功接受此任務。請在「我的任務」中查看任務進度，進行中和已完成的任務才會顯示客戶聯絡資訊。'
-                )
+                // 不顯示 Alert，讓 UI 直接顯示成功狀態
               }
             } catch (error) {
               Alert.alert('接案失敗', '請稍後再試')
@@ -112,7 +109,7 @@ export const useTaskActions = () => {
             // 模擬 API 呼叫
             await new Promise(resolve => setTimeout(resolve, 1000))
 
-            Alert.alert('任務完成', '任務已標記為完成，等待對方確認。', [{ text: '確定' }])
+            // 不顯示 Alert，讓 UI 直接顯示成功狀態
           } catch (error) {
             Alert.alert('操作失敗', '請稍後再試')
           }
@@ -125,26 +122,15 @@ export const useTaskActions = () => {
    * 處理刪除任務 (PENDING 狀態)
    */
   const handleDeleteTask = useCallback((taskId: string) => {
-    showAlert('確認刪除', '確定要刪除這個任務嗎？刪除後無法復原。', [
-      { text: '取消', style: 'cancel' },
-      {
-        text: '確定刪除',
-        style: 'destructive',
-        onPress: () => {
-          try {
-            // 從任務列表中移除任務
-            const taskIndex = mockTasks.findIndex(t => t.id === taskId)
-            if (taskIndex !== -1) {
-              mockTasks.splice(taskIndex, 1)
-            }
-
-            Alert.alert('刪除成功', '任務已成功刪除。')
-          } catch (error) {
-            Alert.alert('刪除失敗', '請稍後再試')
-          }
-        },
-      },
-    ])
+    try {
+      // 從任務列表中移除任務
+      const taskIndex = mockTasks.findIndex(t => t.id === taskId)
+      if (taskIndex !== -1) {
+        mockTasks.splice(taskIndex, 1)
+      }
+    } catch (error) {
+      Alert.alert('刪除失敗', '請稍後再試')
+    }
   }, [])
 
   /**
@@ -172,10 +158,7 @@ export const useTaskActions = () => {
               const task = mockTasks[taskIndex]
               const applicantCount = task.applicants?.length || 0
               
-              Alert.alert(
-                '取消成功', 
-                `任務已取消，已通知 ${applicantCount} 位申請者。`
-              )
+              // 不顯示 Alert，讓 UI 直接顯示成功狀態
             }
           } catch (error) {
             Alert.alert('取消失敗', '請稍後再試')
@@ -189,26 +172,15 @@ export const useTaskActions = () => {
    * 處理刪除任務記錄 (COMPLETED 狀態)
    */
   const handleDeleteRecord = useCallback((taskId: string) => {
-    showAlert('確認刪除', '確定要刪除這個任務記錄嗎？刪除後無法復原。', [
-      { text: '取消', style: 'cancel' },
-      {
-        text: '確定刪除',
-        style: 'destructive',
-        onPress: () => {
-          try {
-            // 從任務列表中移除任務記錄
-            const taskIndex = mockTasks.findIndex(t => t.id === taskId)
-            if (taskIndex !== -1) {
-              mockTasks.splice(taskIndex, 1)
-            }
-
-            Alert.alert('刪除成功', '任務記錄已成功刪除。')
-          } catch (error) {
-            Alert.alert('刪除失敗', '請稍後再試')
-          }
-        },
-      },
-    ])
+    try {
+      // 從任務列表中移除任務記錄
+      const taskIndex = mockTasks.findIndex(t => t.id === taskId)
+      if (taskIndex !== -1) {
+        mockTasks.splice(taskIndex, 1)
+      }
+    } catch (error) {
+      Alert.alert('刪除失敗', '請稍後再試')
+    }
   }, [])
 
   /**
@@ -243,7 +215,7 @@ export const useTaskActions = () => {
                 updatedAt: new Date(),
               }
               
-              Alert.alert('撤回成功', '已成功撤回申請。')
+              // 不顯示 Alert，讓 UI 直接顯示成功狀態
             }
           } catch (error) {
             Alert.alert('撤回失敗', '請稍後再試')

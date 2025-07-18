@@ -16,6 +16,6 @@ export type FearStarTabParamList = {
 // 蟲蟲終結者專用標籤
 export type TerminatorTabParamList = {
   TaskWall: undefined      // 任務牆
-  MyTasks: undefined       // 我的任務
+  TaskList: undefined      // 任務
   Profile: undefined       // 我的
 }

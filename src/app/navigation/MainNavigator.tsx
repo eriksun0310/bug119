@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import { Bug, List, User } from 'lucide-react-native'
+import { Bug, CheckSquare, User } from 'lucide-react-native'
 import { useTheme } from '@/shared/theme'
 import { FearStarTabParamList } from '@/shared/types'
 
@@ -33,7 +33,7 @@ export const MainNavigator = () => {
             case 'PublishTask':
               return <Bug {...iconProps} />
             case 'TaskList':
-              return <List {...iconProps} />
+              return <CheckSquare {...iconProps} />
             case 'Profile':
               return <User {...iconProps} />
             default:

@@ -23,26 +23,27 @@ export const useTaskDetailLogic = (taskId: string, currentUser: User | null) => 
   }, [])
   
   // 查找任務資料（加入 refreshTrigger 依賴）
-  const task = useMemo(() => 
-    mockTasks.find(t => t.id === taskId) || mockTasks[0], 
-    [taskId, refreshTrigger]
-  )
+  const task = useMemo(() => {
+    const foundTask = mockTasks.find(t => t.id === taskId)
+    // 如果任務不存在（已被刪除），返回 null 而不是預設任務
+    return foundTask || null
+  }, [taskId, refreshTrigger])
 
   // 查找客戶資料
   const customer = useMemo(() => 
-    mockUsers.find(u => u.id === task.createdBy), 
-    [task.createdBy]
+    task ? mockUsers.find(u => u.id === task.createdBy) : null, 
+    [task?.createdBy]
   )
 
   // 查找終結者資料
   const terminator = useMemo(() => 
-    task.assignedTo ? mockUsers.find(u => u.id === task.assignedTo) : null, 
-    [task.assignedTo]
+    task?.assignedTo ? mockUsers.find(u => u.id === task.assignedTo) : null, 
+    [task?.assignedTo]
   )
 
   // 決定聯絡人資訊
   const contactInfo = useMemo(() => {
-    if (!currentUser) return null
+    if (!currentUser || !task) return null
 
     const contactPerson = currentUser.role === UserRole.FEAR_STAR ? terminator : customer
     const contactTitle = currentUser.role === UserRole.FEAR_STAR ? '終結者資訊' : '小怕星資訊'
@@ -51,7 +52,7 @@ export const useTaskDetailLogic = (taskId: string, currentUser: User | null) => 
       person: contactPerson,
       title: contactTitle
     }
-  }, [currentUser, terminator, customer])
+  }, [currentUser, terminator, customer, task])
 
   return {
     task,

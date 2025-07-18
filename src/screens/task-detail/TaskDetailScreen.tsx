@@ -38,6 +38,18 @@ export const TaskDetailScreen: React.FC = () => {
 
   const styles = createStyles(theme, isTablet)
 
+  // 如果任務不存在（已被刪除），自動返回上一頁
+  React.useEffect(() => {
+    if (!task) {
+      navigation.goBack()
+    }
+  }, [task, navigation])
+
+  // 如果任務不存在，不渲染任何內容
+  if (!task) {
+    return null
+  }
+
   // 取得任務狀態的中文顯示
   const statusText = taskStatusValidator.getStatusDisplayText(task.status)
   const headerTitle = `任務詳情 - ${statusText}`
@@ -67,6 +79,7 @@ export const TaskDetailScreen: React.FC = () => {
             onDeleteRecord={handleDeleteRecord}
             onWithdrawApplication={handleWithdrawApplication}
             isTablet={isTablet}
+            navigation={navigation}
           />
         </View>
       </ScrollView>
