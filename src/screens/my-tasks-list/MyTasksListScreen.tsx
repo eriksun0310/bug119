@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { View, FlatList, Text } from 'react-native'
-import { useNavigation } from '@react-navigation/native'
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { useTheme } from '@/shared/theme'
 import { useAuth, useResponsive } from '@/shared/hooks'
@@ -12,12 +12,14 @@ import { ScreenHeader, TaskCard } from '@/shared/ui'
 import { createStyles } from './MyTasksListScreen.styles'
 
 type MyTasksListNavigationProp = NativeStackNavigationProp<RootStackParamList, 'MyTasksList'>
+type MyTasksListRouteProp = RouteProp<RootStackParamList, 'MyTasksList'>
 
 export const MyTasksListScreen: React.FC = () => {
   const { theme } = useTheme()
   const { user } = useAuth()
   const { isTablet } = useResponsive()
   const navigation = useNavigation<MyTasksListNavigationProp>()
+  const route = useRoute<MyTasksListRouteProp>()
 
   // 只顯示小怕星發布的 PENDING 狀態任務
   const pendingTasks = mockTasks.filter(
@@ -45,7 +47,14 @@ export const MyTasksListScreen: React.FC = () => {
         <ScreenHeader
           title="我的任務列表"
           showBackButton
-          onBackPress={() => navigation.goBack()}
+          onBackPress={() => {
+            // 如果來自發布任務，回到主畫面；否則正常返回
+            if (route.params?.fromPublish) {
+              navigation.navigate('Main')
+            } else {
+              navigation.goBack()
+            }
+          }}
         />
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>此功能僅限小怕星使用</Text>
@@ -59,7 +68,14 @@ export const MyTasksListScreen: React.FC = () => {
       <ScreenHeader
         title="我的任務列表"
         showBackButton
-        onBackPress={() => navigation.goBack()}
+        onBackPress={() => {
+          // 如果來自發布任務，回到主畫面；否則正常返回
+          if (route.params?.fromPublish) {
+            navigation.navigate('Main')
+          } else {
+            navigation.goBack()
+          }
+        }}
       />
 
       <View style={styles.content}>

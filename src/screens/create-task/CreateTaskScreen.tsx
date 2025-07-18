@@ -12,6 +12,7 @@ import {
   KeyboardAvoidingContainer,
   PestSelector,
   PrioritySelector,
+  TaskActionResult,
 } from '@/shared/ui'
 import { showAlert } from '@/shared/utils'
 import { useNavigation } from '@react-navigation/native'
@@ -43,6 +44,7 @@ export const CreateTaskScreen = () => {
   const insets = useSafeAreaInsets()
   const navigation = useNavigation<CreateTaskNavigationProp>()
   const [loading, setLoading] = useState(false)
+  const [showActionResult, setShowActionResult] = useState(false)
 
   const [form, setForm] = useState<CreateTaskForm>({
     title: '',
@@ -102,29 +104,34 @@ export const CreateTaskScreen = () => {
       // 模擬 API 呼叫
       await new Promise(resolve => setTimeout(resolve, 2000))
 
-      showAlert('發布成功！', '您的除蟲任務已發布，我們會盡快為您媒合合適的蟲蟲終結者。', [
-        {
-          text: '確定',
-          onPress: () => {
-            // 重置表單
-            setForm({
-              title: '',
-              description: '',
-              priority: TaskPriority.NORMAL,
-              location: {
-                city: '',
-                district: '',
-              },
-              preferredGender: Gender.ANY,
-            })
-          },
-        },
-      ])
+      // 顯示成功結果 UI
+      setShowActionResult(true)
     } catch (error) {
       showAlert('發布失敗', '請稍後再試')
     } finally {
       setLoading(false)
     }
+  }
+
+  // 處理查看任務按鈕點擊
+  const handleViewTask = () => {
+    // 重置表單
+    setForm({
+      title: '',
+      description: '',
+      priority: TaskPriority.NORMAL,
+      location: {
+        city: '',
+        district: '',
+      },
+      preferredGender: Gender.ANY,
+    })
+    
+    // 重置 ActionResult 狀態
+    setShowActionResult(false)
+    
+    // 跳轉到我的任務列表，標記來自發布任務
+    navigation.navigate('MyTasksList', { fromPublish: true })
   }
 
   // 獲取當前位置
@@ -135,6 +142,20 @@ export const CreateTaskScreen = () => {
   }
 
   const styles = createStyles(theme, insets)
+
+  // 如果顯示操作結果，渲染 TaskActionResult
+  if (showActionResult) {
+    return (
+      <View style={styles.container}>
+        <TaskActionResult
+          type="publish"
+          message="任務已成功發布"
+          buttonText="查看任務"
+          onViewTask={handleViewTask}
+        />
+      </View>
+    )
+  }
 
   return (
     <KeyboardAvoidingContainer style={styles.container}>

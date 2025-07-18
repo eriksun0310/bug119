@@ -1,4 +1,4 @@
-export type TaskActionResultType = 'accept' | 'complete' | 'withdraw' | 'delete' | 'cancel'
+export type TaskActionResultType = 'accept' | 'complete' | 'withdraw' | 'delete' | 'cancel' | 'publish'
 
 export interface TaskActionResultProps {
   type: TaskActionResultType

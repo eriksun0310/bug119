@@ -9,7 +9,7 @@ export type MainTabParamList = {
 // 小怕星專用標籤
 export type FearStarTabParamList = {
   PublishTask: undefined    // 發任務
-  TaskList: undefined      // 任務
+  TaskList: { initialTab?: 'pending_confirmation' | 'in_progress' | 'completed' } | undefined      // 任務
   Profile: undefined       // 我的
 }
 

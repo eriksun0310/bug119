@@ -3,7 +3,10 @@
 export type RootStackParamList = {
   Splash: undefined
   Auth: undefined
-  Main: undefined
+  Main: { 
+    screen?: string
+    params?: { initialTab?: 'pending_confirmation' | 'in_progress' | 'completed' }
+  } | undefined
   TaskWall: undefined
   TaskDetail: { taskId: string; fromTab?: 'ongoing' | 'pending' | 'completed' }
   TaskApplicants: { taskId: string }
@@ -13,5 +16,5 @@ export type RootStackParamList = {
   Profile: { userId: string }
   Settings: undefined
   Notifications: undefined
-  MyTasksList: undefined
+  MyTasksList: { fromPublish?: boolean } | undefined
 }
