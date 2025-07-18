@@ -8,6 +8,7 @@ import { useAuth, useResponsive, useTaskDetailLogic, useTaskActions } from '@/sh
 import { useTheme } from '@/shared/theme'
 import { RootStackParamList } from '@/shared/types'
 import { ScreenHeader, TaskCard, TaskStatusRenderer } from '@/shared/ui'
+import { taskStatusValidator } from '@/shared/utils'
 import { createStyles } from './TaskDetailScreen.styles'
 
 type TaskDetailRouteProp = RouteProp<RootStackParamList, 'TaskDetail'>
@@ -25,13 +26,25 @@ export const TaskDetailScreen: React.FC = () => {
   const { task, contactInfo } = useTaskDetailLogic(taskId, user)
 
   // 使用 Hook 獲取任務操作函數
-  const { handleAcceptTask, handleSelectTerminator, handleMarkCompleted } = useTaskActions()
+  const { 
+    handleAcceptTask, 
+    handleSelectTerminator, 
+    handleMarkCompleted,
+    handleDeleteTask,
+    handleCancelTask,
+    handleDeleteRecord,
+    handleWithdrawApplication
+  } = useTaskActions()
 
   const styles = createStyles(theme, isTablet)
 
+  // 取得任務狀態的中文顯示
+  const statusText = taskStatusValidator.getStatusDisplayText(task.status)
+  const headerTitle = `任務詳情 - ${statusText}`
+
   return (
     <View style={styles.container}>
-      <ScreenHeader title="任務詳情" showBackButton onBackPress={() => navigation.goBack()} />
+      <ScreenHeader title={headerTitle} showBackButton onBackPress={() => navigation.goBack()} />
 
       <ScrollView style={styles.content}>
         {/* 頂部任務摘要卡片 */}
@@ -49,6 +62,10 @@ export const TaskDetailScreen: React.FC = () => {
             onAcceptTask={handleAcceptTask}
             onSelectTerminator={handleSelectTerminator}
             onMarkCompleted={handleMarkCompleted}
+            onDeleteTask={handleDeleteTask}
+            onCancelTask={handleCancelTask}
+            onDeleteRecord={handleDeleteRecord}
+            onWithdrawApplication={handleWithdrawApplication}
             isTablet={isTablet}
           />
         </View>

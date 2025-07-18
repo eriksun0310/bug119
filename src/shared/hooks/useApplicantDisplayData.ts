@@ -36,8 +36,17 @@ export const useApplicantDisplayData = ({
           // 終結者看小怕星
           return mockUsers.find(u => u.id === taskCreatedBy)
         }
+      } else if (taskStatus === TaskStatus.PENDING_CONFIRMATION) {
+        // PENDING_CONFIRMATION 狀態：雙方都看對方的資料
+        if (currentUserRole === UserRole.FEAR_STAR) {
+          // 小怕星看終結者
+          return mockUsers.find(u => u.id === application.terminatorId)
+        } else {
+          // 終結者看小怕星
+          return mockUsers.find(u => u.id === taskCreatedBy)
+        }
       } else {
-        // PENDING 或 PENDING_CONFIRMATION 狀態
+        // PENDING 狀態：顯示終結者資料
         return mockUsers.find(u => u.id === application.terminatorId)
       }
     }

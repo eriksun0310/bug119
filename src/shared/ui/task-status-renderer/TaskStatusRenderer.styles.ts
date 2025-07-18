@@ -24,4 +24,8 @@ export const createStyles = (theme: Theme) => StyleSheet.create({
     textAlign: 'center',
     marginTop: theme.spacing.xl,
   },
+  buttonContainer: {
+    marginTop: theme.spacing.lg,
+    paddingHorizontal: theme.spacing.sm,
+  },
 })

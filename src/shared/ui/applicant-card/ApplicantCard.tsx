@@ -15,6 +15,7 @@ export const ApplicantCard: FC<ApplicantCardProps> = ({
   application,
   assignment,
   onSelect,
+  onWithdraw,
   style,
   taskStatus,
   currentUserRole,
@@ -39,25 +40,33 @@ export const ApplicantCard: FC<ApplicantCardProps> = ({
 
   // 處理按鈕點擊
   const handlePress = () => {
-    console.log('1111111')
     onSelect(application || assignment!)
   }
+
+  // 處理撤回申請 - 已移至 TaskStatusRenderer
+  // const handleWithdraw = () => {
+  //   if (application && onWithdraw) {
+  //     onWithdraw(application.id)
+  //   }
+  // }
 
   // 決定按鈕配置
   const getButtonConfig = () => {
     switch (taskStatus) {
       case 'pending':
-        return currentUserRole === 'terminator'
-          ? { text: '接受任務', show: true }
-          : { show: false }
+        // 移除接受任務按鈕，改到 TaskStatusRenderer
+        return { show: false }
 
       case 'pending_confirmation':
-        return currentUserRole === 'fear_star'
-          ? { text: '選擇委託', show: true }
-          : { show: false }
+        if (currentUserRole === 'fear_star') {
+          return { text: '選擇委託', show: true }
+        }
+        // 移除終結者的撤回申請按鈕，改到 TaskStatusRenderer
+        return { show: false }
 
       case 'in_progress':
-        return { text: '已完成', show: true }
+        // 移除已完成按鈕，改到 TaskStatusRenderer
+        return { show: false }
 
       case 'completed':
         return { show: false }
@@ -100,7 +109,7 @@ export const ApplicantCard: FC<ApplicantCardProps> = ({
             </View>
           </View>
           {buttonConfig.show && (
-            <Button variant="primary" onPress={handlePress} style={styles.selectButton}>
+            <Button variant="secondary" onPress={handlePress} style={styles.selectButton}>
               {buttonConfig.text}
             </Button>
           )}
@@ -108,7 +117,11 @@ export const ApplicantCard: FC<ApplicantCardProps> = ({
       ) : (
         buttonConfig.show && (
           <View style={styles.actionContainer}>
-            <Button variant="primary" onPress={handlePress} style={styles.selectButton}>
+            <Button 
+              variant="secondary" 
+              onPress={handlePress} 
+              style={styles.selectButton}
+            >
               {buttonConfig.text}
             </Button>
           </View>

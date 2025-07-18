@@ -5,6 +5,7 @@ export interface ApplicantCardProps {
   application?: TaskApplication // 申請記錄（用於 PENDING_CONFIRMATION 狀態）
   assignment?: TaskAssignment // 指派記錄（用於 IN_PROGRESS 狀態）
   onSelect: (data: TaskApplication | TaskAssignment) => void
+  onWithdraw?: (applicationId: string) => void // 撤回申請
   style?: ViewStyle
   taskStatus: TaskStatus
   currentUserRole: UserRole // 當前使用者角色

@@ -121,9 +121,145 @@ export const useTaskActions = () => {
     ])
   }, [])
 
+  /**
+   * 處理刪除任務 (PENDING 狀態)
+   */
+  const handleDeleteTask = useCallback((taskId: string) => {
+    showAlert('確認刪除', '確定要刪除這個任務嗎？刪除後無法復原。', [
+      { text: '取消', style: 'cancel' },
+      {
+        text: '確定刪除',
+        style: 'destructive',
+        onPress: () => {
+          try {
+            // 從任務列表中移除任務
+            const taskIndex = mockTasks.findIndex(t => t.id === taskId)
+            if (taskIndex !== -1) {
+              mockTasks.splice(taskIndex, 1)
+            }
+
+            Alert.alert('刪除成功', '任務已成功刪除。')
+          } catch (error) {
+            Alert.alert('刪除失敗', '請稍後再試')
+          }
+        },
+      },
+    ])
+  }, [])
+
+  /**
+   * 處理取消任務 (PENDING_CONFIRMATION 狀態)
+   */
+  const handleCancelTask = useCallback((taskId: string) => {
+    showAlert('確認取消', '確定要取消這個任務嗎？將通知所有申請者。', [
+      { text: '取消', style: 'cancel' },
+      {
+        text: '確定取消',
+        style: 'destructive',
+        onPress: () => {
+          try {
+            // 更新任務狀態為取消
+            const taskIndex = mockTasks.findIndex(t => t.id === taskId)
+            if (taskIndex !== -1) {
+              mockTasks[taskIndex] = {
+                ...mockTasks[taskIndex],
+                status: TaskStatus.CANCELLED,
+                cancelledAt: new Date(),
+                updatedAt: new Date(),
+              }
+
+              // 通知所有申請者
+              const task = mockTasks[taskIndex]
+              const applicantCount = task.applicants?.length || 0
+              
+              Alert.alert(
+                '取消成功', 
+                `任務已取消，已通知 ${applicantCount} 位申請者。`
+              )
+            }
+          } catch (error) {
+            Alert.alert('取消失敗', '請稍後再試')
+          }
+        },
+      },
+    ])
+  }, [])
+
+  /**
+   * 處理刪除任務記錄 (COMPLETED 狀態)
+   */
+  const handleDeleteRecord = useCallback((taskId: string) => {
+    showAlert('確認刪除', '確定要刪除這個任務記錄嗎？刪除後無法復原。', [
+      { text: '取消', style: 'cancel' },
+      {
+        text: '確定刪除',
+        style: 'destructive',
+        onPress: () => {
+          try {
+            // 從任務列表中移除任務記錄
+            const taskIndex = mockTasks.findIndex(t => t.id === taskId)
+            if (taskIndex !== -1) {
+              mockTasks.splice(taskIndex, 1)
+            }
+
+            Alert.alert('刪除成功', '任務記錄已成功刪除。')
+          } catch (error) {
+            Alert.alert('刪除失敗', '請稍後再試')
+          }
+        },
+      },
+    ])
+  }, [])
+
+  /**
+   * 處理撤回申請 (PENDING_CONFIRMATION 狀態)
+   */
+  const handleWithdrawApplication = useCallback((applicationId: string) => {
+    showAlert('確認撤回', '確定要撤回這個申請嗎？', [
+      { text: '取消', style: 'cancel' },
+      {
+        text: '確定撤回',
+        style: 'destructive',
+        onPress: () => {
+          try {
+            // 找到包含此申請的任務
+            const taskIndex = mockTasks.findIndex(task => 
+              task.applicants?.some(app => app.id === applicationId)
+            )
+            
+            if (taskIndex !== -1) {
+              const task = mockTasks[taskIndex]
+              
+              // 移除申請者
+              const updatedApplicants = task.applicants?.filter(app => app.id !== applicationId) || []
+              
+              // 如果沒有其他申請者，將任務狀態改回 PENDING
+              const newStatus = updatedApplicants.length === 0 ? TaskStatus.PENDING : TaskStatus.PENDING_CONFIRMATION
+              
+              mockTasks[taskIndex] = {
+                ...task,
+                applicants: updatedApplicants,
+                status: newStatus,
+                updatedAt: new Date(),
+              }
+              
+              Alert.alert('撤回成功', '已成功撤回申請。')
+            }
+          } catch (error) {
+            Alert.alert('撤回失敗', '請稍後再試')
+          }
+        },
+      },
+    ])
+  }, [])
+
   return {
     handleAcceptTask,
     handleSelectTerminator,
     handleMarkCompleted,
+    handleDeleteTask,
+    handleCancelTask,
+    handleDeleteRecord,
+    handleWithdrawApplication,
   }
 }

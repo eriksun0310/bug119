@@ -7,6 +7,7 @@ export enum TaskStatus {
   PENDING_CONFIRMATION = 'pending_confirmation', // 待確認
   IN_PROGRESS = 'in_progress', // 進行中
   COMPLETED = 'completed', // 已完成
+  CANCELLED = 'cancelled', // 已取消
 }
 
 export enum TaskPriority {
@@ -45,6 +46,9 @@ export interface Task {
   
   // 只在 COMPLETED 狀態下存在
   completedAt?: Date
+  
+  // 只在 CANCELLED 狀態下存在
+  cancelledAt?: Date
   
   createdAt: Date
   updatedAt: Date
