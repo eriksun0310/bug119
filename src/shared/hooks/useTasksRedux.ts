@@ -54,6 +54,9 @@ import {
   TaskFilter,
   TaskSort,
   updateTask,
+  withdrawApplicationError,
+  withdrawApplicationStart,
+  withdrawApplicationSuccess,
 } from '@/shared/store/slices/tasksSlice'
 import { Task, TaskApplication } from '@/shared/types'
 import { useCallback } from 'react'
@@ -95,7 +98,32 @@ export const useTasksRedux = () => {
 
       // 模擬 API 呼叫 - 目前使用假資料
       await new Promise(resolve => setTimeout(resolve, 500))
-      dispatch(fetchTasksSuccess(mockTasks))
+      
+      // 添加測試用的 pending 任務供終結者測試
+      const testPendingTask = {
+        id: `test_pending_${Date.now()}`,
+        title: '測試任務 - 家中蟑螂問題',
+        description: '廚房發現蟑螂，需要專業除蟲服務，希望盡快處理',
+        pestType: 'cockroach' as const,
+        location: {
+          latitude: 25.0330,
+          longitude: 121.5654,
+          city: '台北市',
+          district: '大安區',
+        },
+        status: 'pending' as const,
+        priority: 'urgent' as const,
+        budget: 1500,
+        isImmediate: false,
+        createdBy: '1', // 小怕星發布
+        applicants: [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }
+      
+      // 合併假資料和測試任務
+      const allTasks = [...mockTasks, testPendingTask]
+      dispatch(fetchTasksSuccess(allTasks))
     } catch (error) {
       dispatch(fetchTasksError(error instanceof Error ? error.message : '載入任務失敗'))
     }
@@ -275,9 +303,39 @@ export const useTasksRedux = () => {
         }
 
         dispatch(applyForTaskSuccess({ taskId, application: newApplication }))
+
+        // 為測試目的，自動讓小怕星選擇該終結者
+        setTimeout(async () => {
+          console.log('自動觸發小怕星選擇終結者')
+          
+          // 模擬小怕星選擇終結者
+          await new Promise(resolve => setTimeout(resolve, 1000))
+          dispatch(selectTerminatorStart())
+          
+          await new Promise(resolve => setTimeout(resolve, 500))
+          dispatch(selectTerminatorSuccess({ taskId, terminatorId }))
+        }, 2000) // 2秒後自動選擇終結者
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : '申請任務失敗'
         dispatch(applyForTaskError(errorMessage))
+        throw new Error(errorMessage)
+      }
+    },
+    [dispatch]
+  )
+
+  const withdrawApplication = useCallback(
+    async (taskId: string, applicationId: string) => {
+      try {
+        dispatch(withdrawApplicationStart())
+
+        // 模擬 API 呼叫
+        await new Promise(resolve => setTimeout(resolve, 500))
+
+        dispatch(withdrawApplicationSuccess({ taskId, applicationId }))
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : '撤回申請失敗'
+        dispatch(withdrawApplicationError(errorMessage))
         throw new Error(errorMessage)
       }
     },
@@ -363,6 +421,7 @@ export const useTasksRedux = () => {
     completeTask,
     cancelTask,
     applyForTask,
+    withdrawApplication,
 
     // 篩選與排序
     setFilter,

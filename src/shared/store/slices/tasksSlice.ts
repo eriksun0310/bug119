@@ -412,6 +412,57 @@ const tasksSlice = createSlice({
       state.applications.error = action.payload
     },
 
+    // 撤回申請
+    withdrawApplicationStart: (state) => {
+      state.applications.loading = 'loading'
+      state.applications.error = null
+    },
+    
+    withdrawApplicationSuccess: (state, action: PayloadAction<{ taskId: string; applicationId: string }>) => {
+      state.applications.loading = 'success'
+      state.applications.error = null
+      
+      // 從任務列表中移除申請
+      if (state.tasks.data) {
+        const taskIndex = state.tasks.data.findIndex(task => task.id === action.payload.taskId)
+        if (taskIndex !== -1) {
+          state.tasks.data[taskIndex] = {
+            ...state.tasks.data[taskIndex],
+            applicants: state.tasks.data[taskIndex].applicants.filter(
+              app => app.id !== action.payload.applicationId
+            ),
+            updatedAt: new Date(),
+          }
+          
+          // 如果沒有申請者了，狀態回到 PENDING
+          if (state.tasks.data[taskIndex].applicants.length === 0) {
+            state.tasks.data[taskIndex].status = TaskStatus.PENDING
+          }
+        }
+      }
+      
+      // 從當前任務中移除申請
+      if (state.currentTask.data?.id === action.payload.taskId) {
+        state.currentTask.data = {
+          ...state.currentTask.data,
+          applicants: state.currentTask.data.applicants.filter(
+            app => app.id !== action.payload.applicationId
+          ),
+          updatedAt: new Date(),
+        }
+        
+        // 如果沒有申請者了，狀態回到 PENDING
+        if (state.currentTask.data.applicants.length === 0) {
+          state.currentTask.data.status = TaskStatus.PENDING
+        }
+      }
+    },
+    
+    withdrawApplicationError: (state, action: PayloadAction<string>) => {
+      state.applications.loading = 'error'
+      state.applications.error = action.payload
+    },
+
     // ===== 篩選與排序 =====
     setTaskFilter: (state, action: PayloadAction<Partial<TaskFilter>>) => {
       state.filter = {
@@ -509,6 +560,11 @@ export const {
   applyForTaskStart,
   applyForTaskSuccess,
   applyForTaskError,
+  
+  // 撤回申請
+  withdrawApplicationStart,
+  withdrawApplicationSuccess,
+  withdrawApplicationError,
   
   // 篩選與排序
   setTaskFilter,

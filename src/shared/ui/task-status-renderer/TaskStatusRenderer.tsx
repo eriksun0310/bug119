@@ -18,7 +18,7 @@ interface TaskStatusRendererProps {
   onDeleteTask?: (taskId: string, onSuccess?: () => void) => void
   onCancelTask?: (taskId: string, onSuccess?: () => void) => void
   onDeleteRecord?: (taskId: string, onSuccess?: () => void) => void
-  onWithdrawApplication?: (applicationId: string, onSuccess?: () => void) => void
+  onWithdrawApplication?: (taskId: string, applicationId: string, onSuccess?: () => void) => void
   isTablet: boolean
   navigation?: NativeStackNavigationProp<any>
 }
@@ -46,7 +46,7 @@ export const TaskStatusRenderer: FC<TaskStatusRendererProps> = ({
   const styles = createStyles(theme)
   const assignments = getAssignmentsByTaskId(task.id)
   const [showActionResult, setShowActionResult] = useState(false)
-  const [actionType, setActionType] = useState<'accept' | 'withdraw' | 'complete' | 'delete' | 'cancel' | 'select'>('accept')
+  const [actionType, setActionType] = useState<'accept' | 'withdraw' | 'complete' | 'delete' | 'cancel' | 'select' | 'delete_record'>('accept')
   
   // 處理接受任務
   const handleAcceptTaskWithUI = (taskId?: string) => {
@@ -59,7 +59,7 @@ export const TaskStatusRenderer: FC<TaskStatusRendererProps> = ({
   // 處理撤回申請
   const handleWithdrawWithUI = (applicationId: string) => {
     if (onWithdrawApplication) {
-      onWithdrawApplication(applicationId, () => {
+      onWithdrawApplication(task.id, applicationId, () => {
         setActionType('withdraw')
         setShowActionResult(true)
       })
@@ -80,7 +80,7 @@ export const TaskStatusRenderer: FC<TaskStatusRendererProps> = ({
   const handleDeleteRecordWithUI = (taskId: string) => {
     if (onDeleteRecord) {
       onDeleteRecord(taskId, () => {
-        setActionType('delete')
+        setActionType('delete_record')
         setShowActionResult(true)
       })
     }
@@ -233,7 +233,7 @@ export const TaskStatusRenderer: FC<TaskStatusRendererProps> = ({
                 })}
                 onWithdraw={(appId) => {
                   if (onWithdrawApplication) {
-                    onWithdrawApplication(appId, () => {
+                    onWithdrawApplication(task.id, appId, () => {
                       setActionType('withdraw')
                       setShowActionResult(true)
                     })
@@ -275,23 +275,39 @@ export const TaskStatusRenderer: FC<TaskStatusRendererProps> = ({
     )
   }
 
-  // 顯示刪除的 UI（區分刪除任務和刪除記錄）
-  if (showActionResult && actionType === 'delete') {
-    // 根據任務狀態決定顯示訊息和跳轉位置
-    const isDeleteRecord = task.status === TaskStatus.COMPLETED
-    const message = isDeleteRecord ? "任務記錄已刪除" : "任務已刪除"
-    const targetTab = isDeleteRecord ? 'completed' : 'pending_confirmation'
-    
+  // 顯示刪除記錄的 UI（專門處理刪除記錄）
+  if (showActionResult && actionType === 'delete_record') {
     return (
       <TaskActionResult
         type="delete"
-        message={message}
+        message="任務記錄已刪除"
         buttonText="確定"
         onViewTask={() => {
-          // 不需要再次執行刪除操作，因為已經在 handleDeleteRecordWithUI 中完成了
           setShowActionResult(false)
           
-          // 刪除後返回上一頁（刪除記錄回到 completed tab，刪除任務回到上一頁）
+          // 刪除記錄後跳轉到任務列表的 completed tab
+          setTimeout(() => {
+            navigation?.navigate('Main', { 
+              screen: 'TaskList',
+              params: { initialTab: 'completed' }
+            })
+          }, 100) // 短暫延遲確保資料更新
+        }}
+      />
+    )
+  }
+
+  // 顯示刪除任務的 UI（處理刪除任務）
+  if (showActionResult && actionType === 'delete') {
+    return (
+      <TaskActionResult
+        type="delete"
+        message="任務已刪除"
+        buttonText="確定"
+        onViewTask={() => {
+          setShowActionResult(false)
+          
+          // 刪除任務後回到上一頁
           setTimeout(() => {
             navigation?.goBack()
           }, 100) // 短暫延遲確保資料更新

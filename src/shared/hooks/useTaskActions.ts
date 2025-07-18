@@ -18,6 +18,7 @@ export const useTaskActions = () => {
     selectTerminator, 
     completeTask, 
     cancelTask,
+    withdrawApplication,
     removeTaskData 
   } = useTasksRedux()
   /**
@@ -193,12 +194,15 @@ export const useTaskActions = () => {
         style: 'destructive',
         onPress: () => {
           try {
-            // 操作成功後觸發回調 - 不顯示 Alert，讓 UI 直接顯示成功狀態
+            // 先觸發回調顯示成功狀態，延遲刪除任務
             if (onSuccess) {
               onSuccess()
-            } else {
-              removeTaskData(taskId)
             }
+            
+            // 延遲刪除任務，讓 TaskActionResult 有時間顯示
+            setTimeout(() => {
+              removeTaskData(taskId)
+            }, 100)
           } catch (error) {
             Alert.alert('刪除失敗', '請稍後再試')
           }
@@ -210,29 +214,27 @@ export const useTaskActions = () => {
   /**
    * 處理撤回申請 (PENDING_CONFIRMATION 狀態)
    */
-  const handleWithdrawApplication = useCallback((applicationId: string, onSuccess?: () => void) => {
+  const handleWithdrawApplication = useCallback((taskId: string, applicationId: string, onSuccess?: () => void) => {
     showAlert('確認撤回', '確定要撤回這個申請嗎？', [
       { text: '取消', style: 'cancel' },
       {
         text: '確定撤回',
         style: 'destructive',
-        onPress: () => {
+        onPress: async () => {
           try {
+            await withdrawApplication(taskId, applicationId)
+            
             // 操作成功後觸發回調 - 不顯示 Alert，讓 UI 直接顯示成功狀態
             if (onSuccess) {
               onSuccess()
-            } else {
-              // 注意：這裡需要實作撤回申請的 Redux action
-              // 目前先顯示提示訊息
-              Alert.alert('功能開發中', '撤回申請功能還在開發中，請稍後使用')
             }
           } catch (error) {
-            Alert.alert('撤回失敗', '請稍後再試')
+            Alert.alert('撤回失敗', error instanceof Error ? error.message : '請稍後再試')
           }
         },
       },
     ])
-  }, [])
+  }, [withdrawApplication])
 
   return {
     handleAcceptTask,
