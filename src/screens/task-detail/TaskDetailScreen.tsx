@@ -1,7 +1,7 @@
 // 任務詳細頁面 - 蟲蟲終結者查看任務詳情
 
 import React from 'react'
-import { ScrollView, View } from 'react-native'
+import { ScrollView, View, Text } from 'react-native'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { useAuthRedux, useResponsive, useTaskDetailLogic, useTaskActions } from '@/shared/hooks'
