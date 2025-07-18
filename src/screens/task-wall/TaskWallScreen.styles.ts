@@ -78,6 +78,13 @@ export const createStyles = (theme: Theme, isTablet: boolean, screenWidth: numbe
     textAlign: 'center',
     marginTop: theme.spacing.md,
   },
+  emptyStateSubtext: {
+    fontSize: theme.fontSize.sm,
+    color: theme.colors.textSecondary,
+    textAlign: 'center',
+    marginTop: theme.spacing.xs,
+    opacity: 0.7,
+  },
   taskCardHorizontal: {
     width: screenWidth > 600 ? '48%' : '100%', // 寬螢幕每行顯示兩個卡片，窄螢幕每行一個
   },

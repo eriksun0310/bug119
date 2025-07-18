@@ -1,8 +1,8 @@
 // 發布任務畫面 - 小怕星專用
 
-import { useAuthRedux } from '@/shared/hooks'
+import { useAuthRedux, useTasksRedux } from '@/shared/hooks'
 import { useTheme } from '@/shared/theme'
-import { Gender, PestType, RootStackParamList, TaskPriority } from '@/shared/types'
+import { Gender, PestType, RootStackParamList, TaskPriority, TaskStatus } from '@/shared/types'
 import {
   AddressSelector,
   BudgetSelector,
@@ -41,9 +41,9 @@ interface CreateTaskForm {
 export const CreateTaskScreen = () => {
   const { theme } = useTheme()
   const { user } = useAuthRedux()
+  const { createTask, createTaskLoading, createTaskError, resetCreateState } = useTasksRedux()
   const insets = useSafeAreaInsets()
   const navigation = useNavigation<CreateTaskNavigationProp>()
-  const [loading, setLoading] = useState(false)
   const [showActionResult, setShowActionResult] = useState(false)
 
   const [form, setForm] = useState<CreateTaskForm>({
@@ -98,18 +98,37 @@ export const CreateTaskScreen = () => {
       return
     }
 
-    setLoading(true)
+    if (!user?.id) {
+      showAlert('請先登入', '您需要先登入才能發布任務')
+      return
+    }
 
     try {
-      // 模擬 API 呼叫
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      // 使用 Redux 創建任務
+      const taskData = {
+        title: form.title.trim(),
+        description: form.description.trim(),
+        pestType: form.pestType!,
+        location: {
+          latitude: 25.033, // 暫時使用固定座標，未來整合地圖服務
+          longitude: 121.5654,
+          city: form.location.city,
+          district: form.location.district,
+        },
+        status: TaskStatus.PENDING,
+        priority: form.priority,
+        budget: form.budget!,
+        isImmediate: form.priority === TaskPriority.VERY_URGENT,
+        createdBy: user.id,
+      }
 
+      await createTask(taskData)
+      
       // 顯示成功結果 UI
       setShowActionResult(true)
     } catch (error) {
-      showAlert('發布失敗', '請稍後再試')
-    } finally {
-      setLoading(false)
+      const errorMessage = error instanceof Error ? error.message : '發布任務失敗'
+      showAlert('發布失敗', errorMessage)
     }
   }
 
@@ -126,6 +145,9 @@ export const CreateTaskScreen = () => {
       },
       preferredGender: Gender.ANY,
     })
+    
+    // 重置 Redux 創建任務狀態
+    resetCreateState()
     
     // 重置 ActionResult 狀態
     setShowActionResult(false)
@@ -248,7 +270,7 @@ export const CreateTaskScreen = () => {
       <View style={styles.submitSection}>
         <Button
           variant="primary"
-          loading={loading}
+          loading={createTaskLoading === 'loading'}
           onPress={handleSubmit}
           style={styles.submitButton}
           fullWidth

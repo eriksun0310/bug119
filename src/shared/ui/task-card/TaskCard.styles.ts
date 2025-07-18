@@ -88,6 +88,8 @@ export const createStyles = (theme: Theme) => StyleSheet.create({
   },
   
   acceptButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: theme.colors.secondary,
     paddingHorizontal: theme.spacing.md,
     paddingVertical: theme.spacing.sm,
@@ -100,6 +102,7 @@ export const createStyles = (theme: Theme) => StyleSheet.create({
     color: theme.colors.primary,
     fontSize: theme.fontSize.sm,
     fontWeight: '600',
+    marginLeft: theme.spacing.xs,
   },
   
   

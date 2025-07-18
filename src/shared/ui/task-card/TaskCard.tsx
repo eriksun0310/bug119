@@ -3,8 +3,8 @@
 import { getPestTypeDisplayName, getPriorityDisplayInfo } from '@/shared/mocks'
 import { mockUsers } from '@/shared/mocks/users.mock'
 import { useTheme } from '@/shared/theme'
-import { UserRole } from '@/shared/types'
-import { Bug, DollarSign, MapPin, MessageSquare, User as UserIcon } from 'lucide-react-native'
+import { UserRole, TaskStatus } from '@/shared/types'
+import { Bug, DollarSign, MapPin, MessageSquare, User as UserIcon, Check } from 'lucide-react-native'
 import React, { FC } from 'react'
 import { Text, TouchableOpacity, View } from 'react-native'
 import { createStyles } from './TaskCard.styles'
@@ -38,6 +38,7 @@ export const TaskCard: FC<TaskCardProps> = ({
     }
   }
 
+
   const formatBudget = () => {
     return `${task.budget}`
   }
@@ -51,6 +52,7 @@ export const TaskCard: FC<TaskCardProps> = ({
   // 根據當前用戶身份決定顯示哪個聯絡資訊
   const contactPerson = currentUserRole === UserRole.FEAR_STAR ? terminator : customer
   const contactLabel = currentUserRole === UserRole.FEAR_STAR ? '終結者' : '客戶'
+
 
   const containerStyle =
     variant === 'compact' ? [styles.container, styles.compactContainer] : styles.container

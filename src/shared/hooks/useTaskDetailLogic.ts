@@ -1,33 +1,44 @@
-import { useMemo, useState, useEffect } from 'react'
-import { mockTasks, mockUsers } from '@/shared/mocks'
+import { useMemo, useEffect } from 'react'
+import { useTasksRedux } from './useTasksRedux'
+import { mockUsers } from '@/shared/mocks'
 import { User, UserRole } from '@/shared/types'
+import { useSelector } from 'react-redux'
+import { RootState } from '@/shared/store'
+import { selectTaskById, selectCurrentTask } from '@/shared/store/selectors/tasksSelectors'
 
 /**
  * 任務詳情邏輯 Hook
  * 負責處理任務資料查找和相關用戶資訊
  */
-
-
-// TODO:這個改成 RTK Query 的方式
 export const useTaskDetailLogic = (taskId: string, currentUser: User | null) => {
-  // 使用 state 來強制重新渲染
-  const [refreshTrigger, setRefreshTrigger] = useState(0)
+  const { loadTaskDetail, loadTasks } = useTasksRedux()
   
-  // 設定定期檢查任務狀態更新
+  // 首先嘗試從任務列表中獲取，如果沒有則從 currentTask 獲取
+  const taskFromList = useSelector((state: RootState) => selectTaskById(state, taskId))
+  const currentTask = useSelector(selectCurrentTask)
+  
+  // 優先使用任務列表中的資料，如果沒有則使用 currentTask
+  const task = taskFromList || (currentTask?.id === taskId ? currentTask : null)
+  
+  // 載入任務詳情
   useEffect(() => {
-    const interval = setInterval(() => {
-      setRefreshTrigger(prev => prev + 1)
-    }, 1000) // 每秒檢查一次
+    // 確保有載入所有任務
+    loadTasks()
     
-    return () => clearInterval(interval)
-  }, [])
-  
-  // 查找任務資料（加入 refreshTrigger 依賴）
-  const task = useMemo(() => {
-    const foundTask = mockTasks.find(t => t.id === taskId)
-    // 如果任務不存在（已被刪除），返回 null 而不是預設任務
-    return foundTask || null
-  }, [taskId, refreshTrigger])
+    if (taskId && !task) {
+      loadTaskDetail(taskId)
+    }
+  }, [taskId, task, loadTaskDetail, loadTasks])
+
+  // 調試：記錄任務資料狀態
+  useEffect(() => {
+    if (__DEV__) {
+      console.log('useTaskDetailLogic - taskId:', taskId)
+      console.log('useTaskDetailLogic - task:', task)
+      console.log('useTaskDetailLogic - taskFromList:', taskFromList)
+      console.log('useTaskDetailLogic - currentTask:', currentTask)
+    }
+  }, [taskId, task, taskFromList, currentTask])
 
   // 查找客戶資料
   const customer = useMemo(() => 

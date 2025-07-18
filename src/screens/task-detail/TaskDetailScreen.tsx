@@ -45,9 +45,16 @@ export const TaskDetailScreen: React.FC = () => {
     }
   }, [task, navigation])
 
-  // 如果任務不存在，不渲染任何內容
+  // 如果任務不存在，顯示載入狀態或錯誤
   if (!task) {
-    return null
+    return (
+      <View style={styles.container}>
+        <ScreenHeader title="載入中..." showBackButton onBackPress={() => navigation.goBack()} />
+        <View style={styles.content}>
+          <Text style={{ textAlign: 'center', marginTop: 50 }}>載入任務資料中...</Text>
+        </View>
+      </View>
+    )
   }
 
   // 取得任務狀態的中文顯示

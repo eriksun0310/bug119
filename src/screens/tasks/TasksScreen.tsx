@@ -1,8 +1,7 @@
 // 我的任務畫面 - 支援小怕星和終結者
 
 import { TASK_TAB_OPTIONS } from '@/shared/config/options.config'
-import { useAuthRedux, useResponsive } from '@/shared/hooks'
-import { getAssignedTasks, mockTasks } from '@/shared/mocks'
+import { useAuthRedux, useTasksRedux, useResponsive } from '@/shared/hooks'
 import { useTheme } from '@/shared/theme'
 import { RootStackParamList, Task, TaskStatus, UserRole } from '@/shared/types'
 import { TaskCard } from '@/shared/ui'
@@ -22,6 +21,12 @@ type TaskTab = 'pending_confirmation' | 'in_progress' | 'completed'
 export const TasksScreen = () => {
   const { theme } = useTheme()
   const { user } = useAuthRedux()
+  const { 
+    tasks, 
+    tasksLoading, 
+    tasksError, 
+    loadTasks 
+  } = useTasksRedux()
   const { isTablet } = useResponsive()
   const insets = useSafeAreaInsets()
   const navigation = useNavigation<TasksNavigationProp>()
@@ -30,8 +35,12 @@ export const TasksScreen = () => {
   // 從路由參數獲取初始 tab，如果沒有則預設為 pending_confirmation
   const initialTab = route.params?.initialTab || 'pending_confirmation'
   const [activeTab, setActiveTab] = useState<TaskTab>(initialTab)
-  const [refreshing, setRefreshing] = useState(false)
   const activeTabRef = useRef<TaskTab>(initialTab)
+
+  // 載入任務資料
+  useEffect(() => {
+    loadTasks()
+  }, [loadTasks])
 
   // 監聽 activeTab 變化並同步到 ref
   useEffect(() => {
@@ -46,16 +55,17 @@ export const TasksScreen = () => {
   }, [route.params?.initialTab])
   // 根據用戶角色獲取任務列表
   const getAllMyTasks = () => {
-    if (!user) return []
+    if (!user || !tasks) return []
 
     if (user.role === UserRole.FEAR_STAR) {
       // 小怕星：查看自己發布的任務
-      return mockTasks.filter(task => task.createdBy === user.id)
+      return tasks.filter(task => task.createdBy === user.id)
     } else {
-      // 終結者：查看指派給自己的任務
-      const assignedTasks = getAssignedTasks(user.id)
-
-      return [...assignedTasks]
+      // 終結者：查看已指派給自己的任務或已申請的任務
+      return tasks.filter(task => 
+        task.assignedTo === user.id || 
+        task.applicants.some(applicant => applicant.terminatorId === user.id)
+      )
     }
   }
 
@@ -109,11 +119,8 @@ export const TasksScreen = () => {
   }
 
   // 處理重新整理
-  const handleRefresh = () => {
-    setRefreshing(true)
-    setTimeout(() => {
-      setRefreshing(false)
-    }, 1000)
+  const handleRefresh = async () => {
+    await loadTasks()
   }
 
   // 處理通知按鈕點擊
@@ -174,7 +181,7 @@ export const TasksScreen = () => {
           contentContainerStyle={styles.taskListContainer}
           refreshControl={
             <RefreshControl
-              refreshing={refreshing}
+              refreshing={tasksLoading === 'loading'}
               onRefresh={handleRefresh}
               colors={[theme.colors.secondary]}
               tintColor={theme.colors.secondary}
@@ -182,7 +189,13 @@ export const TasksScreen = () => {
           }
         >
           <View style={styles.taskList}>
-            {currentTasks.length > 0 ? (
+            {tasksError ? (
+              <View style={styles.emptyState}>
+                <AlertCircle size={48} color={theme.colors.error} />
+                <Text style={styles.emptyStateText}>載入任務失敗</Text>
+                <Text style={styles.emptyStateSubtext}>{tasksError}</Text>
+              </View>
+            ) : currentTasks.length > 0 ? (
               currentTasks.map(task => (
                 <TaskCard
                   key={task.id}

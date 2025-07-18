@@ -106,6 +106,13 @@ export const createStyles = (theme: Theme, isTablet: boolean, insets: { top: num
     textAlign: 'center',
     marginTop: theme.spacing.md,
   },
+  emptyStateSubtext: {
+    fontSize: theme.fontSize.sm,
+    color: theme.colors.textSecondary,
+    textAlign: 'center',
+    marginTop: theme.spacing.xs,
+    opacity: 0.7,
+  },
   taskCardTablet: {
     width: '48%', // 每行顯示兩個卡片
     marginBottom: 0, // 移除底部邊距，因為已有 gap
