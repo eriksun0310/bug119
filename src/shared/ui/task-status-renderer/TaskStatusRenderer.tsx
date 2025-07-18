@@ -123,11 +123,14 @@ export const TaskStatusRenderer: FC<TaskStatusRendererProps> = ({
           <TaskActionResult
             type="accept"
             message="已成功申請任務"
-            buttonText="確定"
+            buttonText="查看任務"
             onViewTask={() => {
               setShowActionResult(false)
-              // 接受任務後返回上一頁（確保回到 pending_confirmation tab）
-              navigation?.goBack()
+              // 接受任務後跳轉到 TaskList 的 pending_confirmation tab
+              navigation?.navigate('Main', { 
+                screen: 'TaskList',
+                params: { initialTab: 'pending_confirmation' }
+              })
             }}
           />
         )
@@ -205,11 +208,14 @@ export const TaskStatusRenderer: FC<TaskStatusRendererProps> = ({
       <TaskActionResult
         type="complete"
         message="任務已標記完成"
-        buttonText="確定"
+        buttonText="查看任務"
         onViewTask={() => {
           setShowActionResult(false)
-          // 標記完成後返回上一頁（任務會移到 in_progress tab）
-          navigation?.goBack()
+          // 標記完成後跳轉到 TaskList 的 completed tab
+          navigation?.navigate('Main', { 
+            screen: 'TaskList',
+            params: { initialTab: 'completed' }
+          })
         }}
       />
     )
