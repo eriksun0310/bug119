@@ -8,7 +8,7 @@ import { TaskCard } from '@/shared/ui'
 import { createStyles } from './TasksScreen.styles'
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
-import { AlertCircle, Bell, CheckCircle, Clock } from 'lucide-react-native'
+import { AlertCircle, Bell, CheckCircle, Clock, Timer } from 'lucide-react-native'
 import React, { useEffect, useRef, useState } from 'react'
 import { RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -16,7 +16,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 type TasksNavigationProp = NativeStackNavigationProp<RootStackParamList>
 type TasksRouteProp = RouteProp<{ Tasks: { initialTab?: TaskTab } }, 'Tasks'>
 
-type TaskTab = 'pending_confirmation' | 'in_progress' | 'completed'
+type TaskTab = 'pending_confirmation' | 'in_progress' | 'pending_completion' | 'completed'
 
 export const TasksScreen = () => {
   const { theme } = useTheme()
@@ -78,17 +78,16 @@ export const TasksScreen = () => {
     if (user.role === UserRole.FEAR_STAR) {
       // 小怕星的狀態映射
       switch (tab) {
-        case 'in_progress':
-          return allMyTasks.filter(task => 
-            task.status === TaskStatus.IN_PROGRESS || 
-            task.status === TaskStatus.PENDING_COMPLETION
-          )
         case 'pending_confirmation':
           // 包含 PENDING（剛發布）和 PENDING_CONFIRMATION（有人申請）
           return allMyTasks.filter(task => 
             task.status === TaskStatus.PENDING || 
             task.status === TaskStatus.PENDING_CONFIRMATION
           )
+        case 'in_progress':
+          return allMyTasks.filter(task => task.status === TaskStatus.IN_PROGRESS)
+        case 'pending_completion':
+          return allMyTasks.filter(task => task.status === TaskStatus.PENDING_COMPLETION)
         case 'completed':
           return allMyTasks.filter(task => task.status === TaskStatus.COMPLETED)
         default:
@@ -97,14 +96,13 @@ export const TasksScreen = () => {
     } else {
       // 終結者的狀態映射
       switch (tab) {
-        case 'in_progress':
-          return allMyTasks.filter(task => 
-            task.status === TaskStatus.IN_PROGRESS || 
-            task.status === TaskStatus.PENDING_COMPLETION
-          )
         case 'pending_confirmation':
           // 終結者只看 PENDING_CONFIRMATION（有人申請待確認的任務）
           return allMyTasks.filter(task => task.status === TaskStatus.PENDING_CONFIRMATION)
+        case 'in_progress':
+          return allMyTasks.filter(task => task.status === TaskStatus.IN_PROGRESS)
+        case 'pending_completion':
+          return allMyTasks.filter(task => task.status === TaskStatus.PENDING_COMPLETION)
         case 'completed':
           return allMyTasks.filter(task => task.status === TaskStatus.COMPLETED)
         default:
@@ -220,19 +218,23 @@ export const TasksScreen = () => {
               ))
             ) : (
               <View style={styles.emptyState}>
+                {activeTab === 'pending_confirmation' && (
+                  <AlertCircle size={48} color={theme.colors.textSecondary} />
+                )}
                 {activeTab === 'in_progress' && (
                   <Clock size={48} color={theme.colors.textSecondary} />
                 )}
-                {activeTab === 'pending_confirmation' && (
-                  <AlertCircle size={48} color={theme.colors.textSecondary} />
+                {activeTab === 'pending_completion' && (
+                  <Timer size={48} color={theme.colors.textSecondary} />
                 )}
                 {activeTab === 'completed' && (
                   <CheckCircle size={48} color={theme.colors.textSecondary} />
                 )}
                 <Text style={styles.emptyStateText}>
-                  {activeTab === 'in_progress' && '目前沒有進行中的任務'}
                   {activeTab === 'pending_confirmation' &&
                     (user?.role === UserRole.FEAR_STAR ? '沒有待處理的任務' : '沒有待確認的任務')}
+                  {activeTab === 'in_progress' && '目前沒有進行中的任務'}
+                  {activeTab === 'pending_completion' && '沒有等待完成確認的任務'}
                   {activeTab === 'completed' && '還沒有完成的任務'}
                 </Text>
               </View>

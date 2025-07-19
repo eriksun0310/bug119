@@ -33,7 +33,7 @@ export interface Task {
   status: TaskStatus
   priority: TaskPriority
   budget: number
-  scheduledTime?: Date // 預約時間
+  scheduledTime?: string // 預約時間 (ISO 8601 格式)
   isImmediate: boolean // 是否立即處理
   createdBy: string // 小怕星 ID
   applicants: TaskApplication[] // 申請此任務的終結者列表
@@ -46,20 +46,20 @@ export interface Task {
   }
   
   // 只在 COMPLETED 狀態下存在
-  completedAt?: Date
+  completedAt?: string // 完成時間 (ISO 8601 格式)
   
   // 只在 CANCELLED 狀態下存在
-  cancelledAt?: Date
+  cancelledAt?: string // 取消時間 (ISO 8601 格式)
   
-  createdAt: Date
-  updatedAt: Date
+  createdAt: string // 建立時間 (ISO 8601 格式)
+  updatedAt: string // 更新時間 (ISO 8601 格式)
 }
 
 export interface TaskApplication {
   id: string
   taskId: string
   terminatorId: string
-  appliedAt: Date
+  appliedAt: string // 申請時間 (ISO 8601 格式)
   status: 'pending' | 'selected' | 'rejected'
 }
 
@@ -70,7 +70,7 @@ export interface TaskAssignment {
   estimatedDuration: number // 預估時間（分鐘）
   message?: string
   status: 'pending' | 'accepted' | 'rejected'
-  createdAt: Date
+  createdAt: string // 指派時間 (ISO 8601 格式)
 }
 
 export interface TaskProgress {
@@ -79,5 +79,5 @@ export interface TaskProgress {
   currentStep: string
   completionPercentage: number
   notes?: string
-  updatedAt: Date
+  updatedAt: string // 更新時間 (ISO 8601 格式)
 }

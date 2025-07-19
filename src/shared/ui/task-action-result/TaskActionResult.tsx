@@ -21,14 +21,8 @@ export const TaskActionResult: FC<TaskActionResultProps> = ({
 
   // 根據類型選擇圖標顏色
   const getIconColor = () => {
-    switch (type) {
-      case 'withdraw':
-      case 'delete':
-      case 'cancel':
-        return theme.colors.warning
-      default:
-        return theme.colors.success
-    }
+    // 目前所有操作都使用成功色彩
+    return theme.colors.success
   }
 
   return (

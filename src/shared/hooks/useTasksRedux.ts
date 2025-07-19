@@ -2,6 +2,7 @@
 
 import { mockTasks } from '@/shared/mocks'
 import { AppDispatch } from '@/shared/store'
+import { PestType, TaskStatus, TaskPriority, Task, TaskApplication } from '@/shared/types'
 import {
   selectAvailableTasks,
   selectCreateTaskError,
@@ -20,15 +21,9 @@ import {
   selectTaskStats,
 } from '@/shared/store/selectors/tasksSelectors'
 import {
-  acceptTaskError,
-  acceptTaskStart,
-  acceptTaskSuccess,
   applyForTaskError,
   applyForTaskStart,
   applyForTaskSuccess,
-  cancelTaskError,
-  cancelTaskStart,
-  cancelTaskSuccess,
   clearTaskFilter,
   completeTaskError,
   completeTaskStart,
@@ -42,7 +37,6 @@ import {
   // Actions
   fetchTasksStart,
   fetchTasksSuccess,
-  removeTask,
   resetCreateTaskState,
   resetTaskOperations,
   resetTasksState,
@@ -54,11 +48,7 @@ import {
   TaskFilter,
   TaskSort,
   updateTask,
-  withdrawApplicationError,
-  withdrawApplicationStart,
-  withdrawApplicationSuccess,
 } from '@/shared/store/slices/tasksSlice'
-import { Task, TaskApplication } from '@/shared/types'
 import { useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -104,21 +94,21 @@ export const useTasksRedux = () => {
         id: `test_pending_${Date.now()}`,
         title: '測試任務 - 家中蟑螂問題',
         description: '廚房發現蟑螂，需要專業除蟲服務，希望盡快處理',
-        pestType: 'cockroach' as const,
+        pestType: PestType.COCKROACH,
         location: {
           latitude: 25.0330,
           longitude: 121.5654,
           city: '台北市',
           district: '大安區',
         },
-        status: 'pending' as const,
-        priority: 'urgent' as const,
+        status: TaskStatus.PENDING,
+        priority: TaskPriority.URGENT,
         budget: 1500,
         isImmediate: false,
         createdBy: '1', // 小怕星發布
         applicants: [],
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       }
       
       // 合併假資料和測試任務
@@ -161,6 +151,7 @@ export const useTasksRedux = () => {
 
         const taskId = `task_${Date.now()}`
         const now = new Date()
+        const nowISO = now.toISOString()
 
         // 為測試目的，自動添加兩個終結者的申請
         const testApplicants = [
@@ -168,14 +159,14 @@ export const useTasksRedux = () => {
             id: `app_${Date.now()}_1`,
             taskId: taskId,
             terminatorId: '2', // 李師傅除蟲專家
-            appliedAt: now,
+            appliedAt: now.toISOString(),
             status: 'pending' as const
           },
           {
             id: `app_${Date.now()}_2`,
             taskId: taskId,
             terminatorId: '3', // 陳師傅專業除蟲
-            appliedAt: new Date(now.getTime() + 5000), // 5秒後申請
+            appliedAt: new Date(now.getTime() + 5000).toISOString(), // 5秒後申請
             status: 'pending' as const
           }
         ]
@@ -184,10 +175,10 @@ export const useTasksRedux = () => {
         const newTask: Task = {
           ...taskData,
           id: taskId,
-          status: 'pending_confirmation', // 有申請者時設為待確認狀態
+          status: TaskStatus.PENDING_CONFIRMATION, // 有申請者時設為待確認狀態
           applicants: testApplicants,
-          createdAt: now,
-          updatedAt: now,
+          createdAt: nowISO,
+          updatedAt: nowISO,
         }
         console.log('newTask', newTask)
         dispatch(createTaskSuccess(newTask))
@@ -202,23 +193,6 @@ export const useTasksRedux = () => {
   )
 
   // ===== 任務操作函數 =====
-  const acceptTask = useCallback(
-    async (taskId: string, terminatorId: string) => {
-      try {
-        dispatch(acceptTaskStart())
-
-        // 模擬 API 呼叫
-        await new Promise(resolve => setTimeout(resolve, 500))
-
-        dispatch(acceptTaskSuccess({ taskId, terminatorId }))
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : '接受任務失敗'
-        dispatch(acceptTaskError(errorMessage))
-        throw new Error(errorMessage)
-      }
-    },
-    [dispatch]
-  )
 
   const selectTerminator = useCallback(
     async (taskId: string, terminatorId: string) => {
@@ -267,23 +241,6 @@ export const useTasksRedux = () => {
     [dispatch]
   )
 
-  const cancelTask = useCallback(
-    async (taskId: string) => {
-      try {
-        dispatch(cancelTaskStart())
-
-        // 模擬 API 呼叫
-        await new Promise(resolve => setTimeout(resolve, 500))
-
-        dispatch(cancelTaskSuccess(taskId))
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : '取消任務失敗'
-        dispatch(cancelTaskError(errorMessage))
-        throw new Error(errorMessage)
-      }
-    },
-    [dispatch]
-  )
 
   const applyForTask = useCallback(
     async (taskId: string, terminatorId: string) => {
@@ -298,7 +255,7 @@ export const useTasksRedux = () => {
           id: `app_${Date.now()}`,
           taskId,
           terminatorId,
-          appliedAt: new Date(),
+          appliedAt: new Date().toISOString(),
           status: 'pending',
         }
 
@@ -324,23 +281,6 @@ export const useTasksRedux = () => {
     [dispatch]
   )
 
-  const withdrawApplication = useCallback(
-    async (taskId: string, applicationId: string) => {
-      try {
-        dispatch(withdrawApplicationStart())
-
-        // 模擬 API 呼叫
-        await new Promise(resolve => setTimeout(resolve, 500))
-
-        dispatch(withdrawApplicationSuccess({ taskId, applicationId }))
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : '撤回申請失敗'
-        dispatch(withdrawApplicationError(errorMessage))
-        throw new Error(errorMessage)
-      }
-    },
-    [dispatch]
-  )
 
   // ===== 篩選與排序函數 =====
   const setFilter = useCallback(
@@ -382,12 +322,6 @@ export const useTasksRedux = () => {
     [dispatch]
   )
 
-  const removeTaskData = useCallback(
-    (taskId: string) => {
-      dispatch(removeTask(taskId))
-    },
-    [dispatch]
-  )
 
   // ===== 便捷選擇器 =====
   const availableTasks = useSelector(selectAvailableTasks)
@@ -416,12 +350,9 @@ export const useTasksRedux = () => {
     createTask,
 
     // 操作函數
-    acceptTask,
     selectTerminator,
     completeTask,
-    cancelTask,
     applyForTask,
-    withdrawApplication,
 
     // 篩選與排序
     setFilter,
@@ -435,7 +366,6 @@ export const useTasksRedux = () => {
 
     // 更新與移除
     updateTaskData,
-    removeTaskData,
 
     // 便捷選擇器
     availableTasks,

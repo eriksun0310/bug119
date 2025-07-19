@@ -29,11 +29,7 @@ export const TaskDetailScreen: React.FC = () => {
   const { 
     handleAcceptTask, 
     handleSelectTerminator, 
-    handleMarkCompleted,
-    handleDeleteTask,
-    handleCancelTask,
-    handleDeleteRecord,
-    handleWithdrawApplication
+    handleMarkCompleted
   } = useTaskActions()
 
   const styles = createStyles(theme, isTablet)
@@ -81,10 +77,6 @@ export const TaskDetailScreen: React.FC = () => {
             onAcceptTask={handleAcceptTask}
             onSelectTerminator={handleSelectTerminator}
             onMarkCompleted={handleMarkCompleted}
-            onDeleteTask={handleDeleteTask}
-            onCancelTask={handleCancelTask}
-            onDeleteRecord={handleDeleteRecord}
-            onWithdrawApplication={handleWithdrawApplication}
             isTablet={isTablet}
             navigation={navigation}
           />

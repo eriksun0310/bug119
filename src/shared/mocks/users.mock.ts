@@ -17,8 +17,8 @@ export const mockUsers: User[] = [
       line: 'fearstar_line',
       preferredMethod: ContactMethod.LINE,
     },
-    createdAt: new Date('2024-01-01'),
-    updatedAt: new Date('2024-07-01'),
+    createdAt: '2024-01-01T00:00:00.000Z',
+    updatedAt: '2024-07-01T00:00:00.000Z',
    
   },
   // 蟲蟲終結者測試帳號
@@ -36,8 +36,8 @@ export const mockUsers: User[] = [
       telegram: '@masterlee_pest',
       preferredMethod: ContactMethod.PHONE,
     },
-    createdAt: new Date('2023-06-01'),
-    updatedAt: new Date('2024-07-01'),
+    createdAt: '2023-06-01T00:00:00.000Z',
+    updatedAt: '2024-07-01T00:00:00.000Z',
   },
   // 第三位終結者
   {
@@ -54,8 +54,8 @@ export const mockUsers: User[] = [
       telegram: '@chen_pest',
       preferredMethod: ContactMethod.LINE,
     },
-    createdAt: new Date('2023-08-01'),
-    updatedAt: new Date('2024-07-01'),
+    createdAt: '2023-08-01T00:00:00.000Z',
+    updatedAt: '2024-07-01T00:00:00.000Z',
   },
 ]
 
@@ -67,7 +67,7 @@ export const mockUserProfiles = {
     rating: 4.5,
     totalReviews: 8,
     totalTasks: 12,
-    joinDate: new Date('2024-01-01'),
+    joinDate: '2024-01-01T00:00:00.000Z',
   },
   '2': {
     userId: '2',
@@ -75,7 +75,7 @@ export const mockUserProfiles = {
     rating: 4.8,
     totalReviews: 156,
     totalTasks: 203,
-    joinDate: new Date('2023-06-01'),
+    joinDate: '2023-06-01T00:00:00.000Z',
     // 蟲蟲終結者專用資料
     specialties: [PestType.COCKROACH, PestType.ANT, PestType.MOSQUITO, PestType.SPIDER],
     serviceArea: {
@@ -96,7 +96,7 @@ export const mockUserProfiles = {
     rating: 4.6,
     totalReviews: 89,
     totalTasks: 112,
-    joinDate: new Date('2023-08-01'),
+    joinDate: '2023-08-01T00:00:00.000Z',
     specialties: [PestType.ANT, PestType.COCKROACH, PestType.OTHER],
     serviceArea: {
       center: {

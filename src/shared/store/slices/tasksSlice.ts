@@ -57,9 +57,7 @@ export interface TasksState {
   
   // 任務操作狀態
   operations: {
-    acceptTask: AsyncState<string> // 接受任務
     completeTask: AsyncState<string> // 完成任務
-    cancelTask: AsyncState<string> // 取消任務
     selectTerminator: AsyncState<string> // 選擇終結者
   }
 }
@@ -107,17 +105,7 @@ const initialState: TasksState = {
     error: null,
   },
   operations: {
-    acceptTask: {
-      data: null,
-      loading: 'idle',
-      error: null,
-    },
     completeTask: {
-      data: null,
-      loading: 'idle',
-      error: null,
-    },
-    cancelTask: {
       data: null,
       loading: 'idle',
       error: null,
@@ -190,45 +178,6 @@ const tasksSlice = createSlice({
     },
 
     // ===== 任務操作 =====
-    // 接受任務
-    acceptTaskStart: (state) => {
-      state.operations.acceptTask.loading = 'loading'
-      state.operations.acceptTask.error = null
-    },
-    
-    acceptTaskSuccess: (state, action: PayloadAction<{ taskId: string; terminatorId: string }>) => {
-      state.operations.acceptTask.loading = 'success'
-      state.operations.acceptTask.data = action.payload.taskId
-      state.operations.acceptTask.error = null
-      
-      // 更新任務列表中的任務狀態
-      if (state.tasks.data) {
-        const taskIndex = state.tasks.data.findIndex(task => task.id === action.payload.taskId)
-        if (taskIndex !== -1) {
-          state.tasks.data[taskIndex] = {
-            ...state.tasks.data[taskIndex],
-            status: TaskStatus.IN_PROGRESS,
-            assignedTo: action.payload.terminatorId,
-            updatedAt: new Date(),
-          }
-        }
-      }
-      
-      // 更新當前任務詳情
-      if (state.currentTask.data?.id === action.payload.taskId) {
-        state.currentTask.data = {
-          ...state.currentTask.data,
-          status: TaskStatus.IN_PROGRESS,
-          assignedTo: action.payload.terminatorId,
-          updatedAt: new Date(),
-        }
-      }
-    },
-    
-    acceptTaskError: (state, action: PayloadAction<string>) => {
-      state.operations.acceptTask.loading = 'error'
-      state.operations.acceptTask.error = action.payload
-    },
 
     // 選擇終結者
     selectTerminatorStart: (state) => {
@@ -249,7 +198,7 @@ const tasksSlice = createSlice({
             ...state.tasks.data[taskIndex],
             status: TaskStatus.IN_PROGRESS,
             assignedTo: action.payload.terminatorId,
-            updatedAt: new Date(),
+            updatedAt: new Date().toISOString(),
           }
         }
       }
@@ -259,7 +208,7 @@ const tasksSlice = createSlice({
           ...state.currentTask.data,
           status: TaskStatus.IN_PROGRESS,
           assignedTo: action.payload.terminatorId,
-          updatedAt: new Date(),
+          updatedAt: new Date().toISOString(),
         }
       }
     },
@@ -300,13 +249,13 @@ const tasksSlice = createSlice({
         // 如果雙方都確認完成，則將任務狀態設為已完成
         if (updatedTask.completionStatus.fearStarConfirmed && updatedTask.completionStatus.terminatorConfirmed) {
           updatedTask.status = TaskStatus.COMPLETED
-          updatedTask.completedAt = new Date()
+          updatedTask.completedAt = new Date().toISOString()
         } else if (updatedTask.completionStatus.fearStarConfirmed || updatedTask.completionStatus.terminatorConfirmed) {
           // 如果只有一方確認完成，設為待完成確認狀態
           updatedTask.status = TaskStatus.PENDING_COMPLETION
         }
         
-        updatedTask.updatedAt = new Date()
+        updatedTask.updatedAt = new Date().toISOString()
         return updatedTask
       }
       
@@ -329,44 +278,6 @@ const tasksSlice = createSlice({
       state.operations.completeTask.error = action.payload
     },
 
-    // 取消任務
-    cancelTaskStart: (state) => {
-      state.operations.cancelTask.loading = 'loading'
-      state.operations.cancelTask.error = null
-    },
-    
-    cancelTaskSuccess: (state, action: PayloadAction<string>) => {
-      state.operations.cancelTask.loading = 'success'
-      state.operations.cancelTask.data = action.payload
-      state.operations.cancelTask.error = null
-      
-      // 更新任務狀態為已取消
-      if (state.tasks.data) {
-        const taskIndex = state.tasks.data.findIndex(task => task.id === action.payload)
-        if (taskIndex !== -1) {
-          state.tasks.data[taskIndex] = {
-            ...state.tasks.data[taskIndex],
-            status: TaskStatus.CANCELLED,
-            cancelledAt: new Date(),
-            updatedAt: new Date(),
-          }
-        }
-      }
-      
-      if (state.currentTask.data?.id === action.payload) {
-        state.currentTask.data = {
-          ...state.currentTask.data,
-          status: TaskStatus.CANCELLED,
-          cancelledAt: new Date(),
-          updatedAt: new Date(),
-        }
-      }
-    },
-    
-    cancelTaskError: (state, action: PayloadAction<string>) => {
-      state.operations.cancelTask.loading = 'error'
-      state.operations.cancelTask.error = action.payload
-    },
 
     // ===== 申請任務 =====
     applyForTaskStart: (state) => {
@@ -392,7 +303,7 @@ const tasksSlice = createSlice({
             ...task,
             applicants: [...task.applicants, action.payload.application],
             status: TaskStatus.PENDING_CONFIRMATION,
-            updatedAt: new Date(),
+            updatedAt: new Date().toISOString(),
           }
         }
       }
@@ -402,7 +313,7 @@ const tasksSlice = createSlice({
           ...state.currentTask.data,
           applicants: [...state.currentTask.data.applicants, action.payload.application],
           status: TaskStatus.PENDING_CONFIRMATION,
-          updatedAt: new Date(),
+          updatedAt: new Date().toISOString(),
         }
       }
     },
@@ -412,56 +323,6 @@ const tasksSlice = createSlice({
       state.applications.error = action.payload
     },
 
-    // 撤回申請
-    withdrawApplicationStart: (state) => {
-      state.applications.loading = 'loading'
-      state.applications.error = null
-    },
-    
-    withdrawApplicationSuccess: (state, action: PayloadAction<{ taskId: string; applicationId: string }>) => {
-      state.applications.loading = 'success'
-      state.applications.error = null
-      
-      // 從任務列表中移除申請
-      if (state.tasks.data) {
-        const taskIndex = state.tasks.data.findIndex(task => task.id === action.payload.taskId)
-        if (taskIndex !== -1) {
-          state.tasks.data[taskIndex] = {
-            ...state.tasks.data[taskIndex],
-            applicants: state.tasks.data[taskIndex].applicants.filter(
-              app => app.id !== action.payload.applicationId
-            ),
-            updatedAt: new Date(),
-          }
-          
-          // 如果沒有申請者了，狀態回到 PENDING
-          if (state.tasks.data[taskIndex].applicants.length === 0) {
-            state.tasks.data[taskIndex].status = TaskStatus.PENDING
-          }
-        }
-      }
-      
-      // 從當前任務中移除申請
-      if (state.currentTask.data?.id === action.payload.taskId) {
-        state.currentTask.data = {
-          ...state.currentTask.data,
-          applicants: state.currentTask.data.applicants.filter(
-            app => app.id !== action.payload.applicationId
-          ),
-          updatedAt: new Date(),
-        }
-        
-        // 如果沒有申請者了，狀態回到 PENDING
-        if (state.currentTask.data.applicants.length === 0) {
-          state.currentTask.data.status = TaskStatus.PENDING
-        }
-      }
-    },
-    
-    withdrawApplicationError: (state, action: PayloadAction<string>) => {
-      state.applications.loading = 'error'
-      state.applications.error = action.payload
-    },
 
     // ===== 篩選與排序 =====
     setTaskFilter: (state, action: PayloadAction<Partial<TaskFilter>>) => {
@@ -508,20 +369,6 @@ const tasksSlice = createSlice({
       }
     },
 
-    // ===== 移除任務 =====
-    removeTask: (state, action: PayloadAction<string>) => {
-      const taskId = action.payload
-      
-      // 從任務列表中移除
-      if (state.tasks.data) {
-        state.tasks.data = state.tasks.data.filter(task => task.id !== taskId)
-      }
-      
-      // 如果是當前查看的任務，清空詳情
-      if (state.currentTask.data?.id === taskId) {
-        state.currentTask.data = null
-      }
-    },
   },
 })
 
@@ -543,28 +390,17 @@ export const {
   createTaskError,
   
   // 任務操作
-  acceptTaskStart,
-  acceptTaskSuccess,
-  acceptTaskError,
   selectTerminatorStart,
   selectTerminatorSuccess,
   selectTerminatorError,
   completeTaskStart,
   completeTaskSuccess,
   completeTaskError,
-  cancelTaskStart,
-  cancelTaskSuccess,
-  cancelTaskError,
   
   // 申請任務
   applyForTaskStart,
   applyForTaskSuccess,
   applyForTaskError,
-  
-  // 撤回申請
-  withdrawApplicationStart,
-  withdrawApplicationSuccess,
-  withdrawApplicationError,
   
   // 篩選與排序
   setTaskFilter,
@@ -576,9 +412,8 @@ export const {
   resetTaskOperations,
   resetCreateTaskState,
   
-  // 更新與移除
+  // 更新任務
   updateTask,
-  removeTask,
 } = tasksSlice.actions
 
 // 匯出 reducer

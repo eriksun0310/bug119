@@ -1,5 +1,4 @@
 import { mockUsers } from '@/shared/mocks'
-import { TaskStatus } from '@/shared/types'
 import { showAlert } from '@/shared/utils'
 import { useCallback } from 'react'
 import { Alert } from 'react-native'
@@ -14,12 +13,8 @@ export const useTaskActions = () => {
   const { user } = useAuthRedux()
   const { 
     applyForTask, 
-    acceptTask, 
     selectTerminator, 
-    completeTask, 
-    cancelTask,
-    withdrawApplication,
-    removeTaskData 
+    completeTask
   } = useTasksRedux()
   /**
    * 處理接受任務（終結者申請任務，需要小怕星確認）
@@ -108,14 +103,15 @@ export const useTaskActions = () => {
   }, [selectTerminator])
 
   /**
-   * 處理標記任務完成
+   * 處理標記任務完成（依據新業務邏輯）
    */
   const handleMarkCompleted = useCallback(async (taskId: string, onSuccess?: () => void) => {
     if (!user) return
 
     const completedBy = user.role === 'fear_star' ? 'fear_star' : 'terminator'
+    const actionText = user.role === 'fear_star' ? '確認任務完成' : '確認任務完成'
 
-    showAlert('確認完成', '確定要標記此任務為完成嗎？', [
+    showAlert('確認完成', `確定要${actionText}嗎？`, [
       { text: '取消', style: 'cancel' },
       {
         text: '確定完成',
@@ -134,116 +130,11 @@ export const useTaskActions = () => {
     ])
   }, [user, completeTask])
 
-  /**
-   * 處理刪除任務 (PENDING 狀態)
-   */
-  const handleDeleteTask = useCallback((taskId: string, onSuccess?: () => void) => {
-    showAlert('確認刪除', '確定要刪除這個任務嗎？此操作無法復原。', [
-      { text: '取消', style: 'cancel' },
-      {
-        text: '確定刪除',
-        style: 'destructive',
-        onPress: () => {
-          try {
-            // 操作成功後觸發回調 - 不顯示 Alert，讓 UI 直接顯示成功狀態
-            if (onSuccess) {
-              onSuccess()
-            } else {
-              removeTaskData(taskId)
-            }
-          } catch (error) {
-            Alert.alert('刪除失敗', '請稍後再試')
-          }
-        },
-      },
-    ])
-  }, [removeTaskData])
-
-  /**
-   * 處理取消任務 (PENDING_CONFIRMATION 狀態)
-   */
-  const handleCancelTask = useCallback((taskId: string, onSuccess?: () => void) => {
-    showAlert('確認取消', '確定要取消這個任務嗎？將通知所有申請者。', [
-      { text: '取消', style: 'cancel' },
-      {
-        text: '確定取消',
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            await cancelTask(taskId)
-            // 操作成功後觸發回調 - 不顯示 Alert，讓 UI 直接顯示成功狀態
-            if (onSuccess) {
-              onSuccess()
-            }
-          } catch (error) {
-            Alert.alert('取消失敗', error instanceof Error ? error.message : '請稍後再試')
-          }
-        },
-      },
-    ])
-  }, [cancelTask])
-
-  /**
-   * 處理刪除任務記錄 (COMPLETED 狀態)
-   */
-  const handleDeleteRecord = useCallback((taskId: string, onSuccess?: () => void) => {
-    showAlert('確認刪除記錄', '確定要刪除這個任務記錄嗎？此操作無法復原。', [
-      { text: '取消', style: 'cancel' },
-      {
-        text: '確定刪除',
-        style: 'destructive',
-        onPress: () => {
-          try {
-            // 先觸發回調顯示成功狀態，延遲刪除任務
-            if (onSuccess) {
-              onSuccess()
-            }
-            
-            // 延遲刪除任務，讓 TaskActionResult 有時間顯示
-            setTimeout(() => {
-              removeTaskData(taskId)
-            }, 100)
-          } catch (error) {
-            Alert.alert('刪除失敗', '請稍後再試')
-          }
-        },
-      },
-    ])
-  }, [removeTaskData])
-
-  /**
-   * 處理撤回申請 (PENDING_CONFIRMATION 狀態)
-   */
-  const handleWithdrawApplication = useCallback((taskId: string, applicationId: string, onSuccess?: () => void) => {
-    showAlert('確認撤回', '確定要撤回這個申請嗎？', [
-      { text: '取消', style: 'cancel' },
-      {
-        text: '確定撤回',
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            await withdrawApplication(taskId, applicationId)
-            
-            // 操作成功後觸發回調 - 不顯示 Alert，讓 UI 直接顯示成功狀態
-            if (onSuccess) {
-              onSuccess()
-            }
-          } catch (error) {
-            Alert.alert('撤回失敗', error instanceof Error ? error.message : '請稍後再試')
-          }
-        },
-      },
-    ])
-  }, [withdrawApplication])
 
   return {
     handleAcceptTask,
     handleApplyForTask,
     handleSelectTerminator,
     handleMarkCompleted,
-    handleDeleteTask,
-    handleCancelTask,
-    handleDeleteRecord,
-    handleWithdrawApplication,
   }
 }

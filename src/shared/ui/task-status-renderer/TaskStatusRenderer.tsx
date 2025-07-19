@@ -1,10 +1,11 @@
-import { getAssignmentsByTaskId } from '@/shared/mocks'
+// import { getAssignmentsByTaskId } from '@/shared/mocks' // 已不需要
 import { useTheme } from '@/shared/theme'
 import { Task, TaskStatus, User, UserRole } from '@/shared/types'
 import { ApplicantCard, Button, TaskActionResult } from '@/shared/ui'
+import { taskStatusValidator } from '@/shared/utils'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import React, { FC, useState } from 'react'
 import { Text, View } from 'react-native'
-import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { createStyles } from './TaskStatusRenderer.styles'
 
 interface TaskStatusRendererProps {
@@ -15,10 +16,6 @@ interface TaskStatusRendererProps {
   onAcceptTask: (taskId?: string, onSuccess?: () => void) => void
   onSelectTerminator: (application: any, onSuccess?: () => void) => void
   onMarkCompleted?: (taskId: string, onSuccess?: () => void) => void
-  onDeleteTask?: (taskId: string, onSuccess?: () => void) => void
-  onCancelTask?: (taskId: string, onSuccess?: () => void) => void
-  onDeleteRecord?: (taskId: string, onSuccess?: () => void) => void
-  onWithdrawApplication?: (taskId: string, applicationId: string, onSuccess?: () => void) => void
   isTablet: boolean
   navigation?: NativeStackNavigationProp<any>
 }
@@ -35,18 +32,14 @@ export const TaskStatusRenderer: FC<TaskStatusRendererProps> = ({
   onAcceptTask,
   onSelectTerminator,
   onMarkCompleted,
-  onDeleteTask,
-  onCancelTask,
-  onDeleteRecord,
-  onWithdrawApplication,
   isTablet,
   navigation,
 }) => {
   const { theme } = useTheme()
   const styles = createStyles(theme)
-  const assignments = getAssignmentsByTaskId(task.id)
+  // const assignments = getAssignmentsByTaskId(task.id) // 已不需要
   const [showActionResult, setShowActionResult] = useState(false)
-  const [actionType, setActionType] = useState<'accept' | 'withdraw' | 'complete' | 'delete' | 'cancel' | 'select' | 'delete_record'>('accept')
+  const [actionType, setActionType] = useState<'accept' | 'complete' | 'select'>('accept')
   
   // 處理接受任務
   const handleAcceptTaskWithUI = (taskId?: string) => {
@@ -54,16 +47,6 @@ export const TaskStatusRenderer: FC<TaskStatusRendererProps> = ({
       setActionType('accept')
       setShowActionResult(true)
     })
-  }
-  
-  // 處理撤回申請
-  const handleWithdrawWithUI = (applicationId: string) => {
-    if (onWithdrawApplication) {
-      onWithdrawApplication(task.id, applicationId, () => {
-        setActionType('withdraw')
-        setShowActionResult(true)
-      })
-    }
   }
   
   // 處理標記完成
@@ -75,52 +58,7 @@ export const TaskStatusRenderer: FC<TaskStatusRendererProps> = ({
       })
     }
   }
-  
-  // 處理刪除記錄
-  const handleDeleteRecordWithUI = (taskId: string) => {
-    if (onDeleteRecord) {
-      onDeleteRecord(taskId, () => {
-        setActionType('delete_record')
-        setShowActionResult(true)
-      })
-    }
-  }
-  
-  // 處理取消任務
-  const handleCancelTaskWithUI = (taskId: string) => {
-    if (onCancelTask) {
-      onCancelTask(taskId, () => {
-        setActionType('cancel')
-        setShowActionResult(true)
-      })
-    }
-  }
-  
-  // 處理刪除任務
-  const handleDeleteTaskWithUI = (taskId: string) => {
-    if (onDeleteTask) {
-      onDeleteTask(taskId, () => {
-        setActionType('delete')
-        setShowActionResult(true)
-      })
-    }
-  }
 
-  // 顯示撤回申請的結果 UI（終結者和小怕星共用）
-  if (showActionResult && actionType === 'withdraw') {
-    return (
-      <TaskActionResult
-        type="withdraw"
-        message="已撤回申請"
-        buttonText="確定"
-        onViewTask={() => {
-          setShowActionResult(false)
-          // 撤回後返回上一頁
-          navigation?.goBack()
-        }}
-      />
-    )
-  }
 
   // 顯示選擇終結者的結果 UI（小怕星選擇終結者成功）
   if (showActionResult && actionType === 'select') {
@@ -160,21 +98,6 @@ export const TaskStatusRenderer: FC<TaskStatusRendererProps> = ({
     )
   }
 
-  // 顯示取消任務的結果 UI（移到前面，和接受任務一樣的位置）
-  if (showActionResult && actionType === 'cancel') {
-    return (
-      <TaskActionResult
-        type="cancel"
-        message="任務已取消"
-        buttonText="確定"
-        onViewTask={() => {
-          setShowActionResult(false)
-          // 取消任務後返回上一頁
-          navigation?.goBack()
-        }}
-      />
-    )
-  }
 
   // PENDING_CONFIRMATION 狀態：小怕星顯示所有申請者，終結者只顯示自己的申請
   if (task.status === TaskStatus.PENDING_CONFIRMATION && task?.applicants?.length > 0) {
@@ -197,17 +120,6 @@ export const TaskStatusRenderer: FC<TaskStatusRendererProps> = ({
               })}
               style={isTablet ? styles.applicantCardTablet : {}}
             />
-            {onWithdrawApplication && (
-              <View style={styles.buttonContainer}>
-                <Button
-                  variant="danger"
-                  onPress={() => handleWithdrawWithUI(myApplication.id)}
-                  fullWidth
-                >
-                  撤回申請
-                </Button>
-              </View>
-            )}
           </View>
         )
       }
@@ -231,25 +143,10 @@ export const TaskStatusRenderer: FC<TaskStatusRendererProps> = ({
                   setActionType('select')
                   setShowActionResult(true)
                 })}
-                onWithdraw={(appId) => {
-                  if (onWithdrawApplication) {
-                    onWithdrawApplication(task.id, appId, () => {
-                      setActionType('withdraw')
-                      setShowActionResult(true)
-                    })
-                  }
-                }}
                 style={isTablet ? styles.applicantCardTablet : {}}
               />
             ))}
           </View>
-          {onCancelTask && (
-            <View style={styles.buttonContainer}>
-              <Button variant="danger" onPress={() => handleCancelTaskWithUI(task.id)} fullWidth>
-                取消任務
-              </Button>
-            </View>
-          )}
         </View>
       )
     }
@@ -265,56 +162,107 @@ export const TaskStatusRenderer: FC<TaskStatusRendererProps> = ({
         buttonText="查看任務"
         onViewTask={() => {
           setShowActionResult(false)
-          // 標記完成後跳轉到 TaskList 的 completed tab
+          // 標記完成後跳轉到 TaskList 的 pending_completion 或 completed tab
+          const targetTab = task.status === 'completed' ? 'completed' : 'pending_completion'
           navigation?.navigate('Main', { 
             screen: 'TaskList',
-            params: { initialTab: 'completed' }
+            params: { initialTab: targetTab }
           })
         }}
       />
     )
   }
 
-  // 顯示刪除記錄的 UI（專門處理刪除記錄）
-  if (showActionResult && actionType === 'delete_record') {
+  // PENDING_COMPLETION 狀態：顯示雙方確認進度
+  if (task.status === TaskStatus.PENDING_COMPLETION) {
+    const isUserConfirmed = taskStatusValidator.isUserConfirmed(
+      task.status, 
+      user?.role || UserRole.FEAR_STAR, 
+      task.completionStatus
+    )
+    const isOtherPartyConfirmed = taskStatusValidator.isOtherPartyConfirmed(
+      task.status, 
+      user?.role || UserRole.FEAR_STAR, 
+      task.completionStatus
+    )
+
     return (
-      <TaskActionResult
-        type="delete"
-        message="任務記錄已刪除"
-        buttonText="確定"
-        onViewTask={() => {
-          setShowActionResult(false)
+      <View style={styles.container}>
+        <Text style={styles.sectionTitle}>任務完成確認</Text>
+        
+        {/* 顯示確認狀態 */}
+        <View style={styles.completionStatusContainer}>
+          <View style={styles.confirmationItem}>
+            <Text style={styles.confirmationLabel}>
+              {user?.role === UserRole.FEAR_STAR ? '您的確認' : '您的確認'}
+            </Text>
+            <Text style={[
+              styles.confirmationStatus,
+              isUserConfirmed ? styles.confirmedStatus : styles.pendingStatus
+            ]}>
+              {isUserConfirmed ? '已確認' : '待確認'}
+            </Text>
+          </View>
           
-          // 刪除記錄後跳轉到任務列表的 completed tab
-          setTimeout(() => {
-            navigation?.navigate('Main', { 
-              screen: 'TaskList',
-              params: { initialTab: 'completed' }
-            })
-          }, 100) // 短暫延遲確保資料更新
-        }}
-      />
+          <View style={styles.confirmationItem}>
+            <Text style={styles.confirmationLabel}>
+              {user?.role === UserRole.FEAR_STAR ? '終結者確認' : '小怕星確認'}
+            </Text>
+            <Text style={[
+              styles.confirmationStatus,
+              isOtherPartyConfirmed ? styles.confirmedStatus : styles.pendingStatus
+            ]}>
+              {isOtherPartyConfirmed ? '已確認' : '待確認'}
+            </Text>
+          </View>
+        </View>
+
+        {/* 顯示聯絡人資訊（維持 IN_PROGRESS 權限）*/}
+        {contactPerson && (
+          <>
+            <Text style={styles.sectionTitle}>{contactTitle}</Text>
+            <ApplicantCard
+              application={{
+                id: `contact-${contactPerson.id}`,
+                taskId: task.id,
+                terminatorId: contactPerson.id,
+                appliedAt: task.createdAt,
+                status: 'pending',
+              }}
+              taskStatus={task.status}
+              currentUserRole={user?.role || UserRole.FEAR_STAR}
+              currentUserId={user?.id || '1'}
+              taskCreatedBy={task.createdBy}
+              onSelect={() => {}}
+            />
+          </>
+        )}
+
+        {/* 如果當前用戶還未確認，顯示確認按鈕 */}
+        {!isUserConfirmed && onMarkCompleted && (
+          <View style={styles.buttonContainer}>
+            <Button 
+              variant="secondary" 
+              onPress={() => handleCompleteWithUI(task.id)} 
+              fullWidth
+            >
+              確認完成
+            </Button>
+          </View>
+        )}
+
+        {/* 如果當前用戶已確認但對方未確認，顯示等待提示 */}
+        {isUserConfirmed && !isOtherPartyConfirmed && (
+          <View style={styles.waitingContainer}>
+            <Text style={styles.waitingText}>
+              等待{user?.role === UserRole.FEAR_STAR ? '終結者' : '小怕星'}確認完成...
+            </Text>
+          </View>
+        )}
+      </View>
     )
   }
 
-  // 顯示刪除任務的 UI（處理刪除任務）
-  if (showActionResult && actionType === 'delete') {
-    return (
-      <TaskActionResult
-        type="delete"
-        message="任務已刪除"
-        buttonText="確定"
-        onViewTask={() => {
-          setShowActionResult(false)
-          
-          // 刪除任務後回到上一頁
-          setTimeout(() => {
-            navigation?.goBack()
-          }, 100) // 短暫延遲確保資料更新
-        }}
-      />
-    )
-  }
 
 
   // 如果任務已取消，且不是顯示結果UI，顯示已取消狀態
@@ -327,53 +275,96 @@ export const TaskStatusRenderer: FC<TaskStatusRendererProps> = ({
     )
   }
 
-  // 其他情況：顯示對方聯絡人資訊
-  if (
-    task.status !== TaskStatus.PENDING ||
-    user?.role === UserRole.TERMINATOR ||
-    (user?.role === UserRole.FEAR_STAR && assignments.length > 0)
-  ) {
+  // IN_PROGRESS 狀態：雙方都能看到完整聯絡資訊
+  if (task.status === TaskStatus.IN_PROGRESS) {
     return (
       <View style={styles.container}>
         <Text style={styles.sectionTitle}>{contactTitle}</Text>
-        <ApplicantCard
-          application={{
-            id: `contact-${contactPerson?.id}`,
-            taskId: task.id,
-            terminatorId: contactPerson?.id || '',
-            appliedAt: task.createdAt,
-            status: 'pending',
-          }}
-          taskStatus={task.status}
-          currentUserRole={user?.role || UserRole.FEAR_STAR}
-          currentUserId={user?.id || '1'}
-          taskCreatedBy={task.createdBy}
-          onSelect={() => {}}
-        />
-        {task.status === TaskStatus.PENDING && user?.role === UserRole.TERMINATOR && (
+        {contactPerson && (
+          <ApplicantCard
+            application={{
+              id: `contact-${contactPerson.id}`,
+              taskId: task.id,
+              terminatorId: contactPerson.id,
+              appliedAt: task.createdAt,
+              status: 'pending',
+            }}
+            taskStatus={task.status}
+            currentUserRole={user?.role || UserRole.FEAR_STAR}
+            currentUserId={user?.id || '1'}
+            taskCreatedBy={task.createdBy}
+            onSelect={() => {}}
+          />
+        )}
+        {onMarkCompleted && (
           <View style={styles.buttonContainer}>
             <Button 
               variant="secondary" 
-              onPress={() => handleAcceptTaskWithUI(task.id)} 
+              onPress={() => handleCompleteWithUI(task.id)} 
               fullWidth
             >
-              接受任務
+              已完成
             </Button>
           </View>
         )}
-        {task.status === TaskStatus.IN_PROGRESS && onMarkCompleted && (
-            <View style={styles.buttonContainer}>
-              <Button variant="secondary" onPress={() => handleCompleteWithUI(task.id)} fullWidth>
-                已完成
-              </Button>
-            </View>
-          )}
-        {task.status === TaskStatus.COMPLETED && onDeleteRecord && (
-          <View style={styles.buttonContainer}>
-            <Button variant="danger" onPress={() => handleDeleteRecordWithUI(task.id)} fullWidth>
-              刪除記錄
-            </Button>
-          </View>
+      </View>
+    )
+  }
+
+  // PENDING 狀態：終結者看到小怕星基本資料，可申請任務
+  if (task.status === TaskStatus.PENDING && user?.role === UserRole.TERMINATOR) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.sectionTitle}>{contactTitle}</Text>
+        {contactPerson && (
+          <ApplicantCard
+            application={{
+              id: `contact-${contactPerson.id}`,
+              taskId: task.id,
+              terminatorId: contactPerson.id,
+              appliedAt: task.createdAt,
+              status: 'pending',
+            }}
+            taskStatus={task.status}
+            currentUserRole={user.role}
+            currentUserId={user.id}
+            taskCreatedBy={task.createdBy}
+            onSelect={() => {}}
+          />
+        )}
+        <View style={styles.buttonContainer}>
+          <Button 
+            variant="secondary" 
+            onPress={() => handleAcceptTaskWithUI(task.id)} 
+            fullWidth
+          >
+            接受任務
+          </Button>
+        </View>
+      </View>
+    )
+  }
+
+  // COMPLETED 狀態：顯示基本資訊，提供刪除記錄選項
+  if (task.status === TaskStatus.COMPLETED) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.sectionTitle}>{contactTitle}</Text>
+        {contactPerson && (
+          <ApplicantCard
+            application={{
+              id: `contact-${contactPerson.id}`,
+              taskId: task.id,
+              terminatorId: contactPerson.id,
+              appliedAt: task.createdAt,
+              status: 'pending',
+            }}
+            taskStatus={task.status}
+            currentUserRole={user?.role || UserRole.FEAR_STAR}
+            currentUserId={user?.id || '1'}
+            taskCreatedBy={task.createdBy}
+            onSelect={() => {}}
+          />
         )}
       </View>
     )
@@ -383,13 +374,6 @@ export const TaskStatusRenderer: FC<TaskStatusRendererProps> = ({
   return (
     <View style={styles.container}>
       <Text style={styles.emptyApplicants}>目前還沒有終結者申請這個任務</Text>
-      {user?.role === UserRole.FEAR_STAR && task.status === TaskStatus.PENDING && onDeleteTask && (
-        <View style={styles.buttonContainer}>
-          <Button variant="danger" onPress={() => handleDeleteTaskWithUI(task.id)} fullWidth>
-            刪除任務
-          </Button>
-        </View>
-      )}
     </View>
   )
 }

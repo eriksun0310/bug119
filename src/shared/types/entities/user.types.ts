@@ -15,8 +15,8 @@ export interface User {
   role: UserRole
   isVerified: boolean
   contactInfo: ContactInfo       // 通訊方式
-  createdAt: Date
-  updatedAt: Date
+  createdAt: string             // 建立時間 (ISO 8601 格式)
+  updatedAt: string             // 更新時間 (ISO 8601 格式)
 }
 
 export interface UserProfile {
@@ -25,7 +25,7 @@ export interface UserProfile {
   rating: number
   totalReviews: number
   totalTasks: number
-  joinDate: Date
+  joinDate: string              // 加入時間 (ISO 8601 格式)
 }
 
 // 蟲蟲終結者專用資料

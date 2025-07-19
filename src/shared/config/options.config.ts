@@ -9,6 +9,7 @@ import {
   Clock,
   MessageCircle,
   Phone,
+  Timer,
   Zap,
 } from 'lucide-react-native'
 import * as React from 'react'
@@ -182,6 +183,11 @@ export const TASK_TAB_OPTIONS: TaskTabOption[] = [
     key: 'in_progress',
     title: '進行中',
     icon: Clock,
+  },
+  {
+    key: 'pending_completion',
+    title: '待完成',
+    icon: Timer,
   },
   {
     key: 'completed',

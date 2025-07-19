@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useRef } from 'react'
 import { Animated, Text, TouchableOpacity, View } from 'react-native'
-import { Check, FileText, RotateCcw, Trash2, X, XCircle } from 'lucide-react-native'
+import { Check, X } from 'lucide-react-native'
 import { useTheme } from '@/shared/theme'
 import { TaskActionSnackbarProps, SnackbarConfig } from './TaskActionSnackbar.types'
 import { createStyles } from './TaskActionSnackbar.styles'
@@ -92,18 +92,6 @@ export const TaskActionSnackbar: FC<TaskActionSnackbarProps> = ({
           iconColor: '#FFFFFF',
         }
 
-      case 'withdraw':
-        return {
-          icon: 'rotate-ccw',
-          title: '已撤回申請',
-          subtitle: '任務回到待接案狀態',
-          actions: [
-            { label: '返回任務牆', type: 'task_wall' },
-          ],
-          backgroundColor: theme.colors.warning,
-          iconColor: '#FFFFFF',
-        }
-
       case 'complete':
         return {
           icon: 'check',
@@ -113,30 +101,6 @@ export const TaskActionSnackbar: FC<TaskActionSnackbarProps> = ({
             { label: '查看任務', type: 'view_task' },
           ],
           backgroundColor: theme.colors.success,
-          iconColor: '#FFFFFF',
-        }
-
-      case 'delete':
-        return {
-          icon: 'trash-2',
-          title: '已刪除任務',
-          subtitle: '任務已從列表中移除',
-          actions: [
-            { label: '返回任務牆', type: 'task_wall' },
-          ],
-          backgroundColor: theme.colors.error,
-          iconColor: '#FFFFFF',
-        }
-
-      case 'cancel':
-        return {
-          icon: 'x-circle',
-          title: '任務已取消',
-          subtitle: '已通知所有申請者',
-          actions: [
-            { label: '返回任務牆', type: 'task_wall' },
-          ],
-          backgroundColor: theme.colors.error,
           iconColor: '#FFFFFF',
         }
 
@@ -156,18 +120,8 @@ export const TaskActionSnackbar: FC<TaskActionSnackbarProps> = ({
   const renderIcon = (iconType: string, color: string) => {
     const iconProps = { size: 20, color }
     
-    switch (iconType) {
-      case 'check':
-        return <Check {...iconProps} />
-      case 'rotate-ccw':
-        return <RotateCcw {...iconProps} />
-      case 'trash-2':
-        return <Trash2 {...iconProps} />
-      case 'x-circle':
-        return <XCircle {...iconProps} />
-      default:
-        return <Check {...iconProps} />
-    }
+    // 目前所有操作都使用 check 圖標
+    return <Check {...iconProps} />
   }
 
   if (!visible) return null

@@ -5,10 +5,10 @@ export type RootStackParamList = {
   Auth: undefined
   Main: { 
     screen?: string
-    params?: { initialTab?: 'pending_confirmation' | 'in_progress' | 'completed' }
+    params?: { initialTab?: 'pending_confirmation' | 'in_progress' | 'pending_completion' | 'completed' }
   } | undefined
   TaskWall: undefined
-  TaskDetail: { taskId: string; fromTab?: 'ongoing' | 'pending' | 'completed' }
+  TaskDetail: { taskId: string; fromTab?: 'pending_confirmation' | 'in_progress' | 'pending_completion' | 'completed' }
   TaskApplicants: { taskId: string }
   EditProfile: undefined
   MessageDetail: { conversationId: string }

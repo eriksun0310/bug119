@@ -1,4 +1,4 @@
-export type TaskActionType = 'accept' | 'select' | 'withdraw' | 'complete' | 'delete' | 'cancel'
+export type TaskActionType = 'accept' | 'select' | 'complete'
 
 export type SnackbarActionType = 'view_task' | 'my_tasks' | 'task_wall'
 
