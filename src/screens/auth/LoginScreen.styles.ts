@@ -18,6 +18,12 @@ export const createStyles = (theme: Theme, isTablet: boolean) =>
       width: '100%',
       maxWidth: isTablet ? 400 : undefined, // 電腦版最大寬度 400px
     },
+    logo: {
+      width: 120,
+      height: 120,
+      // marginBottom: theme.spacing.lg,
+      alignSelf: 'center',
+    },
     title: {
       fontSize: theme.fontSize.xxl,
       fontWeight: 'bold',
@@ -29,7 +35,7 @@ export const createStyles = (theme: Theme, isTablet: boolean) =>
       fontSize: theme.fontSize.md,
       color: theme.colors.textSecondary,
       textAlign: 'center',
-      marginBottom: theme.spacing.xxl,
+      marginBottom: theme.spacing.xs,
     },
     form: {
       gap: theme.spacing.md,
@@ -51,7 +57,7 @@ export const createStyles = (theme: Theme, isTablet: boolean) =>
     testAccountsContainer: {
       marginTop: theme.spacing.lg,
       padding: theme.spacing.md,
-      backgroundColor: theme.colors.surface,
+      // backgroundColor: theme.colors.surface,
       borderRadius: theme.borderRadius.md,
     },
     testAccountsTitle: {

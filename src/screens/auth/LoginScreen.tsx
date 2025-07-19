@@ -1,13 +1,13 @@
 // 登入畫面
 
-import React, { useState } from 'react'
-import { View, Text, ScrollView, Alert } from 'react-native'
-import { useNavigation } from '@react-navigation/native'
-import { useTheme } from '@/shared/theme'
+import { loginValidationRules } from '@/shared/config/validation.config'
 import { useAuthRedux, useResponsive } from '@/shared/hooks'
 import { useFormValidation } from '@/shared/hooks/useFormValidation'
-import { Button, Input, Card, KeyboardAvoidingContainer } from '@/shared/ui'
-import { loginValidationRules } from '@/shared/config/validation.config'
+import { useTheme } from '@/shared/theme'
+import { Button, Input, KeyboardAvoidingContainer } from '@/shared/ui'
+import { useNavigation } from '@react-navigation/native'
+import React, { useState } from 'react'
+import { Alert, Image, ScrollView, Text, View } from 'react-native'
 import { createStyles } from './LoginScreen.styles'
 
 export const LoginScreen = () => {
@@ -74,7 +74,12 @@ export const LoginScreen = () => {
     <KeyboardAvoidingContainer style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.formContainer}>
-          <Card>
+       
+            <Image 
+              source={require('../../../assets/images/logo.png')}
+              style={styles.logo}
+              resizeMode="contain"
+            />
             <Text style={styles.title}>Bug 119</Text>
           <Text style={styles.subtitle}>歡迎回來！</Text>
           
@@ -129,7 +134,7 @@ export const LoginScreen = () => {
               </View>
             </View>
           </View>
-          </Card>
+         
           
           <View style={styles.registerContainer}>
           <Text style={styles.registerText}>還沒有帳號？</Text>
