@@ -6,9 +6,7 @@ import {
   Text, 
   ScrollView, 
   TouchableOpacity,
-  RefreshControl,
-  Alert,
-  Modal
+  RefreshControl
 } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
@@ -16,21 +14,16 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { 
   Search, 
   Filter, 
-  Bell,
-  X
+  Bell
 } from 'lucide-react-native'
 import { useTheme } from '@/shared/theme'
 import { useAuthRedux, useTasksRedux, useResponsive, useTaskActions } from '@/shared/hooks'
-import { TaskCard, Input, FilterModal, ScreenHeader } from '@/shared/ui'
+import { TaskCard, Input, FilterModal } from '@/shared/ui'
 import { 
   getPestTypeDisplayName
 } from '@/shared/mocks'
-import { Task, PestType, TaskPriority, RootStackParamList } from '@/shared/types'
+import { Task, RootStackParamList } from '@/shared/types'
 import { FilterModalFilters } from '@/shared/ui/filter-modal/FilterModal.types'
-import { 
-  TASK_WALL_PEST_FILTER_OPTIONS, 
-  TASK_WALL_PRIORITY_FILTER_OPTIONS 
-} from '@/shared/config/options.config'
 import { createStyles } from './TaskWallScreen.styles'
 
 type TaskWallNavigationProp = NativeStackNavigationProp<RootStackParamList, 'TaskDetail'>
@@ -48,13 +41,21 @@ export const TaskWallScreen = () => {
   const navigation = useNavigation<TaskWallNavigationProp>()
   const insets = useSafeAreaInsets()
   const { handleAcceptTask: acceptTask } = useTaskActions()
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedFilters, setSelectedFilters] = useState<FilterModalFilters>({
-    pestType: null,
-    priority: null,
-    isImmediate: false,
+  // 統一的表單狀態管理
+  const [formState, setFormState] = useState({
+    searchQuery: '',
+    selectedFilters: {
+      pestType: null,
+      priority: null,
+      isImmediate: false,
+    } as FilterModalFilters,
+    showFilterModal: false,
   })
-  const [showFilterModal, setShowFilterModal] = useState(false)
+
+  // 統一的狀態更新函數
+  const updateFormState = (field: keyof typeof formState, value: any) => {
+    setFormState(prev => ({ ...prev, [field]: value }))
+  }
   
   // 載入任務資料
   useEffect(() => {
@@ -73,8 +74,8 @@ export const TaskWallScreen = () => {
   // 篩選任務
   const filteredTasks = (availableTasks || []).filter(task => {
     // 搜尋篩選
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase()
+    if (formState.searchQuery) {
+      const query = formState.searchQuery.toLowerCase()
       const matchesSearch = 
         task.title.toLowerCase().includes(query) ||
         task.description.toLowerCase().includes(query) ||
@@ -85,17 +86,17 @@ export const TaskWallScreen = () => {
     }
     
     // 害蟲類型篩選
-    if (selectedFilters.pestType && task.pestType !== selectedFilters.pestType) {
+    if (formState.selectedFilters.pestType && task.pestType !== formState.selectedFilters.pestType) {
       return false
     }
     
     // 優先程度篩選
-    if (selectedFilters.priority && task.priority !== selectedFilters.priority) {
+    if (formState.selectedFilters.priority && task.priority !== formState.selectedFilters.priority) {
       return false
     }
     
     // 立即處理篩選
-    if (selectedFilters.isImmediate && !task.isImmediate) {
+    if (formState.selectedFilters.isImmediate && !task.isImmediate) {
       return false
     }
     
@@ -124,12 +125,12 @@ export const TaskWallScreen = () => {
   
   // 清除篩選
   const clearFilters = () => {
-    setSelectedFilters({
+    updateFormState('selectedFilters', {
       pestType: null,
       priority: null,
       isImmediate: false,
     })
-    setSearchQuery('')
+    updateFormState('searchQuery', '')
   }
   
   // 處理通知按鈕點擊
@@ -139,17 +140,17 @@ export const TaskWallScreen = () => {
   
   // 處理篩選按鈕點擊
   const handleFilterPress = () => {
-    setShowFilterModal(true)
+    updateFormState('showFilterModal', true)
   }
   
   // 應用篩選
   const applyFilters = (filters: FilterModalFilters) => {
-    setSelectedFilters(filters)
+    updateFormState('selectedFilters', filters)
   }
   
   // 重置篩選
   const resetFilters = () => {
-    setSelectedFilters({
+    updateFormState('selectedFilters', {
       pestType: null,
       priority: null,
       isImmediate: false,
@@ -168,7 +169,7 @@ export const TaskWallScreen = () => {
             onPress={handleFilterPress}
           >
             <Filter size={24} color={
-              (selectedFilters.pestType || selectedFilters.priority || selectedFilters.isImmediate) 
+              (formState.selectedFilters.pestType || formState.selectedFilters.priority || formState.selectedFilters.isImmediate) 
                 ? theme.colors.secondary 
                 : theme.colors.text
             } />
@@ -183,14 +184,14 @@ export const TaskWallScreen = () => {
         <View style={styles.searchContainer}>
           <Input
             placeholder="搜尋任務、地點或害蟲類型..."
-            value={searchQuery}
-            onChangeText={setSearchQuery}
+            value={formState.searchQuery}
+            onChangeText={(text) => updateFormState('searchQuery', text)}
             leftIcon={<Search size={20} color={theme.colors.textSecondary} />}
           />
         </View>
         
         {/* 清除篩選 */}
-        {(searchQuery || selectedFilters.pestType || selectedFilters.priority || selectedFilters.isImmediate) && (
+        {(formState.searchQuery || formState.selectedFilters.pestType || formState.selectedFilters.priority || formState.selectedFilters.isImmediate) && (
           <View style={styles.clearFilterRow}>
             <TouchableOpacity onPress={clearFilters}>
               <Text style={styles.clearFiltersButton}>清除篩選</Text>
@@ -235,7 +236,7 @@ export const TaskWallScreen = () => {
               <View style={styles.emptyState}>
                 <Search size={48} color={theme.colors.textSecondary} />
                 <Text style={styles.emptyStateText}>
-                  {searchQuery || Object.values(selectedFilters).some(Boolean)
+                  {formState.searchQuery || Object.values(formState.selectedFilters).some(Boolean)
                     ? '沒有符合條件的任務'
                     : '目前沒有可接的任務\n請稍後再查看'
                   }
@@ -248,11 +249,11 @@ export const TaskWallScreen = () => {
       
       {/* 篩選模態框 */}
       <FilterModal 
-        visible={showFilterModal}
-        filters={selectedFilters}
+        visible={formState.showFilterModal}
+        filters={formState.selectedFilters}
         onApply={applyFilters}
         onReset={resetFilters}
-        onClose={() => setShowFilterModal(false)}
+        onClose={() => updateFormState('showFilterModal', false)}
       />
     </View>
   )
