@@ -34,12 +34,9 @@ src/
 │   ├── edit-profile/  # 編輯個人資料
 │   ├── home/          # 首頁
 │   ├── loading/       # 載入頁面
-│   ├── message-detail/# 訊息詳細
-│   ├── messages/      # 訊息列表
 │   ├── my-tasks/      # 我的任務
 │   ├── notifications/ # 通知
 │   ├── profile/       # 個人資料
-│   ├── splash/        # 啟動畫面
 │   ├── task-detail/   # 任務詳細
 │   ├── task-wall/     # 任務牆
 │   └── tasks/         # 任務列表
@@ -156,11 +153,6 @@ src/shared/ui/
 │   ├── Input.types.ts
 │   └── index.ts
 │
-├── message-item/       # 訊息項目元件
-│   ├── MessageItem.tsx
-│   ├── MessageItem.types.ts
-│   └── index.ts
-│
 ├── pest-selector/      # 害蟲類型選擇器
 │   ├── PestSelector.tsx
 │   ├── PestSelector.types.ts
@@ -181,7 +173,6 @@ src/shared/ui/
 │   ├── TaskCard.types.ts
 │   └── index.ts
 │
-├── SwipeableRow.tsx    # 滑動行元件
 │
 └── index.ts            # 統一導出所有全域共用元件
 ```

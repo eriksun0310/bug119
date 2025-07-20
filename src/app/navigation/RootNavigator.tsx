@@ -1,22 +1,21 @@
 // 根導航器
 
-import React from 'react'
+import { useAuthRedux } from '@/shared/hooks'
+import { useTheme } from '@/shared/theme'
+import { RootStackParamList, UserRole } from '@/shared/types'
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { RootStackParamList, UserRole } from '@/shared/types'
-import { useTheme } from '@/shared/theme'
-import { useAuthRedux } from '@/shared/hooks'
+import React from 'react'
 
 // 導入畫面組件
+import { EditProfileScreen } from '@/screens/edit-profile'
+import { MyTasksListScreen } from '@/screens/my-tasks-list'
+import { NotificationsScreen } from '@/screens/notifications'
+import { TaskApplicantsScreen } from '@/screens/task-applicants'
+import { TaskDetailScreen } from '@/screens/task-detail'
 import { AuthNavigator } from './AuthNavigator'
 import { MainNavigator } from './MainNavigator'
 import { TerminatorNavigator } from './TerminatorNavigator'
-import { TaskDetailScreen } from '@/screens/task-detail'
-import { TaskApplicantsScreen } from '@/screens/task-applicants'
-import { EditProfileScreen } from '@/screens/edit-profile'
-import { MessageDetailScreen } from '@/screens/message-detail'
-import { NotificationsScreen } from '@/screens/notifications'
-import { MyTasksListScreen } from '@/screens/my-tasks-list'
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
 
@@ -142,14 +141,7 @@ export const RootNavigator = () => {
             presentation: 'card',
           }}
         />
-        <Stack.Screen 
-          name="MessageDetail" 
-          component={MessageDetailScreen}
-          options={{
-            headerShown: false,
-            presentation: 'card',
-          }}
-        />
+        
         <Stack.Screen 
           name="Notifications" 
           component={NotificationsScreen}

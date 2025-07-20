@@ -1,7 +1,6 @@
 // 根路由導航型別定義
 
 export type RootStackParamList = {
-  Splash: undefined
   Auth: undefined
   Main: { 
     screen?: string
@@ -11,8 +10,6 @@ export type RootStackParamList = {
   TaskDetail: { taskId: string; fromTab?: 'pending_confirmation' | 'in_progress' | 'pending_completion' | 'completed' }
   TaskApplicants: { taskId: string }
   EditProfile: undefined
-  MessageDetail: { conversationId: string }
-  Chat: { conversationId: string }
   Profile: { userId: string }
   Settings: undefined
   Notifications: undefined
