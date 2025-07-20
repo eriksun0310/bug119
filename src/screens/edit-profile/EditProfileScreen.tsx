@@ -6,7 +6,7 @@ import { useAuthRedux, useResponsive } from '@/shared/hooks'
 import { useFormValidation } from '@/shared/hooks/useFormValidation'
 import { useTheme } from '@/shared/theme'
 import { ContactMethod } from '@/shared/types'
-import { AddressSelector, Input, KeyboardAvoidingContainer, SegmentedControl } from '@/shared/ui'
+import { AddressSelector, Input, KeyboardAvoidingContainer, LogoLoading, SegmentedControl } from '@/shared/ui'
 import { ScreenHeader } from '@/shared/ui/screen-header'
 import { showAlert } from '@/shared/utils'
 import { useNavigation } from '@react-navigation/native'
@@ -242,6 +242,19 @@ const EditProfileScreen = () => {
   
   const styles = createStyles(theme, isTablet, insets)
   
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <LogoLoading 
+            size="lg"
+            animationType="pulse"
+          />
+        </View>
+      </View>
+    )
+  }
+
   return (
     <KeyboardAvoidingContainer style={styles.container}>
       {/* 標題列 */}
@@ -252,7 +265,7 @@ const EditProfileScreen = () => {
             onPress={handleSave}
             disabled={loading}
           >
-            <Save size={24} color={loading ? theme.colors.textSecondary : theme.colors.secondary} />
+            <Save size={24} color={theme.colors.secondary} />
           </TouchableOpacity>
         }
       />

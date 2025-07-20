@@ -5,14 +5,9 @@ import { Theme } from '@/shared/theme/types'
 
 export const createStyles = (theme: Theme) => StyleSheet.create({
   container: {
-    backgroundColor: theme.colors.surface,
-    borderRadius: theme.borderRadius.lg,
-    padding: theme.spacing.md,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    ...theme.shadows.sm,
     minWidth: 280, // 最小寬度確保內容可讀性
     maxWidth: 450, // 增加最大寬度
+    marginBottom: theme.spacing.md,
   },
   
   header: {
@@ -120,5 +115,27 @@ export const createStyles = (theme: Theme) => StyleSheet.create({
   compactDescription: {
     fontSize: theme.fontSize.sm,
     marginBottom: theme.spacing.sm,
+  },
+  
+  // Loading 相關樣式
+  cardContent: {
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.borderRadius.lg,
+    padding: theme.spacing.md,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    ...theme.shadows.sm,
+  },
+  
+  loadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: theme.colors.surface + '90', // 半透明背景
+    borderRadius: theme.borderRadius.lg,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 })

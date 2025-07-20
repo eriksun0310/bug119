@@ -8,6 +8,12 @@ export const createAuthSharedStyles = (theme: Theme, isTablet: boolean) =>
       flex: 1,
       backgroundColor: theme.colors.background,
     },
+    loadingContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingHorizontal: theme.spacing.xl,
+    },
     scrollContent: {
       flexGrow: 1,
       justifyContent: 'center',

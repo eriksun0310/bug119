@@ -6,7 +6,7 @@ import { useResponsive } from '@/shared/hooks'
 import { useFormValidation } from '@/shared/hooks/useFormValidation'
 import { useTheme } from '@/shared/theme'
 import { ContactMethod, UserRole } from '@/shared/types'
-import { AddressSelector, Button, Input, KeyboardAvoidingContainer, SegmentedControl } from '@/shared/ui'
+import { AddressSelector, Button, Input, KeyboardAvoidingContainer, LogoLoading, SegmentedControl } from '@/shared/ui'
 import { useNavigation } from '@react-navigation/native'
 import React, { useState } from 'react'
 import { Alert, Image, ScrollView, Text, View } from 'react-native'
@@ -69,6 +69,7 @@ export const RegisterScreen = () => {
   
   const handleRegister = async () => {
     if (!validateFormWithContactMethod()) {
+      Alert.alert('表單驗證失敗', '請檢查並修正所有錯誤')
       return
     }
     
@@ -88,6 +89,19 @@ export const RegisterScreen = () => {
   }
 
   const styles = createStyles(theme, isTablet)
+  
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <LogoLoading 
+            size="lg"
+            animationType="pulse"
+          />
+        </View>
+      </View>
+    )
+  }
   
   return (
     <KeyboardAvoidingContainer style={styles.container}>
@@ -123,7 +137,7 @@ export const RegisterScreen = () => {
             />
             
             <Input
-              label="密碼"
+              label="密碼（至少6個字元）"
               value={form.password}
               onChangeText={handleInputChange('password')}
               placeholder="請輸入密碼"
@@ -182,6 +196,7 @@ export const RegisterScreen = () => {
                 placeholder="請輸入手機號碼"
                 keyboardType="phone-pad"
                 error={errors.phone}
+                required
               />
             )}
             
@@ -192,13 +207,14 @@ export const RegisterScreen = () => {
                 onChangeText={handleInputChange('line')}
                 placeholder="請輸入 LINE ID"
                 error={errors.line}
+                required
               />
             )}
             
             <Button
               variant="primary"
-              loading={loading}
               onPress={handleRegister}
+              loading={loading}
               style={{ marginTop: theme.spacing.md }}
             >
               註冊

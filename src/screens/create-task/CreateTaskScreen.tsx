@@ -13,6 +13,7 @@ import {
   PestSelector,
   PrioritySelector,
   TaskActionResult,
+  LogoLoading,
 } from '@/shared/ui'
 import { ScreenHeader } from '@/shared/ui/screen-header'
 import { showAlert } from '@/shared/utils'
@@ -165,6 +166,20 @@ export const CreateTaskScreen = () => {
   }
 
   const styles = createStyles(theme, insets)
+
+  // 如果正在創建任務，顯示 loading
+  if (createTaskLoading === ('loading' as any)) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <LogoLoading 
+            size="lg" 
+            animationType="pulse"
+          />
+        </View>
+      </View>
+    )
+  }
 
   // 如果顯示操作結果，渲染 TaskActionResult
   if (showActionResult) {

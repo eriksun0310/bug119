@@ -1,6 +1,6 @@
 import { mockUsers } from '@/shared/mocks'
 import { showAlert } from '@/shared/utils'
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { Alert } from 'react-native'
 import { useAuthRedux } from './useAuthRedux'
 import { useTasksRedux } from './useTasksRedux'
@@ -16,6 +16,10 @@ export const useTaskActions = () => {
     selectTerminator, 
     completeTask
   } = useTasksRedux()
+  
+  // 加入 loading 狀態管理
+  const [loading, setLoading] = useState(false)
+  const [loadingAction, setLoadingAction] = useState<string | null>(null)
   /**
    * 處理接受任務（終結者申請任務，需要小怕星確認）
    */
@@ -24,6 +28,8 @@ export const useTaskActions = () => {
       if (!taskId || !user) return false
 
       const executeAccept = async () => {
+        setLoading(true)
+        setLoadingAction('接受任務')
         try {
           await applyForTask(taskId, user.id)
           // 操作成功後觸發回調 - 不顯示 Alert，讓 UI 直接顯示成功狀態
@@ -34,6 +40,9 @@ export const useTaskActions = () => {
         } catch (error) {
           Alert.alert('接案失敗', error instanceof Error ? error.message : '請稍後再試')
           return false
+        } finally {
+          setLoading(false)
+          setLoadingAction(null)
         }
       }
 
@@ -88,6 +97,8 @@ export const useTaskActions = () => {
       {
         text: '確定委託',
         onPress: async () => {
+          setLoading(true)
+          setLoadingAction('選擇終結者')
           try {
             await selectTerminator(application.taskId, application.terminatorId)
             // 操作成功後觸發回調 - 不顯示 Alert，讓 UI 直接顯示成功狀態
@@ -96,6 +107,9 @@ export const useTaskActions = () => {
             }
           } catch (error) {
             Alert.alert('委託失敗', error instanceof Error ? error.message : '請稍後再試')
+          } finally {
+            setLoading(false)
+            setLoadingAction(null)
           }
         },
       },
@@ -116,6 +130,8 @@ export const useTaskActions = () => {
       {
         text: '確定完成',
         onPress: async () => {
+          setLoading(true)
+          setLoadingAction('標記完成')
           try {
             await completeTask(taskId, completedBy)
             // 操作成功後觸發回調 - 不顯示 Alert，讓 UI 直接顯示成功狀態
@@ -124,6 +140,9 @@ export const useTaskActions = () => {
             }
           } catch (error) {
             Alert.alert('操作失敗', error instanceof Error ? error.message : '請稍後再試')
+          } finally {
+            setLoading(false)
+            setLoadingAction(null)
           }
         },
       },
@@ -136,5 +155,7 @@ export const useTaskActions = () => {
     handleApplyForTask,
     handleSelectTerminator,
     handleMarkCompleted,
+    loading,
+    loadingAction,
   }
 }

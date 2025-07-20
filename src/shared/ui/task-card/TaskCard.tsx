@@ -5,8 +5,9 @@ import { mockUsers } from '@/shared/mocks/users.mock'
 import { useTheme } from '@/shared/theme'
 import { UserRole, TaskStatus } from '@/shared/types'
 import { Bug, DollarSign, MapPin, MessageSquare, User as UserIcon, Check } from 'lucide-react-native'
-import React, { FC } from 'react'
+import React, { FC, useState } from 'react'
 import { Text, TouchableOpacity, View } from 'react-native'
+import { LogoLoading } from '../logo-loading'
 import { createStyles } from './TaskCard.styles'
 import { TaskCardProps } from './TaskCard.types'
 
@@ -28,13 +29,21 @@ export const TaskCard: FC<TaskCardProps> = ({
 }) => {
   const { theme } = useTheme()
   const styles = createStyles(theme)
+  const [isLoading, setIsLoading] = useState(false)
 
   const priorityInfo = getPriorityDisplayInfo(task.priority)
   const pestTypeName = getPestTypeDisplayName(task.pestType)
 
-  const handlePress = () => {
+  const handlePress = async () => {
     if (onPress) {
-      onPress(task)
+      setIsLoading(true)
+      try {
+        // 顯示短暫的 loading，給用戶點擊反饋
+        await new Promise(resolve => setTimeout(resolve, 500))
+        onPress(task)
+      } finally {
+        setIsLoading(false)
+      }
     }
   }
 
@@ -63,12 +72,14 @@ export const TaskCard: FC<TaskCardProps> = ({
     variant === 'compact' ? [styles.description, styles.compactDescription] : styles.description
 
   return (
-    <TouchableOpacity
-      style={[containerStyle, style]}
-      onPress={handlePress}
-      activeOpacity={0.7}
-      {...props}
-    >
+    <View style={[containerStyle, style]}>
+      <TouchableOpacity
+        style={styles.cardContent}
+        onPress={handlePress}
+        activeOpacity={0.7}
+        disabled={isLoading}
+        {...props}
+      >
       {/* 標題和優先程度 */}
       <View style={styles.header}>
         <Text style={titleStyle} numberOfLines={variant === 'compact' ? 1 : 2}>
@@ -132,6 +143,17 @@ export const TaskCard: FC<TaskCardProps> = ({
           <Text style={styles.budgetText}>{formatBudget()}</Text>
         </View>
       </View>
-    </TouchableOpacity>
+      </TouchableOpacity>
+      
+      {/* Loading 覆蓋層 */}
+      {isLoading && (
+        <View style={styles.loadingOverlay}>
+          <LogoLoading 
+            size="sm" 
+            animationType="spin"
+          />
+        </View>
+      )}
+    </View>
   )
 }

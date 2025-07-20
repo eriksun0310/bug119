@@ -6,6 +6,12 @@ export const createStyles = (theme: Theme, isTablet: boolean, insets: { top: num
     flex: 1,
     backgroundColor: theme.colors.background,
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: theme.spacing.xl,
+  },
   tabsHeader: {
     backgroundColor: theme.colors.surface,
     paddingHorizontal: theme.spacing.md,

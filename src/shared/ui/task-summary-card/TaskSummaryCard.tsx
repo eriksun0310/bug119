@@ -33,7 +33,7 @@ export const TaskSummaryCard: FC<TaskSummaryCardProps> = ({ task }) => {
       <Text style={styles.taskMeta}>
         地點：{task.location.district}, {task.location.city}
       </Text>
-      <Text style={styles.taskMeta}>發布時間：{formatDateTime(task.createdAt.toISOString())}</Text>
+      <Text style={styles.taskMeta}>發布時間：{formatDateTime(task.createdAt)}</Text>
     </Card>
   )
 }

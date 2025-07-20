@@ -4,7 +4,7 @@ import { loginValidationRules } from '@/shared/config/validation.config'
 import { useAuthRedux, useResponsive } from '@/shared/hooks'
 import { useFormValidation } from '@/shared/hooks/useFormValidation'
 import { useTheme } from '@/shared/theme'
-import { Button, Input, KeyboardAvoidingContainer } from '@/shared/ui'
+import { Button, Input, KeyboardAvoidingContainer, LogoLoading } from '@/shared/ui'
 import { useNavigation } from '@react-navigation/native'
 import React, { useState } from 'react'
 import { Alert, Image, ScrollView, Text, View } from 'react-native'
@@ -70,6 +70,19 @@ export const LoginScreen = () => {
 
   const styles = createStyles(theme, isTablet)
   
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <LogoLoading 
+            size="lg"
+            animationType="pulse"
+          />
+        </View>
+      </View>
+    )
+  }
+  
   return (
     <KeyboardAvoidingContainer style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -105,7 +118,6 @@ export const LoginScreen = () => {
             
             <Button
               variant="primary"
-              loading={loading}
               onPress={handleLogin}
               style={{ marginTop: theme.spacing.md }}
             >

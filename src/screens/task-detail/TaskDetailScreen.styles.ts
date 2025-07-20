@@ -7,6 +7,12 @@ export const createStyles = (theme: Theme, isTablet: boolean) =>
       flex: 1,
       backgroundColor: theme.colors.background,
     },
+    loadingContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingHorizontal: theme.spacing.xl,
+    },
     content: {
       paddingHorizontal: theme.spacing.lg,
       paddingVertical: theme.spacing.lg,

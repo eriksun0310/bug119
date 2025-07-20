@@ -1,13 +1,13 @@
 // 任務詳細頁面 - 蟲蟲終結者查看任務詳情
 
 import React from 'react'
-import { ScrollView, View, Text } from 'react-native'
+import { ScrollView, View } from 'react-native'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { useAuthRedux, useResponsive, useTaskDetailLogic, useTaskActions } from '@/shared/hooks'
 import { useTheme } from '@/shared/theme'
 import { RootStackParamList } from '@/shared/types'
-import { ScreenHeader, TaskCard, TaskStatusRenderer } from '@/shared/ui'
+import { LogoLoading, ScreenHeader, TaskCard, TaskStatusRenderer } from '@/shared/ui'
 import { taskStatusValidator } from '@/shared/utils'
 import { createStyles } from './TaskDetailScreen.styles'
 
@@ -29,7 +29,9 @@ export const TaskDetailScreen: React.FC = () => {
   const { 
     handleAcceptTask, 
     handleSelectTerminator, 
-    handleMarkCompleted
+    handleMarkCompleted,
+    loading,
+    loadingAction
   } = useTaskActions()
 
   const styles = createStyles(theme, isTablet)
@@ -46,8 +48,11 @@ export const TaskDetailScreen: React.FC = () => {
     return (
       <View style={styles.container}>
         <ScreenHeader title="載入中..." showBackButton onBackPress={() => navigation.goBack()} />
-        <View style={styles.content}>
-          <Text style={{ textAlign: 'center', marginTop: 50 }}>載入任務資料中...</Text>
+        <View style={styles.loadingContainer}>
+          <LogoLoading 
+            size="md"
+            animationType="spin"
+          />
         </View>
       </View>
     )
@@ -56,6 +61,21 @@ export const TaskDetailScreen: React.FC = () => {
   // 取得任務狀態的中文顯示
   const statusText = taskStatusValidator.getStatusDisplayText(task.status)
   const headerTitle = `任務詳情 - ${statusText}`
+
+  // 如果正在處理任務操作，顯示 LogoLoading
+  if (loading && loadingAction) {
+    return (
+      <View style={styles.container}>
+        <ScreenHeader title={headerTitle} showBackButton onBackPress={() => navigation.goBack()} />
+        <View style={styles.loadingContainer}>
+          <LogoLoading 
+            size="lg"
+            animationType="pulse"
+          />
+        </View>
+      </View>
+    )
+  }
 
   return (
     <View style={styles.container}>

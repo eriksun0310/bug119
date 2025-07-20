@@ -2,14 +2,11 @@
 // 所有選擇器元件的選項配置都集中在這裡管理
 
 import {
-  AlertCircle,
   AlertTriangle,
   Bug,
-  CheckCircle,
   Clock,
   MessageCircle,
   Phone,
-  Timer,
   Zap,
 } from 'lucide-react-native'
 import * as React from 'react'
@@ -101,15 +98,6 @@ export interface BudgetOption {
   label: string
 }
 
-export const BUDGET_PRESET_OPTIONS: BudgetOption[] = [
-  { value: 500, label: '$500' },
-  { value: 1000, label: '$1,000' },
-  { value: 1500, label: '$1,500' },
-  { value: 2000, label: '$2,000' },
-  { value: 2500, label: '$2,500' },
-  { value: 3000, label: '$3,000' },
-  { value: 5000, label: '$5,000' },
-] as const
 
 // ================================
 // 任務優先程度選項配置
@@ -179,29 +167,24 @@ export const TASK_WALL_PRIORITY_FILTER_OPTIONS: FilterOption[] = [
 export interface TaskTabOption {
   key: string
   title: string
-  icon: React.ComponentType<any>
 }
 
 export const TASK_TAB_OPTIONS: TaskTabOption[] = [
   {
     key: 'pending_confirmation',
     title: '待確認',
-    icon: AlertCircle,
   },
   {
     key: 'in_progress',
     title: '進行中',
-    icon: Clock,
   },
   {
     key: 'pending_completion',
     title: '待完成',
-    icon: Timer,
   },
   {
     key: 'completed',
     title: '已完成',
-    icon: CheckCircle,
   },
 ] as const
 
@@ -209,74 +192,8 @@ export const TASK_TAB_OPTIONS: TaskTabOption[] = [
 // 選項配置的輔助函數
 // ================================
 
-// 根據值獲取性別選項
-export const getGenderOption = (value: Gender) => {
-  for (const option of GENDER_OPTIONS) {
-    if (option.value === value) return option
-  }
-  return undefined
-}
 
-// 根據值獲取聯絡方式選項
-export const getContactMethodOption = (value: ContactMethod) => {
-  for (const option of CONTACT_METHOD_OPTIONS) {
-    if (option.value === value) return option
-  }
-  return undefined
-}
 
-// 根據類型獲取害蟲選項
-export const getPestTypeOption = (type: PestType) => {
-  for (const option of PEST_TYPE_OPTIONS) {
-    if (option.type === type) return option
-  }
-  return undefined
-}
-
-// 根據類型獲取優先程度選項
-export const getPriorityOption = (type: TaskPriority) => {
-  for (const option of PRIORITY_OPTIONS) {
-    if (option.type === type) return option
-  }
-  return undefined
-}
-
-// 根據金額獲取預算選項
-export const getBudgetOption = (value: number) => {
-  for (const option of BUDGET_PRESET_OPTIONS) {
-    if (option.value === value) return option
-  }
-  return undefined
-}
-
-// 根據鍵值獲取任務牆篩選選項
-export const getTaskWallPestFilterOption = (key: string) => {
-  for (const option of TASK_WALL_PEST_FILTER_OPTIONS) {
-    if (option.key === key) return option
-  }
-  return undefined
-}
-
-export const getTaskWallPriorityFilterOption = (key: string) => {
-  for (const option of TASK_WALL_PRIORITY_FILTER_OPTIONS) {
-    if (option.key === key) return option
-  }
-  return undefined
-}
-
-// 根據鍵值獲取任務標籤頁選項
-export const getTaskTabOption = (key: string) => {
-  for (const option of TASK_TAB_OPTIONS) {
-    if (option.key === key) return option
-  }
-  return undefined
-}
-
-// 聯絡方式顯示名稱映射
-export const getContactMethodDisplayName = (method: ContactMethod): string => {
-  const option = getContactMethodOption(method)
-  return option?.label || method
-}
 
 // ================================
 // 縣市和區域選項配置
@@ -484,10 +401,6 @@ export const CITY_OPTIONS: CityOption[] = [
   },
 ] as const
 
-// 根據縣市代碼獲取縣市選項
-export const getCityOption = (code: string) => {
-  return CITY_OPTIONS.find(city => city.code === code)
-}
 
 // 根據縣市名稱獲取縣市選項
 export const getCityOptionByName = (name: string) => {

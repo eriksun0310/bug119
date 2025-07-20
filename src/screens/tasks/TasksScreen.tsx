@@ -4,7 +4,7 @@ import { TASK_TAB_OPTIONS } from '@/shared/config/options.config'
 import { useAuthRedux, useTasksRedux, useResponsive } from '@/shared/hooks'
 import { useTheme } from '@/shared/theme'
 import { RootStackParamList, Task, TaskStatus, UserRole } from '@/shared/types'
-import { TaskCard } from '@/shared/ui'
+import { LogoLoading, TaskCard } from '@/shared/ui'
 import { ScreenHeader } from '@/shared/ui/screen-header'
 import { createStyles } from './TasksScreen.styles'
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native'
@@ -145,6 +145,29 @@ export const TasksScreen = () => {
   }))
 
   const styles = createStyles(theme, isTablet, insets)
+
+  // 如果是初始載入（不是下拉刷新），顯示 LogoLoading
+  if (tasksLoading === 'loading' && !tasks) {
+    return (
+      <View style={styles.container}>
+        <ScreenHeader
+          title="任務"
+          showBackButton={false}
+          rightActions={
+            <TouchableOpacity onPress={handleNotificationPress}>
+              <Bell size={24} color={theme.colors.text} />
+            </TouchableOpacity>
+          }
+        />
+        <View style={styles.loadingContainer}>
+          <LogoLoading 
+            size="md"
+            animationType="spin"
+          />
+        </View>
+      </View>
+    )
+  }
 
   return (
     <View style={styles.container}>

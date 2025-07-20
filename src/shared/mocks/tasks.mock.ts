@@ -329,42 +329,6 @@ export const mockTasks: Task[] = [
   },
 ] 
 
-// 依據狀態篩選任務
-export const getTasksByStatus = (status: TaskStatus) => {
-  return mockTasks.filter(task => task.status === status)
-}
-
-// 依據害蟲類型篩選任務
-export const getTasksByPestType = (pestType: PestType) => {
-  return mockTasks.filter(task => task.pestType === pestType)
-}
-
-// 依據優先程度篩選任務
-export const getTasksByPriority = (priority: TaskPriority) => {
-  return mockTasks.filter(task => task.priority === priority)
-}
-
-// 取得可接的任務（未指派且狀態為 PENDING）
-export const getAvailableTasks = () => {
-  return mockTasks.filter(task => task.status === TaskStatus.PENDING && !task.assignedTo)
-}
-
-// 取得已指派給特定終結者的任務
-export const getAssignedTasks = (terminatorId: string) => {
-  return mockTasks.filter(task => {
-    // 已指派的任務 (IN_PROGRESS, COMPLETED)
-    if (task.assignedTo === terminatorId) {
-      return true
-    }
-    
-    // PENDING_CONFIRMATION 狀態下，終結者已申請的任務
-    if (task.status === TaskStatus.PENDING_CONFIRMATION && task.applicants) {
-      return task.applicants.some(applicant => applicant.terminatorId === terminatorId)
-    }
-    
-    return false
-  })
-}
 
 // 害蟲類型顯示名稱
 export const getPestTypeDisplayName = (pestType: PestType): string => {
@@ -395,26 +359,6 @@ export const getPriorityDisplayInfo = (priority: TaskPriority) => {
       return { name: '非常緊急', color: '#FF3B30' }
     default:
       return { name: '一般', color: '#666666' }
-  }
-}
-
-// 任務狀態顯示名稱
-export const getTaskStatusDisplayName = (status: TaskStatus): string => {
-  switch (status) {
-    case TaskStatus.PENDING:
-      return '待接案'
-    case TaskStatus.PENDING_CONFIRMATION:
-      return '待確認'
-    case TaskStatus.IN_PROGRESS:
-      return '進行中'
-    case TaskStatus.PENDING_COMPLETION:
-      return '待完成確認'
-    case TaskStatus.COMPLETED:
-      return '已完成'
-    case TaskStatus.CANCELLED:
-      return '已取消'
-    default:
-      return '未知狀態'
   }
 }
 
@@ -504,29 +448,9 @@ export const mockTaskAssignments: TaskAssignment[] = [
   },
 ]
 
-// 依據任務ID取得所有申請（TaskApplication）
-export const getApplicationsByTaskId = (taskId: string) => {
-  return mockTaskApplications.filter(application => application.taskId === taskId)
-}
-
-// 依據終結者ID取得所有申請（TaskApplication）
-export const getApplicationsByTerminatorId = (terminatorId: string) => {
-  return mockTaskApplications.filter(application => application.terminatorId === terminatorId)
-}
-
-// 取得特定任務的申請數量
-export const getTaskApplicationCount = (taskId: string) => {
-  return mockTaskApplications.filter(
-    application => application.taskId === taskId && application.status === 'pending'
-  ).length
-}
 
 // 依據任務ID取得指派資訊（TaskAssignment）
 export const getAssignmentsByTaskId = (taskId: string) => {
   return mockTaskAssignments.filter(assignment => assignment.taskId === taskId)
 }
 
-// 依據終結者ID取得所有指派（TaskAssignment）
-export const getAssignmentsByTerminatorId = (terminatorId: string) => {
-  return mockTaskAssignments.filter(assignment => assignment.terminatorId === terminatorId)
-}
