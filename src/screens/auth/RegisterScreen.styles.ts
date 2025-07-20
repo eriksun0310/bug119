@@ -1,39 +1,12 @@
-import { StyleSheet } from 'react-native'
 import { Theme } from '@/shared/theme/types'
+import { StyleSheet } from 'react-native'
+import { createAuthSharedStyles } from './auth.shared.styles'
 
-export const createStyles = (theme: Theme, isTablet: boolean) =>
-  StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: theme.colors.background,
-    },
-    scrollContent: {
-      flexGrow: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: theme.spacing.lg,
-      paddingTop: theme.spacing.xl,
-    },
-    formContainer: {
-      width: '100%',
-      maxWidth: isTablet ? 400 : undefined, // 電腦版最大寬度 400px
-    },
-    title: {
-      fontSize: theme.fontSize.xxl,
-      fontWeight: 'bold',
-      color: theme.colors.text,
-      textAlign: 'center',
-      marginBottom: theme.spacing.xs,
-    },
-    subtitle: {
-      fontSize: theme.fontSize.md,
-      color: theme.colors.textSecondary,
-      textAlign: 'center',
-      marginBottom: theme.spacing.xxl,
-    },
-    form: {
-      gap: theme.spacing.md,
-    },
+export const createStyles = (theme: Theme, isTablet: boolean) => {
+  const sharedStyles = createAuthSharedStyles(theme, isTablet)
+  
+  return StyleSheet.create({
+    ...sharedStyles,
     sectionTitle: {
       fontSize: theme.fontSize.lg,
       fontWeight: '600',
@@ -53,3 +26,4 @@ export const createStyles = (theme: Theme, isTablet: boolean) =>
       marginBottom: theme.spacing.sm,
     },
   })
+}

@@ -1,15 +1,15 @@
 // 註冊畫面
 
-import React, { useState } from 'react'
-import { View, Text, ScrollView, Alert } from 'react-native'
-import { useNavigation } from '@react-navigation/native'
-import { useTheme } from '@/shared/theme'
+import { CONTACT_METHOD_OPTIONS, USER_ROLE_OPTIONS } from '@/shared/config/options.config'
+import { registerValidationRules } from '@/shared/config/validation.config'
 import { useResponsive } from '@/shared/hooks'
 import { useFormValidation } from '@/shared/hooks/useFormValidation'
-import { Button, Input, Card, SegmentedControl, KeyboardAvoidingContainer } from '@/shared/ui'
-import { ContactMethod } from '@/shared/types'
-import { CONTACT_METHOD_OPTIONS } from '@/shared/config/options.config'
-import { registerValidationRules } from '@/shared/config/validation.config'
+import { useTheme } from '@/shared/theme'
+import { ContactMethod, UserRole } from '@/shared/types'
+import { AddressSelector, Button, Input, KeyboardAvoidingContainer, SegmentedControl } from '@/shared/ui'
+import { useNavigation } from '@react-navigation/native'
+import React, { useState } from 'react'
+import { Alert, Image, ScrollView, Text, View } from 'react-native'
 import { createStyles } from './RegisterScreen.styles'
 
 export const RegisterScreen = () => {
@@ -21,6 +21,7 @@ export const RegisterScreen = () => {
   const {
     form,
     errors,
+    setForm,
     handleInputChange,
     validateForm
   } = useFormValidation(
@@ -29,6 +30,9 @@ export const RegisterScreen = () => {
       email: '',
       password: '',
       confirmPassword: '',
+      role: UserRole.FEAR_STAR,
+      city: '',
+      district: '',
       phone: '',
       line: '',
       telegram: '',
@@ -38,6 +42,12 @@ export const RegisterScreen = () => {
   )
   
   const [loading, setLoading] = useState(false)
+  
+  // 為 AddressSelector 建立 location 物件
+  const locationValue = {
+    city: form.city,
+    district: form.district
+  }
   
   // 自訂驗證函數 - 處理根據偏好聯絡方式的條件式驗證
   const validateFormWithContactMethod = (): boolean => {
@@ -83,7 +93,11 @@ export const RegisterScreen = () => {
     <KeyboardAvoidingContainer style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.formContainer}>
-          <Card>
+              <Image 
+                source={require('../../../assets/images/logo.png')}
+                style={styles.logo}
+                resizeMode="contain"
+              />
             <Text style={styles.title}>加入 Bug 119</Text>
           <Text style={styles.subtitle}>建立您的帳號</Text>
           
@@ -94,6 +108,7 @@ export const RegisterScreen = () => {
               onChangeText={handleInputChange('name')}
               placeholder="請輸入姓名"
               error={errors.name}
+              required
             />
             
             <Input
@@ -104,6 +119,7 @@ export const RegisterScreen = () => {
               keyboardType="email-address"
               autoCapitalize="none"
               error={errors.email}
+              required
             />
             
             <Input
@@ -113,6 +129,7 @@ export const RegisterScreen = () => {
               placeholder="請輸入密碼"
               secureTextEntry
               error={errors.password}
+              required
             />
             
             <Input
@@ -122,9 +139,30 @@ export const RegisterScreen = () => {
               placeholder="請再次輸入密碼"
               secureTextEntry
               error={errors.confirmPassword}
+              required
             />
             
-            <Text style={styles.sectionTitle}>聯絡方式</Text>
+            <View style={{ marginBottom: theme.spacing.md }}>
+              <Text style={styles.fieldLabel}>選擇角色</Text>
+              <SegmentedControl
+                options={USER_ROLE_OPTIONS.filter(option => option.value !== UserRole.ADMIN)}
+                value={form.role}
+                onValueChange={handleInputChange('role')}
+              />
+            </View>
+            
+            <AddressSelector
+              label="居住地址"
+              value={locationValue}
+              onChange={(location) => {
+                setForm({ ...form, city: location.city, district: location.district })
+              }}
+              errors={{ city: errors.city, district: errors.district }}
+              showQuickSet={false}
+              required
+            />
+            
+         
             
             <View style={{ marginBottom: theme.spacing.md }}>
               <Text style={styles.fieldLabel}>偏好聯絡方式</Text>
@@ -166,7 +204,7 @@ export const RegisterScreen = () => {
               註冊
             </Button>
           </View>
-          </Card>
+       
         </View>
       </ScrollView>
     </KeyboardAvoidingContainer>

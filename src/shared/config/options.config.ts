@@ -13,7 +13,7 @@ import {
   Zap,
 } from 'lucide-react-native'
 import * as React from 'react'
-import { ContactMethod, Gender, PestType, TaskPriority } from '../types'
+import { ContactMethod, Gender, PestType, TaskPriority, UserRole } from '../types'
 import type { SegmentOption } from '../ui'
 
 // ================================
@@ -23,6 +23,15 @@ export const GENDER_OPTIONS: SegmentOption<Gender>[] = [
   { value: Gender.MALE, label: '男' },
   { value: Gender.FEMALE, label: '女' },
   { value: Gender.ANY, label: '不限' },
+] as const
+
+// ================================
+// 用戶角色選項配置
+// ================================
+export const USER_ROLE_OPTIONS: SegmentOption<UserRole>[] = [
+  { value: UserRole.FEAR_STAR, label: '小怕星' },
+  { value: UserRole.TERMINATOR, label: '蟲蟲終結者' },
+  { value: UserRole.ADMIN, label: '管理員' },
 ] as const
 
 // ================================

@@ -24,6 +24,9 @@ export const registerValidationRules: ValidationRules<{
   email: string
   password: string
   confirmPassword: string
+  role: any
+  city: string
+  district: string
   phone: string
   line: string
   telegram: string
@@ -51,6 +54,15 @@ export const registerValidationRules: ValidationRules<{
         return validationMessages.passwordMatch
       }
     }
+  },
+  role: {
+    required: true
+  },
+  city: {
+    required: true
+  },
+  district: {
+    required: true
   },
   phone: {
     // 不設為必填，由條件式驗證處理
