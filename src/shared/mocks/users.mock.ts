@@ -124,4 +124,30 @@ export const testCredentials = {
     password: '123456',
     user: mockUsers[1],
   },
+  // 註冊測試帳號
+  registeredUser: {
+    email: 'test@example.com',
+    password: '123456',
+    user: {
+      id: '99',
+      email: 'test@example.com',
+      name: '測試用戶',
+      phone: '0912345678',
+      avatar: null,
+      role: UserRole.FEAR_STAR,
+      isVerified: true,
+      contactInfo: {
+        phone: '0912345678',
+        line: '',
+        telegram: '',
+        preferredMethod: ContactMethod.PHONE,
+      },
+      location: {
+        city: '台北市',
+        district: '大安區',
+      },
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+  },
 }

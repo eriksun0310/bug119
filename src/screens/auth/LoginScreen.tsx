@@ -5,9 +5,10 @@ import { useAuthRedux, useResponsive } from '@/shared/hooks'
 import { useFormValidation } from '@/shared/hooks/useFormValidation'
 import { useTheme } from '@/shared/theme'
 import { Button, Input, KeyboardAvoidingContainer, LogoLoading } from '@/shared/ui'
+import { showAlert } from '@/shared/utils'
 import { useNavigation } from '@react-navigation/native'
 import React, { useState } from 'react'
-import { Alert, Image, ScrollView, Text, View } from 'react-native'
+import { Image, ScrollView, Text, View } from 'react-native'
 import { createStyles } from './LoginScreen.styles'
 
 export const LoginScreen = () => {
@@ -25,8 +26,8 @@ export const LoginScreen = () => {
     validateForm
   } = useFormValidation(
     {
-      email: '',
-      password: ''
+      email: 'test@example.com',
+      password: '123456'
     },
     loginValidationRules
   )
@@ -44,10 +45,10 @@ export const LoginScreen = () => {
       if (success) {
         navigation.replace('Main')
       } else {
-        Alert.alert('錯誤', '帳號或密碼錯誤')
+        showAlert('錯誤', '帳號或密碼錯誤')
       }
     } catch (error) {
-      Alert.alert('錯誤', '登入失敗，請稍後再試')
+      showAlert('錯誤', '登入失敗，請稍後再試')
     } finally {
       setLoading(false)
     }

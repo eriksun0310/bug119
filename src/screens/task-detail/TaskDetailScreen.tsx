@@ -1,14 +1,14 @@
 // 任務詳細頁面 - 蟲蟲終結者查看任務詳情
 
-import React from 'react'
-import { ScrollView, View } from 'react-native'
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
-import { NativeStackNavigationProp } from '@react-navigation/native-stack'
-import { useAuthRedux, useResponsive, useTaskDetailLogic, useTaskActions } from '@/shared/hooks'
+import { useAuthRedux, useResponsive, useTaskActions, useTaskDetailLogic } from '@/shared/hooks'
 import { useTheme } from '@/shared/theme'
 import { RootStackParamList } from '@/shared/types'
 import { LogoLoading, ScreenHeader, TaskCard, TaskStatusRenderer } from '@/shared/ui'
 import { taskStatusValidator } from '@/shared/utils'
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
+import React from 'react'
+import { ScrollView, View } from 'react-native'
 import { createStyles } from './TaskDetailScreen.styles'
 
 type TaskDetailRouteProp = RouteProp<RootStackParamList, 'TaskDetail'>
@@ -96,7 +96,7 @@ export const TaskDetailScreen: React.FC = () => {
             contactTitle={contactInfo?.title || ''}
             onAcceptTask={handleAcceptTask}
             onSelectTerminator={handleSelectTerminator}
-            onMarkCompleted={handleMarkCompleted}
+          onMarkCompleted={handleMarkCompleted}
             isTablet={isTablet}
             navigation={navigation}
           />

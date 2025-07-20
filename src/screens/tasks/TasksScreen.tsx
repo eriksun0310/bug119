@@ -1,18 +1,18 @@
 // 我的任務畫面 - 支援小怕星和終結者
 
 import { TASK_TAB_OPTIONS } from '@/shared/config/options.config'
-import { useAuthRedux, useTasksRedux, useResponsive } from '@/shared/hooks'
+import { useAuthRedux, useResponsive, useTasksRedux } from '@/shared/hooks'
 import { useTheme } from '@/shared/theme'
 import { RootStackParamList, Task, TaskStatus, UserRole } from '@/shared/types'
 import { LogoLoading, TaskCard } from '@/shared/ui'
 import { ScreenHeader } from '@/shared/ui/screen-header'
-import { createStyles } from './TasksScreen.styles'
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native'
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { AlertCircle, Bell, CheckCircle, Clock, Timer } from 'lucide-react-native'
 import React, { useEffect, useRef, useState } from 'react'
 import { RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { createStyles } from './TasksScreen.styles'
 
 type TasksNavigationProp = NativeStackNavigationProp<RootStackParamList>
 type TasksRouteProp = RouteProp<{ Tasks: { initialTab?: TaskTab } }, 'Tasks'>
@@ -186,7 +186,6 @@ export const TasksScreen = () => {
       <View style={styles.tabsHeader}>
         <View style={styles.tabsContainer}>
           {tabs.map(tab => {
-            const IconComponent = tab.icon
             const isActive = activeTab === tab.key
 
             return (
@@ -195,11 +194,7 @@ export const TasksScreen = () => {
                 style={[styles.tab, isActive && styles.activeTab]}
                 onPress={() => setActiveTab(tab.key)}
               >
-                <IconComponent
-                  size={16}
-                  color={isActive ? theme.colors.primary : theme.colors.textSecondary}
-                  style={styles.tabIcon}
-                />
+             
                 <Text style={[styles.tabText, isActive && styles.activeTabText]}>{tab.title}</Text>
                 <Text style={[styles.tabCount, isActive && styles.activeTabCount]}>
                   {tab.count}

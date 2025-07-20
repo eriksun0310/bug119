@@ -1,3 +1,3 @@
-// 任務詳細頁面導出
+// TaskDetail 畫面統一導出
 
 export { TaskDetailScreen } from './TaskDetailScreen'

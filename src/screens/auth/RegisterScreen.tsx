@@ -7,15 +7,24 @@ import { useFormValidation } from '@/shared/hooks/useFormValidation'
 import { useTheme } from '@/shared/theme'
 import { ContactMethod, UserRole } from '@/shared/types'
 import { AddressSelector, Button, Input, KeyboardAvoidingContainer, LogoLoading, SegmentedControl } from '@/shared/ui'
+import { showAlert } from '@/shared/utils'
 import { useNavigation } from '@react-navigation/native'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import React, { useState } from 'react'
-import { Alert, Image, ScrollView, Text, View } from 'react-native'
+import { Image, ScrollView, Text, View } from 'react-native'
 import { createStyles } from './RegisterScreen.styles'
+
+type AuthStackParamList = {
+  Login: undefined
+  Register: undefined
+}
+
+type RegisterScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'Register'>
 
 export const RegisterScreen = () => {
   const { theme } = useTheme()
   const { isTablet } = useResponsive()
-  const navigation = useNavigation<any>()
+  const navigation = useNavigation<RegisterScreenNavigationProp>()
   
   // 使用 useFormValidation Hook 統一管理表單
   const {
@@ -26,14 +35,14 @@ export const RegisterScreen = () => {
     validateForm
   } = useFormValidation(
     {
-      name: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
+      name: '測試用戶',
+      email: 'test@example.com',
+      password: '123456',
+      confirmPassword: '123456',
       role: UserRole.FEAR_STAR,
-      city: '',
-      district: '',
-      phone: '',
+      city: '台北市',
+      district: '大安區',
+      phone: '0912345678',
       line: '',
       telegram: '',
       preferredMethod: ContactMethod.PHONE
@@ -69,7 +78,7 @@ export const RegisterScreen = () => {
   
   const handleRegister = async () => {
     if (!validateFormWithContactMethod()) {
-      Alert.alert('表單驗證失敗', '請檢查並修正所有錯誤')
+      showAlert('表單驗證失敗', '請檢查並修正所有錯誤')
       return
     }
     
@@ -78,11 +87,11 @@ export const RegisterScreen = () => {
       // 模擬註冊 API 呼叫
       await new Promise(resolve => setTimeout(resolve, 1500))
       
-      Alert.alert('成功', '註冊完成！', [
-        { text: '確定', onPress: () => navigation.goBack() }
+      showAlert('成功', '註冊完成！', [
+        { text: '確定', onPress: () => navigation.replace('Login') }
       ])
     } catch (error) {
-      Alert.alert('錯誤', '註冊失敗，請稍後再試')
+      showAlert('錯誤', '註冊失敗，請稍後再試')
     } finally {
       setLoading(false)
     }
@@ -116,6 +125,16 @@ export const RegisterScreen = () => {
           <Text style={styles.subtitle}>建立您的帳號</Text>
           
           <View style={styles.form}>
+
+
+             <View style={{ marginBottom: theme.spacing.md }}>
+              <Text style={styles.fieldLabel}>選擇角色</Text>
+              <SegmentedControl
+                options={USER_ROLE_OPTIONS.filter(option => option.value !== UserRole.ADMIN)}
+                value={form.role}
+                onValueChange={handleInputChange('role')}
+              />
+            </View>
             <Input
               label="姓名"
               value={form.name}
@@ -156,14 +175,6 @@ export const RegisterScreen = () => {
               required
             />
             
-            <View style={{ marginBottom: theme.spacing.md }}>
-              <Text style={styles.fieldLabel}>選擇角色</Text>
-              <SegmentedControl
-                options={USER_ROLE_OPTIONS.filter(option => option.value !== UserRole.ADMIN)}
-                value={form.role}
-                onValueChange={handleInputChange('role')}
-              />
-            </View>
             
             <AddressSelector
               label="居住地址"
