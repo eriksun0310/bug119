@@ -8,30 +8,6 @@ export const createStyles = (theme: Theme, insets: EdgeInsets) =>
       flex: 1,
       backgroundColor: theme.colors.background,
     },
-    header: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      backgroundColor: theme.colors.surface,
-      paddingHorizontal: theme.spacing.md,
-      paddingTop: insets.top > 0 ? insets.top + theme.spacing.xs : theme.spacing.sm,
-      paddingBottom: theme.spacing.sm,
-      borderBottomWidth: 1,
-      borderBottomColor: theme.colors.border,
-    },
-    title: {
-      fontSize: theme.fontSize.xl,
-      fontWeight: 'bold',
-      color: theme.colors.text,
-      textAlign: 'center',
-      flex: 1,
-    },
-    themeButton: {
-      padding: theme.spacing.xs,
-    },
-    bellButton: {
-      padding: theme.spacing.xs,
-    },
     content: {
       paddingHorizontal: theme.spacing.lg,
       paddingVertical: theme.spacing.lg,

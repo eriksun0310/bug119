@@ -14,6 +14,7 @@ import {
   PrioritySelector,
   TaskActionResult,
 } from '@/shared/ui'
+import { ScreenHeader } from '@/shared/ui/screen-header'
 import { showAlert } from '@/shared/utils'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
@@ -182,16 +183,16 @@ export const CreateTaskScreen = () => {
   return (
     <KeyboardAvoidingContainer style={styles.container}>
       {/* 標題區 */}
-      <View style={styles.header}>
-        <View style={{ width: 40 }} />
-        <View style={styles.titleContainer}>
-          <Text style={styles.title}>發布除蟲任務</Text>
-          <Text style={styles.subtitle}>詳細描述問題，讓專家更好為您服務</Text>
-        </View>
-        <TouchableOpacity style={styles.bellButton} onPress={handleNotificationPress}>
-          <Bell size={24} color={theme.colors.text} />
-        </TouchableOpacity>
-      </View>
+      <ScreenHeader
+        title="發布除蟲任務"
+        subtitle="詳細描述問題，讓專家更好為您服務"
+        showBackButton={false}
+        rightActions={
+          <TouchableOpacity onPress={handleNotificationPress}>
+            <Bell size={24} color={theme.colors.text} />
+          </TouchableOpacity>
+        }
+      />
 
       <ScrollView style={styles.content}>
         <View style={styles.form}>

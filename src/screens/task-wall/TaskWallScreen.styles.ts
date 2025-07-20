@@ -6,32 +6,12 @@ export const createStyles = (theme: Theme, isTablet: boolean, screenWidth: numbe
     flex: 1,
     backgroundColor: theme.colors.background,
   },
-  header: {
+  searchAndFilterContainer: {
     backgroundColor: theme.colors.surface,
     paddingHorizontal: theme.spacing.md,
-    paddingTop: insets.top > 0 ? insets.top + theme.spacing.xs : theme.spacing.sm,
-    paddingBottom: theme.spacing.sm,
+    paddingVertical: theme.spacing.sm,
     borderBottomWidth: 1,
     borderBottomColor: theme.colors.border,
-  },
-  titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: theme.spacing.sm,
-  },
-  title: {
-    fontSize: theme.fontSize.xl,
-    fontWeight: 'bold',
-    color: theme.colors.text,
-    textAlign: 'center',
-    flex: 1,
-  },
-  filterIconButton: {
-    padding: theme.spacing.xs,
-  },
-  bellButton: {
-    padding: theme.spacing.xs,
   },
   searchContainer: {
     marginBottom: theme.spacing.sm,

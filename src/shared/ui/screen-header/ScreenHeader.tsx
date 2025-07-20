@@ -13,11 +13,13 @@ import { createStyles } from './ScreenHeader.styles'
  */
 export const ScreenHeader: FC<ScreenHeaderProps> = ({
   title,
+  subtitle,
   showBackButton = true,
   rightActions,
   leftActions,
   onBackPress,
   style,
+  titleContainerStyle,
 }) => {
   const { theme } = useTheme()
   const navigation = useNavigation()
@@ -47,8 +49,9 @@ export const ScreenHeader: FC<ScreenHeaderProps> = ({
           {leftActions}
         </View>
         
-        <View style={styles.centerContainer}>
+        <View style={[styles.centerContainer, titleContainerStyle]}>
           <Text style={styles.title}>{title}</Text>
+          {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
         </View>
         
         <View style={styles.rightContainer}>

@@ -19,6 +19,7 @@ import {
 import { useTheme } from '@/shared/theme'
 import { useAuthRedux, useTasksRedux, useResponsive, useTaskActions } from '@/shared/hooks'
 import { TaskCard, Input, FilterModal } from '@/shared/ui'
+import { ScreenHeader } from '@/shared/ui/screen-header'
 import { 
   getPestTypeDisplayName
 } from '@/shared/mocks'
@@ -162,10 +163,11 @@ export const TaskWallScreen = () => {
   return (
     <View style={styles.container}>
       {/* 標題和控制區 */}
-      <View style={styles.header}>
-        <View style={styles.titleRow}>
+      <ScreenHeader
+        title="任務牆"
+        showBackButton={false}
+        leftActions={
           <TouchableOpacity 
-            style={styles.filterIconButton}
             onPress={handleFilterPress}
           >
             <Filter size={24} color={
@@ -174,12 +176,16 @@ export const TaskWallScreen = () => {
                 : theme.colors.text
             } />
           </TouchableOpacity>
-          <Text style={styles.title}>任務牆</Text>
-          <TouchableOpacity style={styles.bellButton} onPress={handleNotificationPress}>
+        }
+        rightActions={
+          <TouchableOpacity onPress={handleNotificationPress}>
             <Bell size={24} color={theme.colors.text} />
           </TouchableOpacity>
-        </View>
-        
+        }
+      />
+      
+      {/* 搜尋和篩選區 */}
+      <View style={styles.searchAndFilterContainer}>
         {/* 搜尋框 */}
         <View style={styles.searchContainer}>
           <Input

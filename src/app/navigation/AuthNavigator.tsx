@@ -23,11 +23,14 @@ export const AuthNavigator = () => {
       screenOptions={{
         headerStyle: {
           backgroundColor: theme.colors.surface,
-        },
+        } as any,
+        headerShadowVisible: false,
         headerTintColor: theme.colors.text,
         headerTitleStyle: {
           fontWeight: '600',
+          fontSize: theme.fontSize.lg,
         },
+        headerTitleAlign: 'center',
         contentStyle: { backgroundColor: theme.colors.background },
       }}
     >

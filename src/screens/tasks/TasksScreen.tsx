@@ -5,6 +5,7 @@ import { useAuthRedux, useTasksRedux, useResponsive } from '@/shared/hooks'
 import { useTheme } from '@/shared/theme'
 import { RootStackParamList, Task, TaskStatus, UserRole } from '@/shared/types'
 import { TaskCard } from '@/shared/ui'
+import { ScreenHeader } from '@/shared/ui/screen-header'
 import { createStyles } from './TasksScreen.styles'
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
@@ -148,15 +149,18 @@ export const TasksScreen = () => {
   return (
     <View style={styles.container}>
       {/* 標題和標籤頁 */}
-      <View style={styles.header}>
-        <View style={styles.titleRow}>
-          <View style={{ width: 40 }} />
-          <Text style={styles.title}>任務</Text>
-          <TouchableOpacity style={styles.bellButton} onPress={handleNotificationPress}>
+      <ScreenHeader
+        title="任務"
+        showBackButton={false}
+        rightActions={
+          <TouchableOpacity onPress={handleNotificationPress}>
             <Bell size={24} color={theme.colors.text} />
           </TouchableOpacity>
-        </View>
-
+        }
+      />
+      
+      {/* 標籤頁區域 */}
+      <View style={styles.tabsHeader}>
         <View style={styles.tabsContainer}>
           {tabs.map(tab => {
             const IconComponent = tab.icon

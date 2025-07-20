@@ -4,6 +4,7 @@ import { useAuthRedux } from '@/shared/hooks'
 import { useTheme } from '@/shared/theme'
 import { RootStackParamList, UserRole } from '@/shared/types'
 import { Card } from '@/shared/ui'
+import { ScreenHeader } from '@/shared/ui/screen-header'
 import { showAlert } from '@/shared/utils'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
@@ -65,19 +66,24 @@ export const ProfileScreen = () => {
   return (
     <View style={styles.container}>
       {/* 標題列 */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.themeButton} onPress={toggleTheme}>
-          {themeMode === 'light' ? (
-            <Moon size={24} color={theme.colors.text} />
-          ) : (
-            <Sun size={24} color={theme.colors.text} />
-          )}
-        </TouchableOpacity>
-        <Text style={styles.title}>我的</Text>
-        <TouchableOpacity style={styles.bellButton} onPress={handleNotificationPress}>
-          <Bell size={24} color={theme.colors.text} />
-        </TouchableOpacity>
-      </View>
+      <ScreenHeader
+        title="我的"
+        showBackButton={false}
+        leftActions={
+          <TouchableOpacity onPress={toggleTheme}>
+            {themeMode === 'light' ? (
+              <Moon size={24} color={theme.colors.text} />
+            ) : (
+              <Sun size={24} color={theme.colors.text} />
+            )}
+          </TouchableOpacity>
+        }
+        rightActions={
+          <TouchableOpacity onPress={handleNotificationPress}>
+            <Bell size={24} color={theme.colors.text} />
+          </TouchableOpacity>
+        }
+      />
 
       <ScrollView contentContainerStyle={styles.content}>
         <Card style={styles.profileCard}>

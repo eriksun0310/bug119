@@ -39,6 +39,13 @@ export const createStyles = (theme: Theme, topInset: number) => StyleSheet.creat
     color: theme.colors.text,
     textAlign: 'center',
   },
+  subtitle: {
+    fontSize: theme.fontSize.sm,
+    fontWeight: '400',
+    color: theme.colors.textSecondary,
+    textAlign: 'center',
+    marginTop: theme.spacing.xs,
+  },
   backButton: {
     padding: theme.spacing.xs,
     marginRight: theme.spacing.sm,

@@ -6,28 +6,6 @@ export const createStyles = (theme: Theme, isTablet: boolean, insets: { top: num
     flex: 1,
     backgroundColor: theme.colors.background,
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: theme.colors.surface,
-    paddingHorizontal: theme.spacing.md,
-    paddingTop: insets.top + theme.spacing.xs,
-    paddingBottom: theme.spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
-  },
-  backButton: {
-    marginRight: theme.spacing.md,
-  },
-  headerTitle: {
-    fontSize: theme.fontSize.lg,
-    fontWeight: '600',
-    color: theme.colors.text,
-    flex: 1,
-  },
-  saveButton: {
-    padding: theme.spacing.xs,
-  },
   content: {
     flex: 1,
   },

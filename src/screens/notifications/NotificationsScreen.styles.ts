@@ -7,30 +7,6 @@ export const createStyles = (theme: Theme, insets: { top: number }) =>
       flex: 1,
       backgroundColor: theme.colors.background,
     },
-    header: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      backgroundColor: theme.colors.surface,
-      paddingHorizontal: theme.spacing.md,
-      paddingTop: insets.top > 0 ? insets.top + theme.spacing.xs : theme.spacing.sm,
-      paddingBottom: theme.spacing.sm,
-      borderBottomWidth: 1,
-      borderBottomColor: theme.colors.border,
-    },
-    backButton: {
-      padding: theme.spacing.xs,
-    },
-    title: {
-      fontSize: theme.fontSize.xl,
-      fontWeight: 'bold',
-      color: theme.colors.text,
-      flex: 1,
-      textAlign: 'center',
-    },
-    markAllButton: {
-      padding: theme.spacing.xs,
-    },
     markAllText: {
       fontSize: theme.fontSize.sm,
       color: theme.colors.secondary,

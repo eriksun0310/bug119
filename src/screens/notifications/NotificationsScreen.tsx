@@ -12,7 +12,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { 
-  ArrowLeft,
   CheckCircle,
   AlertTriangle,
   Clock,
@@ -22,6 +21,7 @@ import {
 } from 'lucide-react-native'
 import { useTheme } from '@/shared/theme'
 import { RootStackParamList } from '@/shared/types'
+import { ScreenHeader } from '@/shared/ui/screen-header'
 import { createStyles } from './NotificationsScreen.styles'
 
 type NotificationsNavigationProp = NativeStackNavigationProp<RootStackParamList>
@@ -191,23 +191,16 @@ export const NotificationsScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       {/* 標題列 */}
-      <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <ArrowLeft size={24} color={theme.colors.text} />
-        </TouchableOpacity>
-        <Text style={styles.title}>
-          通知 {unreadCount > 0 && `(${unreadCount})`}
-        </Text>
-        {unreadCount > 0 && (
-          <TouchableOpacity style={styles.markAllButton} onPress={markAllAsRead}>
-            <Text style={styles.markAllText}>全部已讀</Text>
-          </TouchableOpacity>
-        )}
-        {unreadCount === 0 && <View style={{ width: 60 }} />}
-      </View>
+      <ScreenHeader
+        title={`通知${unreadCount > 0 ? ` (${unreadCount})` : ''}`}
+        rightActions={
+          unreadCount > 0 ? (
+            <TouchableOpacity onPress={markAllAsRead}>
+              <Text style={styles.markAllText}>全部已讀</Text>
+            </TouchableOpacity>
+          ) : undefined
+        }
+      />
       
       {/* 通知列表 */}
       <ScrollView 

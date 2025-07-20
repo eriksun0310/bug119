@@ -1,34 +1,36 @@
 // 編輯個人資料頁面
 
-import React, { useState, useRef } from 'react'
-import { 
-  View, 
-  Text, 
-  ScrollView, 
-  TouchableOpacity,
-  Image,
-  Alert,
-  Platform
-} from 'react-native'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { useNavigation } from '@react-navigation/native'
-import { 
-  ArrowLeft,
-  User,
-  Mail,
-  Phone,
-  Save,
-  MessageCircle
-} from 'lucide-react-native'
-import { useTheme } from '@/shared/theme'
-import { useAuthRedux, useResponsive } from '@/shared/hooks'
-import { useFormValidation } from '@/shared/hooks/useFormValidation'
-import { Input, SegmentedControl, AddressSelector, KeyboardAvoidingContainer } from '@/shared/ui'
-import { showAlert } from '@/shared/utils'
-import * as ImagePicker from 'expo-image-picker'
-import { ContactMethod } from '@/shared/types'
 import { CONTACT_METHOD_OPTIONS } from '@/shared/config/options.config'
 import { editProfileValidationRules } from '@/shared/config/validation.config'
+import { useAuthRedux, useResponsive } from '@/shared/hooks'
+import { useFormValidation } from '@/shared/hooks/useFormValidation'
+import { useTheme } from '@/shared/theme'
+import { ContactMethod } from '@/shared/types'
+import { AddressSelector, Input, KeyboardAvoidingContainer, SegmentedControl } from '@/shared/ui'
+import { ScreenHeader } from '@/shared/ui/screen-header'
+import { showAlert } from '@/shared/utils'
+import { useNavigation } from '@react-navigation/native'
+import * as ImagePicker from 'expo-image-picker'
+import {
+  Bug,
+  Mail,
+  MessageCircle,
+  Phone,
+  Save,
+  Star,
+  User
+} from 'lucide-react-native'
+import React, { useRef, useState } from 'react'
+import {
+  Alert,
+  Image,
+  Platform,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View
+} from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { createStyles } from './EditProfileScreen.styles'
 
 const EditProfileScreen = () => {
@@ -243,22 +245,17 @@ const EditProfileScreen = () => {
   return (
     <KeyboardAvoidingContainer style={styles.container}>
       {/* 標題列 */}
-      <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <ArrowLeft size={24} color={theme.colors.text} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>編輯個人資料</Text>
-        <TouchableOpacity 
-          style={styles.saveButton}
-          onPress={handleSave}
-          disabled={loading}
-        >
-          <Save size={24} color={loading ? theme.colors.textSecondary : theme.colors.secondary} />
-        </TouchableOpacity>
-      </View>
+      <ScreenHeader
+        title="編輯個人資料"
+        rightActions={
+          <TouchableOpacity 
+            onPress={handleSave}
+            disabled={loading}
+          >
+            <Save size={24} color={loading ? theme.colors.textSecondary : theme.colors.secondary} />
+          </TouchableOpacity>
+        }
+      />
       
       <ScrollView 
         ref={scrollViewRef}
@@ -287,15 +284,12 @@ const EditProfileScreen = () => {
           
           {/* 基本資訊 */}
           <View style={styles.section}>
-            
-            {/* 角色顯示 */}
-            <View style={styles.roleInfo}>
-              <Text style={styles.roleLabel}>帳號類型：</Text>
-              <Text style={styles.roleValue}>
-                {user?.role === 'fear_star' ? '小怕星' : '蟲蟲終結者'}
-              </Text>
-            </View>
-            
+            <Input
+              label="角色"
+              value={user?.role === 'fear_star'? '小怕星' : '蟲蟲終結者'}
+              leftIcon={ user?.role === 'fear_star' ? <Star size={16} color={theme.colors.textSecondary} /> : <Bug size={16} color={theme.colors.textSecondary} />}
+              editable={false}
+            />
             <Input
               label="姓名"
               value={form.name}
