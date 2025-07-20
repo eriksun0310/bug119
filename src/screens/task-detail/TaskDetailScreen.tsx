@@ -37,31 +37,44 @@ export const TaskDetailScreen: React.FC = () => {
   // 在 TaskDetailScreen 層級管理 showActionResult 狀態
   const [showActionResult, setShowActionResult] = useState(false)
   const [actionType, setActionType] = useState<'accept' | 'select' | 'complete'>('accept')
+  const [previousStatusText, setPreviousStatusText] = useState('')
 
   // 包裝操作函數，在成功後顯示結果
   const wrappedHandleAcceptTask = React.useCallback(async (taskId?: string) => {
+    // 保存操作前的狀態文字
+    const currentStatusText = taskStatusValidator.getStatusDisplayText(task.status)
+    
     const success = await handleAcceptTask(taskId, () => {
+      setPreviousStatusText(currentStatusText)
       setActionType('accept')
       setShowActionResult(true)
     })
     return success
-  }, [handleAcceptTask])
+  }, [handleAcceptTask, task.status])
 
   const wrappedHandleSelectTerminator = React.useCallback(async (application: any) => {
+    // 保存操作前的狀態文字
+    const currentStatusText = taskStatusValidator.getStatusDisplayText(task.status)
+    
     const success = await handleSelectTerminator(application, () => {
+      setPreviousStatusText(currentStatusText)
       setActionType('select')
       setShowActionResult(true)
     })
     return success
-  }, [handleSelectTerminator])
+  }, [handleSelectTerminator, task.status])
 
   const wrappedHandleMarkCompleted = React.useCallback(async (taskId: string) => {
+    // 保存操作前的狀態文字
+    const currentStatusText = taskStatusValidator.getStatusDisplayText(task.status)
+    
     const success = await handleMarkCompleted(taskId, () => {
+      setPreviousStatusText(currentStatusText)
       setActionType('complete')
       setShowActionResult(true)
     })
     return success
-  }, [handleMarkCompleted])
+  }, [handleMarkCompleted, task.status])
 
   // 處理查看任務按鈕
   const handleViewTask = React.useCallback(() => {
@@ -155,9 +168,12 @@ export const TaskDetailScreen: React.FC = () => {
 
     const config = getResultConfig()
 
+    // 使用操作前的狀態標題，保持用戶預期的上下文
+    const actionResultTitle = `任務詳情 - ${previousStatusText}`
+
     return (
       <View style={styles.container}>
-        <ScreenHeader title={headerTitle} showBackButton onBackPress={() => navigation.goBack()} />
+        <ScreenHeader title={actionResultTitle} showBackButton onBackPress={() => navigation.goBack()} />
         <TaskActionResult
           type={config.type}
           message={config.message}

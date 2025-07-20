@@ -1368,21 +1368,29 @@ const canSelectTerminator = taskStatusValidator.canSelectTerminator(taskStatus, 
 export const TaskDetailScreen = () => {
   const [showActionResult, setShowActionResult] = useState(false)
   const [actionType, setActionType] = useState<'accept' | 'select' | 'complete'>('accept')
+  const [previousStatusText, setPreviousStatusText] = useState('') // 保存操作前的狀態
 
   // 包裝操作函數，在成功後顯示結果
   const wrappedHandleSelectTerminator = useCallback(async (application: any) => {
+    // 保存操作前的狀態文字
+    const currentStatusText = taskStatusValidator.getStatusDisplayText(task.status)
+    
     const success = await handleSelectTerminator(application, () => {
+      setPreviousStatusText(currentStatusText)  // 關鍵：保存操作前狀態
       setActionType('select')
       setShowActionResult(true)  // 關鍵：在操作成功回調中設置
     })
     return success
-  }, [handleSelectTerminator])
+  }, [handleSelectTerminator, task.status])
 
   // 關鍵：優先檢查 showActionResult，再檢查其他狀態
   if (showActionResult) {
+    // 使用操作前的狀態標題，保持用戶預期的上下文
+    const actionResultTitle = `任務詳情 - ${previousStatusText}`
+    
     return (
       <View style={styles.container}>
-        <ScreenHeader title={headerTitle} showBackButton onBackPress={() => navigation.goBack()} />
+        <ScreenHeader title={actionResultTitle} showBackButton onBackPress={() => navigation.goBack()} />
         <TaskActionResult
           type="accept"
           message="已成功選擇終結者"
@@ -1522,6 +1530,10 @@ const handleViewTask = useCallback(() => {
 **原因**：container 樣式缺少 `flex: 1` 和 `justifyContent: 'center'`
 **解決**：確保樣式包含正確的置中屬性
 
+##### 問題5：標題顯示新狀態造成用戶困惑
+**原因**：顯示 TaskActionResult 時 ScreenHeader 顯示了更新後的任務狀態
+**解決**：在操作前保存當前狀態文字，TaskActionResult 頁面使用操作前的狀態標題，維持用戶的心理預期
+
 #### 測試檢查清單
 **每次涉及任務操作的修改後，必須測試以下流程**：
 
@@ -1540,6 +1552,7 @@ const handleViewTask = useCallback(() => {
 2. **檢查顯示優先級**：確認結果檢查在狀態路由之前
 3. **檢查回調時機**：確認回調在操作真正成功後執行
 4. **檢查樣式**：確認 container 有正確的置中樣式
+5. **檢查標題設定**：確認 TaskActionResult 頁面使用操作前的狀態標題，而非新狀態標題
 
 **記住：TaskActionResult 是用戶體驗的關鍵環節，絕對不能省略或破壞！**
 
