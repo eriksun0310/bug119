@@ -49,4 +49,16 @@ export const createStyles = (theme: Theme, insets: { top: number }) => StyleShee
     textAlign: 'center',
     lineHeight: 16,
   },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.md,
+  },
+  mockDataButton: {
+    padding: theme.spacing.xs,
+    borderRadius: theme.borderRadius.sm,
+    backgroundColor: theme.colors.surface,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+  },
 })

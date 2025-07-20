@@ -3,11 +3,11 @@
 import { useAuthRedux, useResponsive, useTaskActions, useTaskDetailLogic } from '@/shared/hooks'
 import { useTheme } from '@/shared/theme'
 import { RootStackParamList } from '@/shared/types'
-import { LogoLoading, ScreenHeader, TaskCard, TaskStatusRenderer } from '@/shared/ui'
+import { LogoLoading, ScreenHeader, TaskCard, TaskStatusRenderer, TaskActionResult } from '@/shared/ui'
 import { taskStatusValidator } from '@/shared/utils'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
-import React from 'react'
+import React, { useState } from 'react'
 import { ScrollView, View } from 'react-native'
 import { createStyles } from './TaskDetailScreen.styles'
 
@@ -33,6 +33,51 @@ export const TaskDetailScreen: React.FC = () => {
     loading,
     loadingAction
   } = useTaskActions()
+
+  // 在 TaskDetailScreen 層級管理 showActionResult 狀態
+  const [showActionResult, setShowActionResult] = useState(false)
+  const [actionType, setActionType] = useState<'accept' | 'select' | 'complete'>('accept')
+
+  // 包裝操作函數，在成功後顯示結果
+  const wrappedHandleAcceptTask = React.useCallback(async (taskId?: string) => {
+    const success = await handleAcceptTask(taskId, () => {
+      setActionType('accept')
+      setShowActionResult(true)
+    })
+    return success
+  }, [handleAcceptTask])
+
+  const wrappedHandleSelectTerminator = React.useCallback(async (application: any) => {
+    const success = await handleSelectTerminator(application, () => {
+      setActionType('select')
+      setShowActionResult(true)
+    })
+    return success
+  }, [handleSelectTerminator])
+
+  const wrappedHandleMarkCompleted = React.useCallback(async (taskId: string) => {
+    const success = await handleMarkCompleted(taskId, () => {
+      setActionType('complete')
+      setShowActionResult(true)
+    })
+    return success
+  }, [handleMarkCompleted])
+
+  // 處理查看任務按鈕
+  const handleViewTask = React.useCallback(() => {
+    setShowActionResult(false)
+    
+    const tabMap = {
+      accept: 'pending_confirmation' as const,
+      complete: 'pending_completion' as const, 
+      select: 'in_progress' as const
+    }
+
+    navigation.navigate('Main', {
+      screen: 'TaskList',
+      params: { initialTab: tabMap[actionType] }
+    })
+  }, [navigation, actionType])
 
   const styles = createStyles(theme, isTablet)
 
@@ -77,6 +122,52 @@ export const TaskDetailScreen: React.FC = () => {
     )
   }
 
+  // 如果顯示操作結果，渲染 TaskActionResult
+  if (showActionResult) {
+    const getResultConfig = () => {
+      switch (actionType) {
+        case 'select':
+          return {
+            type: 'accept' as const,
+            message: '已成功選擇終結者',
+            buttonText: '查看任務',
+          }
+        case 'accept':
+          return {
+            type: 'accept' as const,
+            message: '已成功申請任務',
+            buttonText: '查看任務',
+          }
+        case 'complete':
+          return {
+            type: 'complete' as const,
+            message: '任務已標記完成',
+            buttonText: '查看任務',
+          }
+        default:
+          return {
+            type: 'accept' as const,
+            message: '操作成功',
+            buttonText: '查看任務',
+          }
+      }
+    }
+
+    const config = getResultConfig()
+
+    return (
+      <View style={styles.container}>
+        <ScreenHeader title={headerTitle} showBackButton onBackPress={() => navigation.goBack()} />
+        <TaskActionResult
+          type={config.type}
+          message={config.message}
+          buttonText={config.buttonText}
+          onViewTask={handleViewTask}
+        />
+      </View>
+    )
+  }
+
   return (
     <View style={styles.container}>
       <ScreenHeader title={headerTitle} showBackButton onBackPress={() => navigation.goBack()} />
@@ -94,9 +185,9 @@ export const TaskDetailScreen: React.FC = () => {
             user={user}
             contactPerson={contactInfo?.person || null}
             contactTitle={contactInfo?.title || ''}
-            onAcceptTask={handleAcceptTask}
-            onSelectTerminator={handleSelectTerminator}
-          onMarkCompleted={handleMarkCompleted}
+            onAcceptTask={wrappedHandleAcceptTask}
+            onSelectTerminator={wrappedHandleSelectTerminator}
+            onMarkCompleted={wrappedHandleMarkCompleted}
             isTablet={isTablet}
             navigation={navigation}
           />

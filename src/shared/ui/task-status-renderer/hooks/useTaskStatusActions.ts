@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useState, useRef, useEffect } from 'react'
 import { ActionType, TaskStatusRendererProps, ActionHandlers } from '../TaskStatusRenderer.types'
 
 /**
@@ -18,32 +18,66 @@ export const useTaskStatusActions = ({
 } => {
   const [showActionResult, setShowActionResult] = useState(false)
   const [actionType, setActionType] = useState<ActionType>('accept')
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  // 清理定時器
+  const clearActionResultTimeout = useCallback(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+      timeoutRef.current = null
+    }
+  }, [])
+
+  // 設置顯示結果並自動清除（現在不再使用，保留作為備用）
+  const setShowActionResultWithTimeout = useCallback((show: boolean, type?: ActionType) => {
+    clearActionResultTimeout()
+    
+    if (show && type) {
+      setActionType(type)
+      setShowActionResult(true)
+      
+      // 3秒後自動隱藏結果頁面（防止卡住）
+      timeoutRef.current = setTimeout(() => {
+        setShowActionResult(false)
+      }, 3000)
+    } else {
+      setShowActionResult(false)
+    }
+  }, [clearActionResultTimeout])
+
+  // 手動關閉結果頁面
+  const hideActionResult = useCallback(() => {
+    clearActionResultTimeout()
+    setShowActionResult(false)
+  }, [clearActionResultTimeout])
 
   // 處理接受任務
-  const handleAcceptWithUI = useCallback((taskId?: string) => {
-    onAcceptTask(taskId, () => {
-      setActionType('accept')
-      setShowActionResult(true)
+  const handleAcceptWithUI = useCallback(async (taskId?: string) => {
+    const success = await onAcceptTask(taskId, () => {
+      setShowActionResultWithTimeout(true, 'accept')
     })
-  }, [onAcceptTask])
+    // 如果用戶取消操作，不需要做任何事
+    return success
+  }, [onAcceptTask, setShowActionResultWithTimeout])
 
   // 處理標記完成
-  const handleCompleteWithUI = useCallback((taskId: string) => {
+  const handleCompleteWithUI = useCallback(async (taskId: string) => {
     if (onMarkCompleted) {
-      onMarkCompleted(taskId, () => {
-        setActionType('complete')
-        setShowActionResult(true)
+      const success = await onMarkCompleted(taskId, () => {
+        setShowActionResultWithTimeout(true, 'complete')
       })
+      return success
     }
-  }, [onMarkCompleted])
+    return false
+  }, [onMarkCompleted, setShowActionResultWithTimeout])
 
   // 處理選擇終結者
-  const handleSelectWithUI = useCallback((application: any) => {
-    onSelectTerminator(application, () => {
-      setActionType('select')
-      setShowActionResult(true)
+  const handleSelectWithUI = useCallback(async (application: any) => {
+    const success = await onSelectTerminator(application, () => {
+      setShowActionResultWithTimeout(true, 'select')
     })
-  }, [onSelectTerminator])
+    return success
+  }, [onSelectTerminator, setShowActionResultWithTimeout])
 
   const actionHandlers: ActionHandlers = {
     handleAcceptWithUI,
@@ -51,10 +85,17 @@ export const useTaskStatusActions = ({
     handleSelectWithUI,
   }
 
+  // 清理定時器
+  useEffect(() => {
+    return () => {
+      clearActionResultTimeout()
+    }
+  }, [clearActionResultTimeout])
+
   return {
     showActionResult,
     actionType,
-    setShowActionResult,
+    setShowActionResult: hideActionResult,
     setActionType,
     actionHandlers,
   }

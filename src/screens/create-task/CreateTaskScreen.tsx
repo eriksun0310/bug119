@@ -19,7 +19,7 @@ import { ScreenHeader } from '@/shared/ui/screen-header'
 import { showAlert } from '@/shared/utils'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
-import { Bell, Send } from 'lucide-react-native'
+import { Bell, Send, TestTube } from 'lucide-react-native'
 import React, { useState } from 'react'
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -43,7 +43,7 @@ interface CreateTaskForm {
 export const CreateTaskScreen = () => {
   const { theme } = useTheme()
   const { user } = useAuthRedux()
-  const { createTask, createTaskLoading, createTaskError, resetCreateState } = useTasksRedux()
+  const { createTask, createTaskLoading, resetCreateState } = useTasksRedux()
   const insets = useSafeAreaInsets()
   const navigation = useNavigation<CreateTaskNavigationProp>()
   const [showActionResult, setShowActionResult] = useState(false)
@@ -60,6 +60,81 @@ export const CreateTaskScreen = () => {
   })
 
   const [errors, setErrors] = useState<Partial<Record<keyof CreateTaskForm, string>>>({})
+
+  // 測試資料模板
+  const mockDataTemplates: CreateTaskForm[] = [
+    {
+      title: '客廳蟑螂問題急需處理',
+      description: '家中客廳發現大量蟑螂，特別是晚上時間，需要專業除蟲服務。已嘗試市售殺蟲劑但效果不佳，希望能徹底解決問題。',
+      pestType: PestType.COCKROACH,
+      priority: TaskPriority.URGENT,
+      budget: 1500,
+      location: {
+        city: '台北市',
+        district: '大安區',
+      },
+      preferredGender: Gender.ANY,
+    },
+    {
+      title: '廚房螞蟻入侵問題',
+      description: '廚房地板和牆角出現螞蟻行軍，影響食物衛生，希望能徹底清除並預防再次出現。',
+      pestType: PestType.ANT,
+      priority: TaskPriority.NORMAL,
+      budget: 1200,
+      location: {
+        city: '新北市',
+        district: '板橋區',
+      },
+      preferredGender: Gender.ANY,
+    },
+    {
+      title: '臥室蚊子影響睡眠',
+      description: '每晚都有蚊子嗡嗡叫，嚴重影響睡眠品質，需要專業除蚊處理。',
+      pestType: PestType.MOSQUITO,
+      priority: TaskPriority.NORMAL,
+      budget: 900,
+      location: {
+        city: '台北市',
+        district: '松山區',
+      },
+      preferredGender: Gender.MALE,
+    },
+    {
+      title: '陽台蜘蛛網清理',
+      description: '陽台角落有多個大型蜘蛛網，需要清理並預防再次出現。',
+      pestType: PestType.SPIDER,
+      priority: TaskPriority.NORMAL,
+      budget: 750,
+      location: {
+        city: '台北市',
+        district: '中正區',
+      },
+      preferredGender: Gender.FEMALE,
+    },
+    {
+      title: '書房書蟲緊急處理',
+      description: '珍貴書籍被書蟲蛀蝕，需要立即專業處理避免進一步損害。',
+      pestType: PestType.OTHER,
+      priority: TaskPriority.VERY_URGENT,
+      budget: 2000,
+      location: {
+        city: '台中市',
+        district: '西屯區',
+      },
+      preferredGender: Gender.ANY,
+    },
+  ]
+
+  // 快速填入測試資料
+  const fillMockData = () => {
+    // 隨機選擇一個測試資料模板
+    const randomTemplate = mockDataTemplates[Math.floor(Math.random() * mockDataTemplates.length)]
+    
+    setForm(randomTemplate)
+    setErrors({}) // 清除錯誤
+    
+    showAlert('測試資料已填入', `已填入「${randomTemplate.title}」測試資料`)
+  }
 
   // 表單驗證
   const validateForm = (): boolean => {
@@ -203,9 +278,14 @@ export const CreateTaskScreen = () => {
         subtitle="詳細描述問題，讓專家更好為您服務"
         showBackButton={false}
         rightActions={
-          <TouchableOpacity onPress={handleNotificationPress}>
-            <Bell size={24} color={theme.colors.text} />
-          </TouchableOpacity>
+          <View style={styles.headerActions}>
+            <TouchableOpacity onPress={fillMockData} style={styles.mockDataButton}>
+              <TestTube size={20} color={theme.colors.primary} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleNotificationPress}>
+              <Bell size={24} color={theme.colors.text} />
+            </TouchableOpacity>
+          </View>
         }
       />
 

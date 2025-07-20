@@ -36,7 +36,7 @@ export const TaskStatusRenderer: FC<TaskStatusRendererProps> = (props) => {
     actionHandlers: statusActions.actionHandlers,
   }
 
-  // 優先處理操作結果UI
+  // 優先處理操作結果UI（現在在 TaskDetailScreen 層級管理）
   if (statusActions.showActionResult) {
     return <ActionResultRenderer {...statusProps} />
   }

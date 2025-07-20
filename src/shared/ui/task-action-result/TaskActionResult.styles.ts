@@ -4,7 +4,9 @@ import { Theme } from '@/shared/theme/types'
 export const createStyles = (theme: Theme) =>
   StyleSheet.create({
     container: {
+      flex: 1,
       alignItems: 'center',
+      justifyContent: 'center',
       paddingVertical: theme.spacing.xl,
       paddingHorizontal: theme.spacing.lg,
     },

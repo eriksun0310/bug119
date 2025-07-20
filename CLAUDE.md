@@ -1351,6 +1351,198 @@ const canSelectTerminator = taskStatusValidator.canSelectTerminator(taskStatus, 
 - [ ] 型別定義按分類管理
 - [ ] 無空的資料夾結構
 
+### 13.1 TaskActionResult 實現指南
+
+**重要：TaskActionResult 的顯示邏輯容易在重大修改時被破壞，必須嚴格遵循以下原則**
+
+#### 核心原則
+1. **狀態管理層級**：`showActionResult` 狀態必須在 **畫面層級（Screen）** 管理，不可在子元件內部管理
+2. **顯示優先級**：TaskActionResult 的顯示判斷必須在任務狀態路由之前
+3. **操作回調時機**：只有在操作真正成功後才能設置 `showActionResult = true`
+
+#### 實現模式
+
+##### 正確的狀態管理模式
+```typescript
+// ✅ 正確：在畫面層級管理狀態
+export const TaskDetailScreen = () => {
+  const [showActionResult, setShowActionResult] = useState(false)
+  const [actionType, setActionType] = useState<'accept' | 'select' | 'complete'>('accept')
+
+  // 包裝操作函數，在成功後顯示結果
+  const wrappedHandleSelectTerminator = useCallback(async (application: any) => {
+    const success = await handleSelectTerminator(application, () => {
+      setActionType('select')
+      setShowActionResult(true)  // 關鍵：在操作成功回調中設置
+    })
+    return success
+  }, [handleSelectTerminator])
+
+  // 關鍵：優先檢查 showActionResult，再檢查其他狀態
+  if (showActionResult) {
+    return (
+      <View style={styles.container}>
+        <ScreenHeader title={headerTitle} showBackButton onBackPress={() => navigation.goBack()} />
+        <TaskActionResult
+          type="accept"
+          message="已成功選擇終結者"
+          buttonText="查看任務"
+          onViewTask={handleViewTask}
+        />
+      </View>
+    )
+  }
+
+  // 正常的任務狀態渲染
+  return (
+    <View style={styles.container}>
+      {/* 正常畫面內容 */}
+    </View>
+  )
+}
+```
+
+##### 錯誤的實現模式
+```typescript
+// ❌ 錯誤：在子元件內部管理狀態
+export const TaskStatusRenderer = (props) => {
+  const [showActionResult, setShowActionResult] = useState(false) // 錯誤！
+  
+  // 當父元件重新渲染時，這個狀態會丟失
+  if (showActionResult) {
+    return <ActionResultRenderer />
+  }
+  
+  // 任務狀態路由會覆蓋 ActionResult 顯示
+  switch (task.status) {
+    case TaskStatus.IN_PROGRESS:
+      return <InProgressRenderer />
+  }
+}
+```
+
+#### 關鍵實現細節
+
+##### 1. 操作函數包裝
+```typescript
+// 必須包裝原始操作函數，在成功回調中設置狀態
+const wrappedHandleSelectTerminator = useCallback(async (application: any) => {
+  const success = await handleSelectTerminator(application, () => {
+    // 關鍵：先設置 actionType 再設置 showActionResult
+    setActionType('select')
+    setShowActionResult(true)
+  })
+  return success
+}, [handleSelectTerminator])
+```
+
+##### 2. 操作回調時機修正
+```typescript
+// useTaskActions.ts 中的正確實現
+const handleSelectTerminator = useCallback((application: any, onSuccess?: () => void) => {
+  return new Promise<boolean>((resolve) => {
+    showAlert('確認委託', `確定要委託「${selectedTerminator?.name}」處理這個任務嗎？`, [
+      { text: '取消', style: 'cancel', onPress: () => resolve(false) },
+      {
+        text: '確定委託',
+        onPress: async () => {
+          setLoading(true)
+          try {
+            await selectTerminator(application.taskId, application.terminatorId)
+            
+            // 關鍵：在 Redux 操作完成後，先調用回調再 resolve
+            if (onSuccess) {
+              onSuccess()  // 這會設置 showActionResult = true
+            }
+            
+            // 給微小延遲確保 UI 狀態更新
+            setTimeout(() => resolve(true), 10)
+          } catch (error) {
+            Alert.alert('委託失敗', error.message)
+            resolve(false)
+          } finally {
+            setLoading(false)
+          }
+        },
+      },
+    ])
+  })
+}, [selectTerminator])
+```
+
+##### 3. TaskActionResult 樣式要求
+```typescript
+// TaskActionResult.styles.ts 必須包含以下樣式
+export const createStyles = (theme: Theme) => StyleSheet.create({
+  container: {
+    flex: 1,                    // 必須：佔滿可用空間
+    alignItems: 'center',       // 必須：水平置中
+    justifyContent: 'center',   // 必須：垂直置中
+    paddingVertical: theme.spacing.xl,
+    paddingHorizontal: theme.spacing.lg,
+  },
+  // ... 其他樣式
+})
+```
+
+##### 4. 導航邏輯
+```typescript
+const handleViewTask = useCallback(() => {
+  setShowActionResult(false)  // 關鍵：先關閉結果頁面
+  
+  const tabMap = {
+    accept: 'pending_confirmation' as const,
+    complete: 'pending_completion' as const, 
+    select: 'in_progress' as const
+  }
+
+  // 導航到對應的任務列表標籤
+  navigation.navigate('Main', {
+    screen: 'TaskList',
+    params: { initialTab: tabMap[actionType] }
+  })
+}, [navigation, actionType])
+```
+
+#### 常見問題與解決方案
+
+##### 問題1：TaskActionResult 不顯示
+**原因**：狀態在子元件內部管理，父元件重新渲染時狀態丟失
+**解決**：將狀態提升到畫面層級
+
+##### 問題2：顯示後立即消失
+**原因**：Redux 狀態更新導致組件重新渲染，任務狀態路由覆蓋結果顯示
+**解決**：確保 `if (showActionResult)` 檢查在任務狀態路由之前
+
+##### 問題3：操作成功但不顯示結果
+**原因**：回調函數在用戶確認前就執行了
+**解決**：使用 Promise 包裝 showAlert，在操作真正完成後才調用回調
+
+##### 問題4：TaskActionResult 沒有置中顯示
+**原因**：container 樣式缺少 `flex: 1` 和 `justifyContent: 'center'`
+**解決**：確保樣式包含正確的置中屬性
+
+#### 測試檢查清單
+**每次涉及任務操作的修改後，必須測試以下流程**：
+
+- [ ] 點擊操作按鈕（接受任務、選擇終結者、標記完成）
+- [ ] 確認對話框顯示正確
+- [ ] 用戶確認後顯示 loading
+- [ ] loading 完成後顯示 TaskActionResult（置中顯示）
+- [ ] TaskActionResult 顯示正確的訊息和按鈕
+- [ ] 點擊「查看任務」正確導航到對應的任務列表標籤
+- [ ] 任務狀態已更新為下一個階段
+
+#### 緊急修復指南
+**如果 TaskActionResult 再次不見，立即檢查**：
+
+1. **檢查狀態管理層級**：確認 `showActionResult` 在畫面層級
+2. **檢查顯示優先級**：確認結果檢查在狀態路由之前
+3. **檢查回調時機**：確認回調在操作真正成功後執行
+4. **檢查樣式**：確認 container 有正確的置中樣式
+
+**記住：TaskActionResult 是用戶體驗的關鍵環節，絕對不能省略或破壞！**
+
 ### 14. 開發流程
 1. **需求分析** - 確認實際需要的功能，遵循單一職責原則
 2. **設計元件結構** - 遵循 FSD 架構，按需建立資料夾

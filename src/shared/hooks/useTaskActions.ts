@@ -46,14 +46,23 @@ export const useTaskActions = () => {
         }
       }
 
-      showAlert('確認接案', '確定要接受這個任務嗎？', [
-        { text: '取消', style: 'cancel' },
-        {
-          text: '確定接受',
-          onPress: executeAccept,
-        },
-      ])
-      return true // 返回 true 表示開始處理
+      // 重要修復：等待用戶確認再決定是否執行操作
+      return new Promise<boolean>((resolve) => {
+        showAlert('確認接案', '確定要接受這個任務嗎？', [
+          { 
+            text: '取消', 
+            style: 'cancel',
+            onPress: () => resolve(false)
+          },
+          {
+            text: '確定接受',
+            onPress: async () => {
+              const success = await executeAccept()
+              resolve(success)
+            },
+          },
+        ])
+      })
     },
     [user, applyForTask]
   )
@@ -92,61 +101,82 @@ export const useTaskActions = () => {
   const handleSelectTerminator = useCallback((application: any, onSuccess?: () => void) => {
     const selectedTerminator = mockUsers.find(u => u.id === application.terminatorId)
 
-    showAlert('確認委託', `確定要委託「${selectedTerminator?.name}」處理這個任務嗎？`, [
-      { text: '取消', style: 'cancel' },
-      {
-        text: '確定委託',
-        onPress: async () => {
-          setLoading(true)
-          setLoadingAction('選擇終結者')
-          try {
-            await selectTerminator(application.taskId, application.terminatorId)
-            // 操作成功後觸發回調 - 不顯示 Alert，讓 UI 直接顯示成功狀態
-            if (onSuccess) {
-              onSuccess()
-            }
-          } catch (error) {
-            Alert.alert('委託失敗', error instanceof Error ? error.message : '請稍後再試')
-          } finally {
-            setLoading(false)
-            setLoadingAction(null)
-          }
+    // 重要修復：返回 Promise 等待用戶確認
+    return new Promise<boolean>((resolve) => {
+      showAlert('確認委託', `確定要委託「${selectedTerminator?.name}」處理這個任務嗎？`, [
+        { 
+          text: '取消', 
+          style: 'cancel',
+          onPress: () => resolve(false)
         },
-      },
-    ])
+        {
+          text: '確定委託',
+          onPress: async () => {
+            setLoading(true)
+            setLoadingAction('選擇終結者')
+            try {
+              await selectTerminator(application.taskId, application.terminatorId)
+              
+              // 重要：先觸發回調設置 showActionResult，再 resolve Promise
+              if (onSuccess) {
+                onSuccess()
+              }
+              
+              // 給一個微小的延遲確保 UI 狀態更新
+              setTimeout(() => resolve(true), 10)
+            } catch (error) {
+              Alert.alert('委託失敗', error instanceof Error ? error.message : '請稍後再試')
+              resolve(false)
+            } finally {
+              setLoading(false)
+              setLoadingAction(null)
+            }
+          },
+        },
+      ])
+    })
   }, [selectTerminator])
 
   /**
    * 處理標記任務完成（依據新業務邏輯）
    */
   const handleMarkCompleted = useCallback(async (taskId: string, onSuccess?: () => void) => {
-    if (!user) return
+    if (!user) return false
 
     const completedBy = user.role === 'fear_star' ? 'fear_star' : 'terminator'
     const actionText = user.role === 'fear_star' ? '確認任務完成' : '確認任務完成'
 
-    showAlert('確認完成', `確定要${actionText}嗎？`, [
-      { text: '取消', style: 'cancel' },
-      {
-        text: '確定完成',
-        onPress: async () => {
-          setLoading(true)
-          setLoadingAction('標記完成')
-          try {
-            await completeTask(taskId, completedBy)
-            // 操作成功後觸發回調 - 不顯示 Alert，讓 UI 直接顯示成功狀態
-            if (onSuccess) {
-              onSuccess()
-            }
-          } catch (error) {
-            Alert.alert('操作失敗', error instanceof Error ? error.message : '請稍後再試')
-          } finally {
-            setLoading(false)
-            setLoadingAction(null)
-          }
+    // 重要修復：返回 Promise 等待用戶確認
+    return new Promise<boolean>((resolve) => {
+      showAlert('確認完成', `確定要${actionText}嗎？`, [
+        { 
+          text: '取消', 
+          style: 'cancel',
+          onPress: () => resolve(false)
         },
-      },
-    ])
+        {
+          text: '確定完成',
+          onPress: async () => {
+            setLoading(true)
+            setLoadingAction('標記完成')
+            try {
+              await completeTask(taskId, completedBy)
+              // 操作成功後觸發回調 - 不顯示 Alert，讓 UI 直接顯示成功狀態
+              if (onSuccess) {
+                onSuccess()
+              }
+              resolve(true)
+            } catch (error) {
+              Alert.alert('操作失敗', error instanceof Error ? error.message : '請稍後再試')
+              resolve(false)
+            } finally {
+              setLoading(false)
+              setLoadingAction(null)
+            }
+          },
+        },
+      ])
+    })
   }, [user, completeTask])
 
 
