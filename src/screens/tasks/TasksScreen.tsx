@@ -4,7 +4,7 @@ import { TASK_TAB_OPTIONS } from '@/shared/config/options.config'
 import { useAuthRedux, useResponsive, useTasksRedux } from '@/shared/hooks'
 import { useTheme } from '@/shared/theme'
 import { RootStackParamList, Task, TaskStatus, UserRole } from '@/shared/types'
-import { LogoLoading, TaskCard } from '@/shared/ui'
+import { TaskCard } from '@/shared/ui'
 import { ScreenHeader } from '@/shared/ui/screen-header'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
@@ -77,10 +77,7 @@ export const TasksScreen = () => {
       switch (tab) {
         case 'pending_confirmation':
           // 包含 PENDING（剛發布）和 PENDING_CONFIRMATION（有人申請）
-          return allMyTasks.filter(
-            task =>
-              task.status === TaskStatus.PENDING || task.status === TaskStatus.PENDING_CONFIRMATION
-          )
+          return allMyTasks.filter(task => task.status === TaskStatus.PENDING_CONFIRMATION)
         case 'in_progress':
           return allMyTasks.filter(task => task.status === TaskStatus.IN_PROGRESS)
         case 'pending_completion':
