@@ -1,6 +1,6 @@
 // Bug 119 主要應用程式檔案
 
-import React from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { StatusBar } from 'expo-status-bar'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
@@ -10,11 +10,42 @@ import { useAuthRedux } from './src/shared/hooks/useAuthRedux'
 import { AuthReduxProvider } from './src/shared/hooks/AuthReduxProvider'
 import { RootNavigator } from './src/app/navigation'
 import { LoadingScreen } from './src/screens/loading/LoadingScreen'
+import { SplashScreen } from './src/screens/splash'
+import { SPLASH_CONFIG } from './src/shared/config/splash.config'
 import { store } from './src/shared/store'
 
 const AppContent = () => {
   const { isLoading } = useAuthRedux()
+  const [showSplash, setShowSplash] = useState(true)
+  const [appReady, setAppReady] = useState(false)
   
+  useEffect(() => {
+    // 準備應用程式（載入字體、初始化資料等）
+    const prepareApp = async () => {
+      try {
+        // 這裡可以加入預載資源的邏輯
+        // 例如：載入字體、初始化資料等
+        await new Promise(resolve => setTimeout(resolve, SPLASH_CONFIG.PREPARATION.MOCK_LOADING_TIME))
+      } catch (error) {
+        console.warn('準備應用程式時發生錯誤:', error)
+      } finally {
+        setAppReady(true)
+      }
+    }
+    
+    prepareApp()
+  }, [])
+  
+  const handleSplashComplete = useCallback(() => {
+    setShowSplash(false)
+  }, [])
+  
+  // 顯示自定義 splash screen
+  if (!appReady || showSplash) {
+    return <SplashScreen onAnimationComplete={handleSplashComplete} />
+  }
+  
+  // 顯示載入畫面
   if (isLoading) {
     return <LoadingScreen />
   }

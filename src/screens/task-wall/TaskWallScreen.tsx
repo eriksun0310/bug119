@@ -49,6 +49,7 @@ export const TaskWallScreen = () => {
       pestType: null,
       priority: null,
       isImmediate: false,
+      location: { city: '', district: '' },
     } as FilterModalFilters,
     showFilterModal: false,
   })
@@ -101,6 +102,15 @@ export const TaskWallScreen = () => {
       return false
     }
     
+    // 地址篩選
+    if (formState.selectedFilters.location.city && task.location.city !== formState.selectedFilters.location.city) {
+      return false
+    }
+    
+    if (formState.selectedFilters.location.district && task.location.district !== formState.selectedFilters.location.district) {
+      return false
+    }
+    
     return true
   })
   
@@ -130,6 +140,7 @@ export const TaskWallScreen = () => {
       pestType: null,
       priority: null,
       isImmediate: false,
+      location: { city: '', district: '' },
     })
     updateFormState('searchQuery', '')
   }
@@ -155,6 +166,7 @@ export const TaskWallScreen = () => {
       pestType: null,
       priority: null,
       isImmediate: false,
+      location: { city: '', district: '' },
     })
   }
   
@@ -171,7 +183,11 @@ export const TaskWallScreen = () => {
             onPress={handleFilterPress}
           >
             <Filter size={24} color={
-              (formState.selectedFilters.pestType || formState.selectedFilters.priority || formState.selectedFilters.isImmediate) 
+              (formState.selectedFilters.pestType || 
+               formState.selectedFilters.priority || 
+               formState.selectedFilters.isImmediate ||
+               formState.selectedFilters.location.city ||
+               formState.selectedFilters.location.district) 
                 ? theme.colors.secondary 
                 : theme.colors.text
             } />
@@ -197,7 +213,12 @@ export const TaskWallScreen = () => {
         </View>
         
         {/* 清除篩選 */}
-        {(formState.searchQuery || formState.selectedFilters.pestType || formState.selectedFilters.priority || formState.selectedFilters.isImmediate) && (
+        {(formState.searchQuery || 
+          formState.selectedFilters.pestType || 
+          formState.selectedFilters.priority || 
+          formState.selectedFilters.isImmediate ||
+          formState.selectedFilters.location.city ||
+          formState.selectedFilters.location.district) && (
           <View style={styles.clearFilterRow}>
             <TouchableOpacity onPress={clearFilters}>
               <Text style={styles.clearFiltersButton}>清除篩選</Text>

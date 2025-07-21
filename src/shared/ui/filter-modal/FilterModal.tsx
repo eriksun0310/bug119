@@ -7,6 +7,7 @@ import { PestType, TaskPriority } from '@/shared/types'
 import { X } from 'lucide-react-native'
 import React, { useEffect, useState } from 'react'
 import { Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native'
+import { AddressSelector } from '../address-selector'
 import { createStyles } from './FilterModal.styles'
 import { FilterModalProps } from './FilterModal.types'
 
@@ -36,6 +37,7 @@ export const FilterModal: React.FC<FilterModalProps> = ({
       pestType: null,
       priority: null,
       isImmediate: false,
+      location: { city: '', district: '' },
     }
     setTempFilters(resetFilters)
     onReset()
@@ -60,6 +62,21 @@ export const FilterModal: React.FC<FilterModalProps> = ({
           </View>
 
           <ScrollView>
+            {/* 地址篩選 */}
+            <View style={styles.filterSection}>
+              <AddressSelector
+                label="地點篩選"
+                value={tempFilters.location}
+                onChange={(location) => 
+                  setTempFilters({ ...tempFilters, location })
+                }
+                cityPlaceholder="不限縣市"
+                districtPlaceholder="不限區域"
+                showQuickSet={false}
+                required={false}
+              />
+            </View>
+
             {/* 害蟲類型 */}
             <View style={styles.filterSection}>
               <Text style={styles.filterSectionTitle}>害蟲類型</Text>
