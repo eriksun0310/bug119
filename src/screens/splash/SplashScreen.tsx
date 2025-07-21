@@ -1,10 +1,10 @@
 // Bug 119 啟動畫面
 
-import React, { useEffect, useRef } from 'react'
-import { View, Text, Image, Animated, Easing } from 'react-native'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { useTheme } from '@/shared/theme'
 import { SPLASH_CONFIG } from '@/shared/config/splash.config'
+import { useTheme } from '@/shared/theme'
+import React, { useEffect, useRef } from 'react'
+import { Animated, Easing, Image, Text, View } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { createStyles } from './SplashScreen.styles'
 
 interface SplashScreenProps {
@@ -15,14 +15,14 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationComplete 
   const { theme } = useTheme()
   const insets = useSafeAreaInsets()
   const styles = createStyles(theme, insets)
-  
+
   // 動畫值
   const logoScale = useRef(new Animated.Value(0)).current
   const logoOpacity = useRef(new Animated.Value(0)).current
   const titleTranslateY = useRef(new Animated.Value(30)).current
   const titleOpacity = useRef(new Animated.Value(0)).current
   const subtitleOpacity = useRef(new Animated.Value(0)).current
-  
+
   useEffect(() => {
     // 執行進場動畫
     Animated.sequence([
@@ -67,52 +67,39 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationComplete 
       }, SPLASH_CONFIG.ANIMATIONS.HOLD_DURATION)
     })
   }, [])
-  
+
   return (
     <View style={styles.container}>
-      <Animated.View 
-        style={[
-          styles.logoContainer,
-          {
-            transform: [{ scale: logoScale }],
-            opacity: logoOpacity,
-          }
-        ]}
+      <Animated.View
+        style={{
+          transform: [{ scale: logoScale }],
+          opacity: logoOpacity,
+        }}
       >
-        <Image 
+        <Image
           source={require('../../../assets/images/logo.png')}
           style={styles.logo}
           resizeMode="contain"
         />
       </Animated.View>
-      
-      <Animated.View 
+
+      <Animated.View
         style={[
           styles.textContainer,
           {
             transform: [{ translateY: titleTranslateY }],
             opacity: titleOpacity,
-          }
+          },
         ]}
       >
         <Text style={styles.title}>Bug 119</Text>
       </Animated.View>
-      
-      <Animated.Text 
-        style={[
-          styles.subtitle,
-          { opacity: subtitleOpacity }
-        ]}
-      >
+
+      <Animated.Text style={[styles.subtitle, { opacity: subtitleOpacity }]}>
         怕蟲救星平台
       </Animated.Text>
-      
-      <Animated.Text 
-        style={[
-          styles.tagline,
-          { opacity: subtitleOpacity }
-        ]}
-      >
+
+      <Animated.Text style={[styles.tagline, { opacity: subtitleOpacity }]}>
         小怕星與蟲蟲終結者的橋樑
       </Animated.Text>
     </View>

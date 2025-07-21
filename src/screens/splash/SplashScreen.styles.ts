@@ -1,7 +1,7 @@
-import { StyleSheet } from 'react-native'
-import { Theme } from '@/shared/theme/types'
-import { EdgeInsets } from 'react-native-safe-area-context'
 import { SPLASH_CONFIG } from '@/shared/config/splash.config'
+import { Theme } from '@/shared/theme/types'
+import { StyleSheet } from 'react-native'
+import { EdgeInsets } from 'react-native-safe-area-context'
 
 export const createStyles = (theme: Theme, insets: EdgeInsets) =>
   StyleSheet.create({
@@ -13,9 +13,7 @@ export const createStyles = (theme: Theme, insets: EdgeInsets) =>
       paddingTop: insets.top,
       paddingBottom: insets.bottom,
     },
-    logoContainer: {
-      marginBottom: theme.spacing.xl,
-    },
+
     logo: {
       width: SPLASH_CONFIG.LOGO.SIZE,
       height: SPLASH_CONFIG.LOGO.SIZE,

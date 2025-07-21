@@ -6,11 +6,10 @@ import { useAuthRedux, useResponsive } from '@/shared/hooks'
 import { useFormValidation } from '@/shared/hooks/useFormValidation'
 import { useTheme } from '@/shared/theme'
 import { ContactMethod } from '@/shared/types'
-import { AddressSelector, Input, KeyboardAvoidingContainer, LogoLoading, SegmentedControl } from '@/shared/ui'
+import { AddressSelector, AvatarPicker, Input, KeyboardAvoidingContainer, LogoLoading, SegmentedControl } from '@/shared/ui'
 import { ScreenHeader } from '@/shared/ui/screen-header'
 import { showAlert } from '@/shared/utils'
 import { useNavigation } from '@react-navigation/native'
-import * as ImagePicker from 'expo-image-picker'
 import {
   Bug,
   Mail,
@@ -22,9 +21,6 @@ import {
 } from 'lucide-react-native'
 import React, { useRef, useState } from 'react'
 import {
-  Alert,
-  Image,
-  Platform,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -77,6 +73,12 @@ const EditProfileScreen = () => {
       return false
     }
     
+    // 驗證頭像是否已選擇
+    if (!avatarUri) {
+      showAlert('請選擇頭像', '請上傳您的個人頭像')
+      return false
+    }
+    
     // 根據偵好聯絡方式驗證對應欄位
     if (form.preferredMethod === ContactMethod.PHONE && !form.phone.trim()) {
       return false
@@ -89,119 +91,6 @@ const EditProfileScreen = () => {
   }
   
 
-  // 處理更換頭像
-  const handleChangeAvatar = () => {
-    if (Platform.OS === 'web') {
-      // Web 平台直接選擇檔案
-      pickImageFromWeb()
-    } else {
-      // 原生平台顯示選項
-      Alert.alert(
-        '選擇頭像',
-        '請選擇頭像來源',
-        [
-          { text: '取消', style: 'cancel' },
-          { text: '從相簿選擇', onPress: pickImageFromLibrary },
-          { text: '拍照', onPress: takePhoto }
-        ]
-      )
-    }
-  }
-
-  // Web 平台選擇圖片
-  const pickImageFromWeb = () => {
-    try {
-      if (typeof document === 'undefined') {
-        Alert.alert('不支援', '此功能不支援當前平台')
-        return
-      }
-      
-      const input = document.createElement('input')
-      input.type = 'file'
-      input.accept = 'image/*'
-      input.multiple = false
-      
-      input.onchange = (event: any) => {
-        const file = event.target.files?.[0]
-        if (file) {
-          // 檢查檔案大小（限制為 5MB）
-          if (file.size > 5 * 1024 * 1024) {
-            Alert.alert('檔案過大', '請選擇小於 5MB 的圖片檔案')
-            return
-          }
-          
-          // 檢查檔案類型
-          if (!file.type.startsWith('image/')) {
-            Alert.alert('檔案類型錯誤', '請選擇圖片檔案')
-            return
-          }
-          
-          // 讀取檔案並設定為頭像
-          const reader = new FileReader()
-          reader.onload = (e) => {
-            const result = e.target?.result as string
-            if (result) {
-              setAvatarUri(result)
-            }
-          }
-          reader.readAsDataURL(file)
-        }
-      }
-      
-      input.click()
-    } catch (error) {
-      Alert.alert('錯誤', '選擇圖片時發生錯誤')
-    }
-  }
-
-  // 從相簿選擇圖片
-  const pickImageFromLibrary = async () => {
-    try {
-      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync()
-      
-      if (!permissionResult.granted) {
-        Alert.alert('權限不足', '需要相簿存取權限才能選擇照片')
-        return
-      }
-
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [1, 1],
-        quality: 0.8,
-      })
-
-      if (!result.canceled) {
-        setAvatarUri(result.assets[0].uri)
-      }
-    } catch (error) {
-      Alert.alert('錯誤', '選擇圖片時發生錯誤')
-    }
-  }
-
-  // 拍照
-  const takePhoto = async () => {
-    try {
-      const permissionResult = await ImagePicker.requestCameraPermissionsAsync()
-      
-      if (!permissionResult.granted) {
-        Alert.alert('權限不足', '需要相機權限才能拍照')
-        return
-      }
-
-      const result = await ImagePicker.launchCameraAsync({
-        allowsEditing: true,
-        aspect: [1, 1],
-        quality: 0.8,
-      })
-
-      if (!result.canceled) {
-        setAvatarUri(result.assets[0].uri)
-      }
-    } catch (error) {
-      Alert.alert('錯誤', '拍照時發生錯誤')
-    }
-  }
 
   // 處理儲存
   const handleSave = async () => {
@@ -279,21 +168,12 @@ const EditProfileScreen = () => {
       >
         <View style={styles.form}>
           {/* 頭像區塊 */}
-          <View style={styles.avatarSection}>
-            <TouchableOpacity style={styles.avatar} onPress={handleChangeAvatar}>
-              {avatarUri ? (
-                <Image source={{ uri: avatarUri }} style={styles.avatarImage} />
-              ) : (
-                <User size={40} color={theme.colors.textSecondary} />
-              )}
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.changeAvatarButton} onPress={handleChangeAvatar}>
-              <User size={16} color={theme.colors.primary} />
-              <Text style={styles.changeAvatarText}>
-                {Platform.OS === 'web' ? '選擇頭像' : '更換頭像'}
-              </Text>
-            </TouchableOpacity>
-          </View>
+          <AvatarPicker
+            avatarUri={avatarUri}
+            onAvatarChange={setAvatarUri}
+            variant="standalone"
+            size={80}
+          />
           
           {/* 基本資訊 */}
           <View style={styles.section}>

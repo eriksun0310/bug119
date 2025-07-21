@@ -21,8 +21,8 @@ export const createStyles = (theme: Theme) =>
       alignItems: 'center',
       paddingHorizontal: theme.spacing.lg,
       paddingBottom: theme.spacing.md,
-      borderBottomWidth: 1,
-      borderBottomColor: theme.colors.border,
+      // borderBottomWidth: 1,
+      // borderBottomColor: theme.colors.border,
     },
     modalTitle: {
       fontSize: theme.fontSize.lg,
@@ -107,8 +107,8 @@ export const createStyles = (theme: Theme) =>
       flexDirection: 'row',
       gap: theme.spacing.md,
       padding: theme.spacing.lg,
-      borderTopWidth: 1,
-      borderTopColor: theme.colors.border,
+      // borderTopWidth: 1,
+      // borderTopColor: theme.colors.border,
     },
     actionButton: {
       flex: 1,

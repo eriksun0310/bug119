@@ -1,4 +1,4 @@
-import { StyleSheet, Platform } from 'react-native'
+import { StyleSheet } from 'react-native'
 import { Theme } from '@/shared/theme/types'
 
 export const createStyles = (theme: Theme, isTablet: boolean, insets: { top: number }) => StyleSheet.create({
@@ -32,45 +32,6 @@ export const createStyles = (theme: Theme, isTablet: boolean, insets: { top: num
     fontWeight: '600',
     color: theme.colors.text,
     marginBottom: theme.spacing.sm,
-  },
-  avatarSection: {
-    alignItems: 'center',
-    marginBottom: theme.spacing.xl,
-  },
-  avatar: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: theme.colors.border,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: theme.spacing.md,
-    overflow: 'hidden',
-    ...(Platform.OS === 'web' && {
-      cursor: 'pointer',
-      transition: 'opacity 0.2s ease',
-      '&:hover': {
-        opacity: 0.8,
-      },
-    }),
-  },
-  avatarImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-  },
-  changeAvatarButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.sm,
-    backgroundColor: theme.colors.secondary,
-    borderRadius: theme.borderRadius.md,
-  },
-  changeAvatarText: {
-    fontSize: theme.fontSize.sm,
-    color: theme.colors.primary,
-    marginLeft: theme.spacing.xs,
   },
   infoCard: {
     backgroundColor: theme.colors.secondary + '10',
