@@ -10,7 +10,7 @@ import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { AlertCircle, Bell, CheckCircle, Clock, Timer } from 'lucide-react-native'
 import React, { useEffect, useRef, useState } from 'react'
-import { RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native'
+import { Image, RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { createStyles } from './TasksScreen.styles'
 
@@ -22,17 +22,12 @@ type TaskTab = 'pending_confirmation' | 'in_progress' | 'pending_completion' | '
 export const TasksScreen = () => {
   const { theme } = useTheme()
   const { user } = useAuthRedux()
-  const { 
-    tasks, 
-    tasksLoading, 
-    tasksError, 
-    loadTasks 
-  } = useTasksRedux()
+  const { tasks, tasksLoading, tasksError, loadTasks } = useTasksRedux()
   const { isTablet } = useResponsive()
   const insets = useSafeAreaInsets()
   const navigation = useNavigation<TasksNavigationProp>()
   const route = useRoute<TasksRouteProp>()
-  
+
   // 從路由參數獲取初始 tab，如果沒有則預設為 pending_confirmation
   const initialTab = route.params?.initialTab || 'pending_confirmation'
   const [activeTab, setActiveTab] = useState<TaskTab>(initialTab)
@@ -47,7 +42,7 @@ export const TasksScreen = () => {
   useEffect(() => {
     activeTabRef.current = activeTab
   }, [activeTab])
-  
+
   // 監聽路由參數變化，更新 activeTab
   useEffect(() => {
     if (route.params?.initialTab) {
@@ -63,9 +58,10 @@ export const TasksScreen = () => {
       return tasks.filter(task => task.createdBy === user.id)
     } else {
       // 終結者：查看已指派給自己的任務或已申請的任務
-      return tasks.filter(task => 
-        task.assignedTo === user.id || 
-        task.applicants.some(applicant => applicant.terminatorId === user.id)
+      return tasks.filter(
+        task =>
+          task.assignedTo === user.id ||
+          task.applicants.some(applicant => applicant.terminatorId === user.id)
       )
     }
   }
@@ -81,9 +77,9 @@ export const TasksScreen = () => {
       switch (tab) {
         case 'pending_confirmation':
           // 包含 PENDING（剛發布）和 PENDING_CONFIRMATION（有人申請）
-          return allMyTasks.filter(task => 
-            task.status === TaskStatus.PENDING || 
-            task.status === TaskStatus.PENDING_CONFIRMATION
+          return allMyTasks.filter(
+            task =>
+              task.status === TaskStatus.PENDING || task.status === TaskStatus.PENDING_CONFIRMATION
           )
         case 'in_progress':
           return allMyTasks.filter(task => task.status === TaskStatus.IN_PROGRESS)
@@ -113,7 +109,6 @@ export const TasksScreen = () => {
   }
 
   const currentTasks = getTasksByTab(activeTab)
-
 
   // 處理任務詳情
   const handleTaskPress = (task: Task) => {
@@ -147,27 +142,31 @@ export const TasksScreen = () => {
   const styles = createStyles(theme, isTablet, insets)
 
   // 如果是初始載入（不是下拉刷新），顯示 LogoLoading
-  if (tasksLoading === 'loading' && !tasks) {
-    return (
-      <View style={styles.container}>
-        <ScreenHeader
-          title="任務"
-          showBackButton={false}
-          rightActions={
-            <TouchableOpacity onPress={handleNotificationPress}>
-              <Bell size={24} color={theme.colors.text} />
-            </TouchableOpacity>
-          }
-        />
-        <View style={styles.loadingContainer}>
-          <LogoLoading 
-            size="md"
-            animationType="spin"
-          />
-        </View>
-      </View>
-    )
-  }
+  // if (tasksLoading === 'loading' && !tasks) {
+  //   return (
+  //     <View style={styles.container}>
+  //       <ScreenHeader
+  //         title="任務"
+  //         showBackButton={false}
+  //         leftActions={
+  //           <Image
+  //             source={require('@/assets/images/logo.png')}
+  //             style={{ width: 32, height: 32, marginRight: 8 }}
+  //             resizeMode="contain"
+  //           />
+  //         }
+  //         rightActions={
+  //           <TouchableOpacity onPress={handleNotificationPress}>
+  //             <Bell size={24} color={theme.colors.text} />
+  //           </TouchableOpacity>
+  //         }
+  //       />
+  //       <View style={styles.loadingContainer}>
+  //         <LogoLoading size="md" animationType="spin" />
+  //       </View>
+  //     </View>
+  //   )
+  // }
 
   return (
     <View style={styles.container}>
@@ -175,13 +174,20 @@ export const TasksScreen = () => {
       <ScreenHeader
         title="任務"
         showBackButton={false}
+        leftActions={
+          <Image
+            source={require('../../../assets/images/logo.png')}
+            style={{ width: 32, height: 32, marginRight: 8 }}
+            resizeMode="contain"
+          />
+        }
         rightActions={
           <TouchableOpacity onPress={handleNotificationPress}>
             <Bell size={24} color={theme.colors.text} />
           </TouchableOpacity>
         }
       />
-      
+
       {/* 標籤頁區域 */}
       <View style={styles.tabsHeader}>
         <View style={styles.tabsContainer}>
@@ -194,7 +200,6 @@ export const TasksScreen = () => {
                 style={[styles.tab, isActive && styles.activeTab]}
                 onPress={() => setActiveTab(tab.key)}
               >
-             
                 <Text style={[styles.tabText, isActive && styles.activeTabText]}>{tab.title}</Text>
                 <Text style={[styles.tabCount, isActive && styles.activeTabCount]}>
                   {tab.count}
