@@ -42,7 +42,7 @@ export const TaskDetailScreen: React.FC = () => {
   // 包裝操作函數，在成功後顯示結果
   const wrappedHandleAcceptTask = React.useCallback(async (taskId?: string) => {
     // 保存操作前的狀態文字
-    const currentStatusText = taskStatusValidator.getStatusDisplayText(task.status)
+    const currentStatusText = taskStatusValidator.getStatusDisplayText(task.status, user?.role)
     
     const success = await handleAcceptTask(taskId, () => {
       setPreviousStatusText(currentStatusText)
@@ -54,7 +54,7 @@ export const TaskDetailScreen: React.FC = () => {
 
   const wrappedHandleSelectTerminator = React.useCallback(async (application: any) => {
     // 保存操作前的狀態文字
-    const currentStatusText = taskStatusValidator.getStatusDisplayText(task.status)
+    const currentStatusText = taskStatusValidator.getStatusDisplayText(task.status, user?.role)
     
     const success = await handleSelectTerminator(application, () => {
       setPreviousStatusText(currentStatusText)
@@ -66,7 +66,7 @@ export const TaskDetailScreen: React.FC = () => {
 
   const wrappedHandleMarkCompleted = React.useCallback(async (taskId: string) => {
     // 保存操作前的狀態文字
-    const currentStatusText = taskStatusValidator.getStatusDisplayText(task.status)
+    const currentStatusText = taskStatusValidator.getStatusDisplayText(task.status, user?.role)
     
     const success = await handleMarkCompleted(taskId, () => {
       setPreviousStatusText(currentStatusText)
@@ -117,7 +117,7 @@ export const TaskDetailScreen: React.FC = () => {
   }
 
   // 取得任務狀態的中文顯示
-  const statusText = taskStatusValidator.getStatusDisplayText(task.status)
+  const statusText = taskStatusValidator.getStatusDisplayText(task.status, user?.role)
   const headerTitle = `任務詳情 - ${statusText}`
 
   // 如果正在處理任務操作，顯示 LogoLoading

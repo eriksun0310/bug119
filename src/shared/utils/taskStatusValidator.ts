@@ -141,16 +141,31 @@ export const taskStatusValidator = {
 
   /**
    * 取得任務狀態的中文顯示文字
+   * @param taskStatus 任務狀態
+   * @param userRole 使用者角色（可選）
+   * @returns 狀態顯示文字
    */
-  getStatusDisplayText: (taskStatus: TaskStatus): string => {
+  getStatusDisplayText: (taskStatus: TaskStatus, userRole?: UserRole): string => {
     switch (taskStatus) {
       case TaskStatus.PENDING:
         return '待接案'
       case TaskStatus.PENDING_CONFIRMATION:
+        // 根據角色顯示不同文字
+        if (userRole === UserRole.FEAR_STAR) {
+          return '待選擇' // 小怕星需要選擇終結者
+        } else if (userRole === UserRole.TERMINATOR) {
+          return '等待確認' // 終結者等待被選中
+        }
         return '待確認'
       case TaskStatus.IN_PROGRESS:
         return '進行中'
       case TaskStatus.PENDING_COMPLETION:
+        // 根據角色顯示不同文字
+        if (userRole === UserRole.FEAR_STAR) {
+          return '待驗收' // 小怕星需要驗收確認
+        } else if (userRole === UserRole.TERMINATOR) {
+          return '待確認完成' // 終結者等待完成確認
+        }
         return '待完成確認'
       case TaskStatus.COMPLETED:
         return '已完成'

@@ -1,6 +1,6 @@
 // 我的任務畫面 - 支援小怕星和終結者
 
-import { TASK_TAB_OPTIONS } from '@/shared/config/options.config'
+import { TASK_TAB_OPTIONS, getTaskTabTitle } from '@/shared/config/options.config'
 import { useAuthRedux, useResponsive, useTasksRedux } from '@/shared/hooks'
 import { useTheme } from '@/shared/theme'
 import { RootStackParamList, Task, TaskStatus, UserRole } from '@/shared/types'
@@ -133,6 +133,7 @@ export const TasksScreen = () => {
   const tabs = TASK_TAB_OPTIONS.map(tab => ({
     ...tab,
     key: tab.key as TaskTab,
+    title: getTaskTabTitle(tab, user?.role),  // 根據角色獲取對應的標題
     count: getTasksByTab(tab.key as TaskTab).length,
   }))
 
@@ -256,9 +257,10 @@ export const TasksScreen = () => {
                 )}
                 <Text style={styles.emptyStateText}>
                   {activeTab === 'pending_confirmation' &&
-                    (user?.role === UserRole.FEAR_STAR ? '沒有待處理的任務' : '沒有待確認的任務')}
+                    (user?.role === UserRole.FEAR_STAR ? '沒有需要選擇終結者的任務' : '沒有等待確認的任務')}
                   {activeTab === 'in_progress' && '目前沒有進行中的任務'}
-                  {activeTab === 'pending_completion' && '沒有等待完成確認的任務'}
+                  {activeTab === 'pending_completion' &&
+                    (user?.role === UserRole.FEAR_STAR ? '沒有需要驗收的任務' : '沒有等待完成確認的任務')}
                   {activeTab === 'completed' && '還沒有完成的任務'}
                 </Text>
               </View>

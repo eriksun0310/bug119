@@ -167,12 +167,16 @@ export const TASK_WALL_PRIORITY_FILTER_OPTIONS: FilterOption[] = [
 export interface TaskTabOption {
   key: string
   title: string
+  fearStarTitle?: string  // 小怕星專屬標題
+  terminatorTitle?: string  // 終結者專屬標題
 }
 
 export const TASK_TAB_OPTIONS: TaskTabOption[] = [
   {
     key: 'pending_confirmation',
     title: '待確認',
+    fearStarTitle: '待選擇',  // 小怕星需要選擇終結者
+    terminatorTitle: '等待確認',  // 終結者等待被選中
   },
   {
     key: 'in_progress',
@@ -181,12 +185,25 @@ export const TASK_TAB_OPTIONS: TaskTabOption[] = [
   {
     key: 'pending_completion',
     title: '待完成',
+    fearStarTitle: '待驗收',  // 小怕星需要驗收確認
+    terminatorTitle: '待確認完成',  // 終結者等待完成確認
   },
   {
     key: 'completed',
     title: '已完成',
   },
 ] as const
+
+// 根據使用者角色獲取標籤標題
+export const getTaskTabTitle = (tab: TaskTabOption, role?: UserRole): string => {
+  if (role === UserRole.FEAR_STAR && tab.fearStarTitle) {
+    return tab.fearStarTitle
+  }
+  if (role === UserRole.TERMINATOR && tab.terminatorTitle) {
+    return tab.terminatorTitle
+  }
+  return tab.title
+}
 
 // ================================
 // 選項配置的輔助函數
