@@ -8,6 +8,7 @@ import { X } from 'lucide-react-native'
 import React, { useEffect, useState } from 'react'
 import { Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import { AddressSelector } from '../address-selector'
+import { Select } from '../select'
 import { createStyles } from './FilterModal.styles'
 import { FilterModalProps } from './FilterModal.types'
 
@@ -40,8 +41,26 @@ export const FilterModal: React.FC<FilterModalProps> = ({
       location: { city: '', district: '' },
     }
     setTempFilters(resetFilters)
+    // 不關閉模態框，讓用戶可以繼續調整篩選條件
+  }
+  
+  const handleResetAndClose = () => {
+    const resetFilters = {
+      pestType: null,
+      priority: null,
+      isImmediate: false,
+      location: { city: '', district: '' },
+    }
+    setTempFilters(resetFilters)
     onReset()
     onClose()
+  }
+  
+  const handleClearLocation = () => {
+    setTempFilters({
+      ...tempFilters,
+      location: { city: '', district: '' }
+    })
   }
 
   const handleApply = () => {
@@ -64,8 +83,16 @@ export const FilterModal: React.FC<FilterModalProps> = ({
           <ScrollView>
             {/* 地址篩選 */}
             <View style={styles.filterSection}>
+              <View style={styles.filterSectionHeader}>
+                <Text style={styles.filterSectionTitle}>地點篩選（可只選縣市接整個縣市的案子）</Text>
+                {(tempFilters.location.city || tempFilters.location.district) && (
+                  <TouchableOpacity onPress={handleClearLocation} style={styles.clearLocationButton}>
+                    <Text style={styles.clearLocationText}>清除地址</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
               <AddressSelector
-                label="地點篩選"
+                label=""
                 value={tempFilters.location}
                 onChange={(location) => 
                   setTempFilters({ ...tempFilters, location })
@@ -79,44 +106,35 @@ export const FilterModal: React.FC<FilterModalProps> = ({
 
             {/* 害蟲類型 */}
             <View style={styles.filterSection}>
-              <Text style={styles.filterSectionTitle}>害蟲類型</Text>
-              <View style={styles.filterOptions}>
-                {TASK_WALL_PEST_FILTER_OPTIONS.map(pest => (
-                  <TouchableOpacity
-                    key={pest.key}
-                    style={[
-                      styles.filterOption,
-                      tempFilters.pestType === pest.key && styles.filterOptionActive,
-                    ]}
-                    onPress={() =>
-                      setTempFilters({
-                        ...tempFilters,
-                        pestType: tempFilters.pestType === pest.key ? null : (pest.key as PestType),
-                      })
-                    }
-                  >
-                    <Text
-                      style={[
-                        styles.filterOptionText,
-                        tempFilters.pestType === pest.key && styles.filterOptionTextActive,
-                      ]}
-                    >
-                      {pest.label}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
+              <Select
+                label="害蟲類型"
+                value={tempFilters.pestType || ''}
+                placeholder="不限害蟲類型"
+                options={[
+                  { value: '', label: '不限害蟲類型' },
+                  ...TASK_WALL_PEST_FILTER_OPTIONS.map(pest => ({
+                    value: pest.key,
+                    label: pest.label
+                  }))
+                ]}
+                onSelect={(value) =>
+                  setTempFilters({
+                    ...tempFilters,
+                    pestType: value ? (value as PestType) : null,
+                  })
+                }
+              />
             </View>
 
             {/* 緊急程度 */}
             <View style={styles.filterSection}>
               <Text style={styles.filterSectionTitle}>緊急程度</Text>
-              <View style={styles.filterOptions}>
+              <View style={styles.filterOptionsHorizontal}>
                 {TASK_WALL_PRIORITY_FILTER_OPTIONS.map(priority => (
                   <TouchableOpacity
                     key={priority.key}
                     style={[
-                      styles.filterOption,
+                      styles.filterOptionHorizontal,
                       tempFilters.priority === priority.key && styles.filterOptionActive,
                     ]}
                     onPress={() =>
@@ -149,14 +167,14 @@ export const FilterModal: React.FC<FilterModalProps> = ({
               style={[styles.actionButton, styles.resetButton]}
               onPress={handleReset}
             >
-              <Text style={[styles.actionButtonText, styles.resetButtonText]}>重置</Text>
+              <Text style={[styles.actionButtonText, styles.resetButtonText]}>重置篩選</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               style={[styles.actionButton, styles.applyButton]}
               onPress={handleApply}
             >
-              <Text style={[styles.actionButtonText, styles.applyButtonText]}>套用</Text>
+              <Text style={[styles.actionButtonText, styles.applyButtonText]}>套用篩選</Text>
             </TouchableOpacity>
           </View>
         </TouchableOpacity>

@@ -102,7 +102,10 @@ export const TaskWallScreen = () => {
       return false
     }
     
-    // 地址篩選
+    // 地址篩選邏輯：
+    // 1. 都不選 = 顯示所有地區的任務
+    // 2. 只選縣市，不選區域 = 顯示該縣市所有區域的任務
+    // 3. 選縣市+區域 = 只顯示該特定區域的任務
     if (formState.selectedFilters.location.city && task.location.city !== formState.selectedFilters.location.city) {
       return false
     }
