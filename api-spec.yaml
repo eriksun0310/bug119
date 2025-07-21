@@ -1,0 +1,1556 @@
+openapi: 3.0.3
+info:
+  title: Bug 119 API
+  description: |
+    Bug 119 是一個幫助怕蟲人士（小怕星）媒合附近除蟲專家（蟲蟲終結者）的即時任務平台。
+    
+    ## 主要功能
+    - 使用者註冊與認證
+    - 任務發布與管理
+    - 即時任務媒合
+    - 地理位置服務
+    - 評價系統
+    - 通知系統
+    
+    ## 使用者角色
+    - **fear_star**: 小怕星（需要除蟲服務的用戶）
+    - **terminator**: 蟲蟲終結者（提供除蟲服務的專家）
+    - **admin**: 系統管理員
+  version: 1.0.0
+  contact:
+    name: Bug 119 技術團隊
+    email: tech@bug119.com
+  license:
+    name: Proprietary
+
+servers:
+  - url: https://api.bug119.com
+    description: 正式環境
+  - url: https://staging-api.bug119.com
+    description: 測試環境
+  - url: http://localhost:5000
+    description: 本地開發環境
+
+tags:
+  - name: Auth
+    description: 認證相關端點
+  - name: Users
+    description: 使用者管理
+  - name: Tasks
+    description: 任務管理
+  - name: Applications
+    description: 任務申請管理
+  - name: Notifications
+    description: 通知管理
+  - name: Reviews
+    description: 評價管理
+
+security:
+  - bearerAuth: []
+
+paths:
+  # ===== 認證相關 =====
+  /api/auth/register:
+    post:
+      tags:
+        - Auth
+      summary: 註冊新使用者
+      description: 註冊新的小怕星或蟲蟲終結者帳號
+      operationId: register
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: 註冊成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          description: 使用者已存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/auth/login:
+    post:
+      tags:
+        - Auth
+      summary: 使用者登入
+      description: 使用電子郵件和密碼登入
+      operationId: login
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: 登入成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/auth/logout:
+    post:
+      tags:
+        - Auth
+      summary: 使用者登出
+      description: 登出並使當前 token 失效
+      operationId: logout
+      responses:
+        '200':
+          description: 登出成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/auth/verify:
+    get:
+      tags:
+        - Auth
+      summary: 驗證當前使用者
+      description: 驗證 token 並返回當前使用者資訊
+      operationId: verifyUser
+      responses:
+        '200':
+          description: 驗證成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # ===== 使用者相關 =====
+  /api/users/{userId}:
+    get:
+      tags:
+        - Users
+      summary: 取得使用者資料
+      description: 根據 ID 取得使用者基本資料
+      operationId: getUser
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          description: 成功取得使用者資料
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags:
+        - Users
+      summary: 更新使用者資料
+      description: 更新使用者基本資料（只能更新自己的資料）
+      operationId: updateUser
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/users/{userId}/profile:
+    get:
+      tags:
+        - Users
+      summary: 取得使用者詳細資料
+      description: 根據使用者角色返回對應的詳細資料（UserProfile 或 TerminatorProfile）
+      operationId: getUserProfile
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          description: 成功取得使用者詳細資料
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/UserProfile'
+                  - $ref: '#/components/schemas/TerminatorProfile'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags:
+        - Users
+      summary: 更新使用者詳細資料
+      description: 更新使用者詳細資料（只能更新自己的資料）
+      operationId: updateUserProfile
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/UpdateUserProfileRequest'
+                - $ref: '#/components/schemas/UpdateTerminatorProfileRequest'
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/UserProfile'
+                  - $ref: '#/components/schemas/TerminatorProfile'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/users/{userId}/avatar:
+    post:
+      tags:
+        - Users
+      summary: 上傳使用者頭像
+      description: 上傳或更新使用者頭像圖片
+      operationId: uploadAvatar
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                avatar:
+                  type: string
+                  format: binary
+                  description: 頭像圖片檔案（支援 JPG, PNG，最大 5MB）
+              required:
+                - avatar
+      responses:
+        '200':
+          description: 上傳成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  avatarUrl:
+                    type: string
+                    format: uri
+                    description: 頭像圖片 URL
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  # ===== 任務相關 =====
+  /api/tasks:
+    post:
+      tags:
+        - Tasks
+      summary: 建立新任務
+      description: 小怕星建立新的除蟲任務
+      operationId: createTask
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTaskRequest'
+      responses:
+        '201':
+          description: 任務建立成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+    get:
+      tags:
+        - Tasks
+      summary: 取得任務列表
+      description: 取得任務列表，支援多種篩選條件
+      operationId: getTasks
+      parameters:
+        - name: status
+          in: query
+          description: 任務狀態篩選
+          schema:
+            $ref: '#/components/schemas/TaskStatus'
+        - name: pestType
+          in: query
+          description: 害蟲類型篩選
+          schema:
+            $ref: '#/components/schemas/PestType'
+        - name: priority
+          in: query
+          description: 優先級篩選
+          schema:
+            $ref: '#/components/schemas/TaskPriority'
+        - name: minBudget
+          in: query
+          description: 最低預算
+          schema:
+            type: number
+            minimum: 0
+        - name: maxBudget
+          in: query
+          description: 最高預算
+          schema:
+            type: number
+            minimum: 0
+        - name: latitude
+          in: query
+          description: 中心點緯度（搜尋附近任務）
+          schema:
+            type: number
+            format: double
+        - name: longitude
+          in: query
+          description: 中心點經度（搜尋附近任務）
+          schema:
+            type: number
+            format: double
+        - name: radius
+          in: query
+          description: 搜尋半徑（公里）
+          schema:
+            type: number
+            default: 10
+        - name: city
+          in: query
+          description: 城市篩選
+          schema:
+            type: string
+        - name: district
+          in: query
+          description: 區域篩選
+          schema:
+            type: string
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/SortBy'
+        - $ref: '#/components/parameters/SortOrder'
+      responses:
+        '200':
+          description: 成功取得任務列表
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskListResponse'
+
+  /api/tasks/{taskId}:
+    get:
+      tags:
+        - Tasks
+      summary: 取得任務詳情
+      description: 根據 ID 取得任務詳細資訊
+      operationId: getTask
+      parameters:
+        - $ref: '#/components/parameters/TaskId'
+      responses:
+        '200':
+          description: 成功取得任務詳情
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags:
+        - Tasks
+      summary: 更新任務
+      description: 更新任務資訊（只有建立者可以更新，且只能在特定狀態下更新）
+      operationId: updateTask
+      parameters:
+        - $ref: '#/components/parameters/TaskId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTaskRequest'
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      tags:
+        - Tasks
+      summary: 取消任務
+      description: 取消任務（只有建立者可以取消，且只能在特定狀態下取消）
+      operationId: cancelTask
+      parameters:
+        - $ref: '#/components/parameters/TaskId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+                  description: 取消原因
+      responses:
+        '200':
+          description: 取消成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/tasks/{taskId}/apply:
+    post:
+      tags:
+        - Tasks
+        - Applications
+      summary: 申請任務
+      description: 蟲蟲終結者申請處理任務
+      operationId: applyForTask
+      parameters:
+        - $ref: '#/components/parameters/TaskId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskApplicationRequest'
+      responses:
+        '201':
+          description: 申請成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskApplication'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: 已經申請過此任務
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/tasks/{taskId}/select-terminator:
+    post:
+      tags:
+        - Tasks
+      summary: 選擇蟲蟲終結者
+      description: 小怕星從申請者中選擇一位蟲蟲終結者
+      operationId: selectTerminator
+      parameters:
+        - $ref: '#/components/parameters/TaskId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                terminatorId:
+                  type: string
+                  description: 選擇的蟲蟲終結者 ID
+              required:
+                - terminatorId
+      responses:
+        '200':
+          description: 選擇成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/tasks/{taskId}/complete:
+    post:
+      tags:
+        - Tasks
+      summary: 確認任務完成
+      description: 小怕星或蟲蟲終結者確認任務完成
+      operationId: completeTask
+      parameters:
+        - $ref: '#/components/parameters/TaskId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rating:
+                  type: number
+                  minimum: 1
+                  maximum: 5
+                  description: 評分（1-5）
+                review:
+                  type: string
+                  description: 評價內容
+      responses:
+        '200':
+          description: 確認成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/tasks/my-tasks:
+    get:
+      tags:
+        - Tasks
+      summary: 取得我的任務
+      description: 取得當前使用者的任務列表（作為小怕星或蟲蟲終結者）
+      operationId: getMyTasks
+      parameters:
+        - name: role
+          in: query
+          description: 以哪種角色查看任務
+          schema:
+            type: string
+            enum: [fear_star, terminator]
+        - name: status
+          in: query
+          description: 任務狀態篩選
+          schema:
+            $ref: '#/components/schemas/TaskStatus'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: 成功取得任務列表
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskListResponse'
+
+  /api/tasks/available:
+    get:
+      tags:
+        - Tasks
+      summary: 取得可接任務
+      description: 蟲蟲終結者查看可以申請的任務列表
+      operationId: getAvailableTasks
+      parameters:
+        - name: latitude
+          in: query
+          description: 當前位置緯度
+          required: true
+          schema:
+            type: number
+            format: double
+        - name: longitude
+          in: query
+          description: 當前位置經度
+          required: true
+          schema:
+            type: number
+            format: double
+        - name: radius
+          in: query
+          description: 搜尋半徑（公里）
+          schema:
+            type: number
+            default: 10
+        - name: pestType
+          in: query
+          description: 害蟲類型篩選
+          schema:
+            $ref: '#/components/schemas/PestType'
+        - name: minBudget
+          in: query
+          description: 最低預算
+          schema:
+            type: number
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: 成功取得可接任務列表
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskListResponse'
+
+  # ===== 通知相關 =====
+  /api/notifications:
+    get:
+      tags:
+        - Notifications
+      summary: 取得通知列表
+      description: 取得當前使用者的通知列表
+      operationId: getNotifications
+      parameters:
+        - name: unreadOnly
+          in: query
+          description: 只顯示未讀通知
+          schema:
+            type: boolean
+            default: false
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: 成功取得通知列表
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationListResponse'
+
+  /api/notifications/{notificationId}/read:
+    put:
+      tags:
+        - Notifications
+      summary: 標記通知為已讀
+      description: 將指定通知標記為已讀
+      operationId: markNotificationAsRead
+      parameters:
+        - $ref: '#/components/parameters/NotificationId'
+      responses:
+        '200':
+          description: 標記成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/notifications/{notificationId}:
+    delete:
+      tags:
+        - Notifications
+      summary: 刪除通知
+      description: 刪除指定通知
+      operationId: deleteNotification
+      parameters:
+        - $ref: '#/components/parameters/NotificationId'
+      responses:
+        '204':
+          description: 刪除成功
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ===== 評價相關 =====
+  /api/reviews:
+    post:
+      tags:
+        - Reviews
+      summary: 新增評價
+      description: 對完成的任務新增評價
+      operationId: createReview
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateReviewRequest'
+      responses:
+        '201':
+          description: 評價建立成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          description: 已經評價過此任務
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/reviews/user/{userId}:
+    get:
+      tags:
+        - Reviews
+      summary: 取得使用者評價
+      description: 取得指定使用者的所有評價
+      operationId: getUserReviews
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+        - name: role
+          in: query
+          description: 以哪種角色的評價
+          schema:
+            type: string
+            enum: [fear_star, terminator]
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: 成功取得評價列表
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewListResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 使用 JWT Token 進行認證
+
+  parameters:
+    UserId:
+      name: userId
+      in: path
+      required: true
+      description: 使用者 ID
+      schema:
+        type: string
+        format: uuid
+
+    TaskId:
+      name: taskId
+      in: path
+      required: true
+      description: 任務 ID
+      schema:
+        type: string
+        format: uuid
+
+    NotificationId:
+      name: notificationId
+      in: path
+      required: true
+      description: 通知 ID
+      schema:
+        type: string
+        format: uuid
+
+    Page:
+      name: page
+      in: query
+      description: 頁碼（從 1 開始）
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+
+    Limit:
+      name: limit
+      in: query
+      description: 每頁筆數
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+
+    SortBy:
+      name: sortBy
+      in: query
+      description: 排序欄位
+      schema:
+        type: string
+        default: createdAt
+
+    SortOrder:
+      name: sortOrder
+      in: query
+      description: 排序方向
+      schema:
+        type: string
+        enum: [asc, desc]
+        default: desc
+
+  responses:
+    BadRequest:
+      description: 錯誤的請求
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Unauthorized:
+      description: 未授權
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Forbidden:
+      description: 禁止存取
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    NotFound:
+      description: 找不到資源
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  schemas:
+    # ===== 列舉型別 =====
+    UserRole:
+      type: string
+      enum: [fear_star, terminator, admin]
+      description: |
+        使用者角色
+        - fear_star: 小怕星（需要除蟲服務）
+        - terminator: 蟲蟲終結者（提供除蟲服務）
+        - admin: 系統管理員
+
+    TaskStatus:
+      type: string
+      enum: [pending, pending_confirmation, in_progress, pending_completion, completed, cancelled]
+      description: |
+        任務狀態
+        - pending: 待接單
+        - pending_confirmation: 待確認（小怕星選擇終結者）
+        - in_progress: 進行中
+        - pending_completion: 待完成確認
+        - completed: 已完成
+        - cancelled: 已取消
+
+    TaskPriority:
+      type: string
+      enum: [normal, urgent, very_urgent]
+      description: |
+        任務優先級
+        - normal: 一般
+        - urgent: 緊急
+        - very_urgent: 非常緊急
+
+    PestType:
+      type: string
+      enum: [cockroach, ant, mosquito, spider, other]
+      description: |
+        害蟲類型
+        - cockroach: 蟑螂
+        - ant: 螞蟻
+        - mosquito: 蚊子
+        - spider: 蜘蛛
+        - other: 其他
+
+    ContactMethod:
+      type: string
+      enum: [phone, line, telegram]
+      description: |
+        聯絡方式
+        - phone: 電話
+        - line: LINE
+        - telegram: Telegram
+
+    Gender:
+      type: string
+      enum: [male, female, any]
+      description: |
+        性別
+        - male: 男性
+        - female: 女性
+        - any: 不限
+
+    # ===== 基礎型別 =====
+    ContactInfo:
+      type: object
+      properties:
+        phone:
+          type: string
+          pattern: '^\+?[0-9\-\s]+$'
+          description: 電話號碼
+        line:
+          type: string
+          description: LINE ID
+        telegram:
+          type: string
+          description: Telegram ID
+        preferredMethod:
+          $ref: '#/components/schemas/ContactMethod'
+      required:
+        - preferredMethod
+
+    TaskLocation:
+      type: object
+      properties:
+        latitude:
+          type: number
+          format: double
+          minimum: -90
+          maximum: 90
+        longitude:
+          type: number
+          format: double
+          minimum: -180
+          maximum: 180
+        address:
+          type: string
+          description: 完整地址
+        city:
+          type: string
+          description: 城市
+        district:
+          type: string
+          description: 區域
+        detail:
+          type: string
+          description: 詳細地點說明
+      required:
+        - latitude
+        - longitude
+        - address
+        - city
+        - district
+
+    ServiceArea:
+      type: object
+      properties:
+        centerLat:
+          type: number
+          format: double
+          description: 服務中心緯度
+        centerLng:
+          type: number
+          format: double
+          description: 服務中心經度
+        radius:
+          type: number
+          description: 服務半徑（公里）
+          minimum: 0
+        cities:
+          type: array
+          items:
+            type: string
+          description: 服務城市列表
+      required:
+        - centerLat
+        - centerLng
+        - radius
+
+    # ===== 使用者相關 =====
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        phone:
+          type: string
+        avatar:
+          type: string
+          format: uri
+        role:
+          $ref: '#/components/schemas/UserRole'
+        isVerified:
+          type: boolean
+        contactInfo:
+          $ref: '#/components/schemas/ContactInfo'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - email
+        - name
+        - role
+        - isVerified
+        - contactInfo
+        - createdAt
+        - updatedAt
+
+    UserProfile:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        location:
+          type: string
+        rating:
+          type: number
+          minimum: 0
+          maximum: 5
+        totalReviews:
+          type: integer
+          minimum: 0
+        totalTasks:
+          type: integer
+          minimum: 0
+        joinDate:
+          type: string
+          format: date-time
+      required:
+        - userId
+        - rating
+        - totalReviews
+        - totalTasks
+        - joinDate
+
+    TerminatorProfile:
+      allOf:
+        - $ref: '#/components/schemas/UserProfile'
+        - type: object
+          properties:
+            specialties:
+              type: array
+              items:
+                $ref: '#/components/schemas/PestType'
+            serviceArea:
+              $ref: '#/components/schemas/ServiceArea'
+            isAvailable:
+              type: boolean
+            hourlyRate:
+              type: number
+              minimum: 0
+            experienceYears:
+              type: number
+              minimum: 0
+          required:
+            - specialties
+            - serviceArea
+            - isAvailable
+            - hourlyRate
+            - experienceYears
+
+    # ===== 任務相關 =====
+    Task:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 1000
+        pestType:
+          $ref: '#/components/schemas/PestType'
+        location:
+          $ref: '#/components/schemas/TaskLocation'
+        status:
+          $ref: '#/components/schemas/TaskStatus'
+        priority:
+          $ref: '#/components/schemas/TaskPriority'
+        budget:
+          type: number
+          minimum: 0
+        scheduledTime:
+          type: string
+          format: date-time
+          description: 預約時間
+        isImmediate:
+          type: boolean
+          description: 是否立即處理
+        createdBy:
+          type: string
+          format: uuid
+          description: 小怕星 ID
+        applicants:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskApplication'
+        assignedTo:
+          type: string
+          format: uuid
+          description: 指派的蟲蟲終結者 ID
+        completionStatus:
+          type: object
+          properties:
+            fearStarConfirmed:
+              type: boolean
+            terminatorConfirmed:
+              type: boolean
+        completedAt:
+          type: string
+          format: date-time
+        cancelledAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - title
+        - description
+        - pestType
+        - location
+        - status
+        - priority
+        - budget
+        - isImmediate
+        - createdBy
+        - applicants
+        - createdAt
+        - updatedAt
+
+    TaskApplication:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        taskId:
+          type: string
+          format: uuid
+        terminatorId:
+          type: string
+          format: uuid
+        terminator:
+          $ref: '#/components/schemas/User'
+        proposedPrice:
+          type: number
+          minimum: 0
+        estimatedDuration:
+          type: integer
+          minimum: 0
+          description: 預估時間（分鐘）
+        message:
+          type: string
+          maxLength: 500
+        appliedAt:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: [pending, selected, rejected]
+      required:
+        - id
+        - taskId
+        - terminatorId
+        - proposedPrice
+        - estimatedDuration
+        - appliedAt
+        - status
+
+    # ===== 通知相關 =====
+    Notification:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        type:
+          type: string
+          enum: [task_applied, task_selected, task_completed, task_cancelled]
+        title:
+          type: string
+        message:
+          type: string
+        data:
+          type: object
+          description: 相關資料（如任務 ID）
+        isRead:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - userId
+        - type
+        - title
+        - message
+        - isRead
+        - createdAt
+
+    # ===== 評價相關 =====
+    Review:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        taskId:
+          type: string
+          format: uuid
+        reviewerId:
+          type: string
+          format: uuid
+        revieweeId:
+          type: string
+          format: uuid
+        rating:
+          type: number
+          minimum: 1
+          maximum: 5
+        comment:
+          type: string
+          maxLength: 500
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - taskId
+        - reviewerId
+        - revieweeId
+        - rating
+        - createdAt
+
+    # ===== 請求相關 =====
+    RegisterRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+        name:
+          type: string
+        role:
+          type: string
+          enum: [fear_star, terminator]
+        phone:
+          type: string
+        contactInfo:
+          $ref: '#/components/schemas/ContactInfo'
+      required:
+        - email
+        - password
+        - name
+        - role
+
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+      required:
+        - email
+        - password
+
+    UpdateUserRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        phone:
+          type: string
+        contactInfo:
+          $ref: '#/components/schemas/ContactInfo'
+
+    UpdateUserProfileRequest:
+      type: object
+      properties:
+        location:
+          type: string
+
+    UpdateTerminatorProfileRequest:
+      type: object
+      properties:
+        location:
+          type: string
+        specialties:
+          type: array
+          items:
+            $ref: '#/components/schemas/PestType'
+        serviceArea:
+          $ref: '#/components/schemas/ServiceArea'
+        isAvailable:
+          type: boolean
+        hourlyRate:
+          type: number
+          minimum: 0
+        experienceYears:
+          type: number
+          minimum: 0
+
+    CreateTaskRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 1000
+        pestType:
+          $ref: '#/components/schemas/PestType'
+        location:
+          $ref: '#/components/schemas/TaskLocation'
+        priority:
+          $ref: '#/components/schemas/TaskPriority'
+        budget:
+          type: number
+          minimum: 0
+        scheduledTime:
+          type: string
+          format: date-time
+        isImmediate:
+          type: boolean
+      required:
+        - title
+        - description
+        - pestType
+        - location
+        - priority
+        - budget
+        - isImmediate
+
+    UpdateTaskRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 1000
+        priority:
+          $ref: '#/components/schemas/TaskPriority'
+        budget:
+          type: number
+          minimum: 0
+        scheduledTime:
+          type: string
+          format: date-time
+
+    TaskApplicationRequest:
+      type: object
+      properties:
+        proposedPrice:
+          type: number
+          minimum: 0
+        estimatedDuration:
+          type: integer
+          minimum: 0
+          description: 預估時間（分鐘）
+        message:
+          type: string
+          maxLength: 500
+      required:
+        - proposedPrice
+        - estimatedDuration
+
+    CreateReviewRequest:
+      type: object
+      properties:
+        taskId:
+          type: string
+          format: uuid
+        rating:
+          type: number
+          minimum: 1
+          maximum: 5
+        comment:
+          type: string
+          maxLength: 500
+      required:
+        - taskId
+        - rating
+
+    # ===== 回應相關 =====
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: JWT Token
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+        - token
+        - user
+
+    TaskListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Task'
+        pagination:
+          $ref: '#/components/schemas/PaginationInfo'
+      required:
+        - data
+        - pagination
+
+    NotificationListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Notification'
+        pagination:
+          $ref: '#/components/schemas/PaginationInfo'
+        unreadCount:
+          type: integer
+          minimum: 0
+      required:
+        - data
+        - pagination
+        - unreadCount
+
+    ReviewListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Review'
+        pagination:
+          $ref: '#/components/schemas/PaginationInfo'
+        averageRating:
+          type: number
+          minimum: 0
+          maximum: 5
+      required:
+        - data
+        - pagination
+        - averageRating
+
+    PaginationInfo:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          minimum: 1
+        totalPages:
+          type: integer
+          minimum: 0
+        pageSize:
+          type: integer
+          minimum: 1
+        totalItems:
+          type: integer
+          minimum: 0
+        hasNext:
+          type: boolean
+        hasPrevious:
+          type: boolean
+      required:
+        - currentPage
+        - totalPages
+        - pageSize
+        - totalItems
+        - hasNext
+        - hasPrevious
+
+    MessageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: 錯誤類型
+        message:
+          type: string
+          description: 錯誤訊息
+        details:
+          type: object
+          description: 詳細錯誤資訊
+        timestamp:
+          type: string
+          format: date-time
+      required:
+        - error
+        - message
+        - timestamp
+
+# ===== WebSocket/SignalR 事件 (文件用) =====
+# 即時通訊使用 SignalR，以下為主要事件：
+#
+# Client -> Server:
+# - JoinTaskRoom(taskId): 加入任務房間
+# - LeaveTaskRoom(taskId): 離開任務房間
+# - SendMessage(taskId, message): 發送訊息
+#
+# Server -> Client:
+# - TaskStatusChanged(taskId, newStatus): 任務狀態變更
+# - NewTaskApplication(taskId, application): 新的任務申請
+# - TerminatorSelected(taskId, terminatorId): 終結者被選中
+# - TaskCompleted(taskId): 任務完成
+# - NewMessage(taskId, message): 新訊息
+# - UserOnlineStatusChanged(userId, isOnline): 使用者上線狀態變更
