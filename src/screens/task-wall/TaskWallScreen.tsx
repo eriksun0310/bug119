@@ -4,9 +4,8 @@ import React, { useState, useEffect } from 'react'
 import { 
   View, 
   Text, 
-  ScrollView, 
-  TouchableOpacity,
-  RefreshControl
+  FlatList, 
+  TouchableOpacity
 } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
@@ -18,7 +17,7 @@ import {
 } from 'lucide-react-native'
 import { useTheme } from '@/shared/theme'
 import { useAuthRedux, useTasksRedux, useResponsive, useTaskActions } from '@/shared/hooks'
-import { TaskCard, Input, FilterModal } from '@/shared/ui'
+import { TaskCard, Input, FilterModal, LogoLoading } from '@/shared/ui'
 import { ScreenHeader } from '@/shared/ui/screen-header'
 import { 
   getPestTypeDisplayName
@@ -53,6 +52,7 @@ export const TaskWallScreen = () => {
     } as FilterModalFilters,
     showFilterModal: false,
   })
+  
 
   // 統一的狀態更新函數
   const updateFormState = (field: keyof typeof formState, value: any) => {
@@ -132,10 +132,6 @@ export const TaskWallScreen = () => {
     navigation.navigate('TaskDetail', { taskId: task.id })
   }
   
-  // 處理重新整理
-  const handleRefresh = async () => {
-    await loadTasks()
-  }
   
   // 清除篩選
   const clearFilters = () => {
@@ -177,6 +173,7 @@ export const TaskWallScreen = () => {
   
   return (
     <View style={styles.container}>
+      
       {/* 標題和控制區 */}
       <ScreenHeader
         title="任務牆"
@@ -232,49 +229,45 @@ export const TaskWallScreen = () => {
       
       {/* 任務列表 */}
       <View style={styles.content}>
-        <ScrollView
+        <FlatList
           style={styles.scrollContainer}
           contentContainerStyle={styles.taskListContainer}
-          refreshControl={
-            <RefreshControl
-              refreshing={tasksLoading === 'loading'}
-              onRefresh={handleRefresh}
-              colors={[theme.colors.secondary]}
-              tintColor={theme.colors.secondary}
+          data={filteredTasks}
+          renderItem={({ item: task }) => (
+            <TaskCard
+              key={task.id}
+              task={task}
+              onPress={handleTaskPress}
+              onAccept={handleAcceptTask}
+              currentUserRole={user?.role}
+              style={styles.taskCardHorizontal}
             />
-          }
-        >
-          <View style={styles.taskList}>
-            {tasksError ? (
-              <View style={styles.emptyState}>
-                <Search size={48} color={theme.colors.error} />
-                <Text style={styles.emptyStateText}>載入任務失敗</Text>
-                <Text style={styles.emptyStateSubtext}>{tasksError}</Text>
-              </View>
-            ) : filteredTasks.length > 0 ? (
-              filteredTasks.map(task => (
-                <TaskCard
-                  key={task.id}
-                  task={task}
-                  onPress={handleTaskPress}
-                  onAccept={handleAcceptTask}
-                  currentUserRole={user?.role}
-                  style={styles.taskCardHorizontal}
-                />
-              ))
-            ) : (
-              <View style={styles.emptyState}>
-                <Search size={48} color={theme.colors.textSecondary} />
-                <Text style={styles.emptyStateText}>
-                  {formState.searchQuery || Object.values(formState.selectedFilters).some(Boolean)
-                    ? '沒有符合條件的任務'
-                    : '目前沒有可接的任務\n請稍後再查看'
-                  }
-                </Text>
-              </View>
-            )}
-          </View>
-        </ScrollView>
+          )}
+          keyExtractor={(item) => item.id}
+          numColumns={screenWidth > 600 ? 2 : 1}
+          columnWrapperStyle={screenWidth > 600 ? styles.taskRow : undefined}
+          ListEmptyComponent={() => (
+            <View style={styles.emptyState}>
+              {tasksError ? (
+                <>
+                  <Search size={48} color={theme.colors.error} />
+                  <Text style={styles.emptyStateText}>載入任務失敗</Text>
+                  <Text style={styles.emptyStateSubtext}>{tasksError}</Text>
+                </>
+              ) : (
+                <>
+                  <Search size={48} color={theme.colors.textSecondary} />
+                  <Text style={styles.emptyStateText}>
+                    {formState.searchQuery || Object.values(formState.selectedFilters).some(Boolean)
+                      ? '沒有符合條件的任務'
+                      : '目前沒有可接的任務\n請稍後再查看'
+                    }
+                  </Text>
+                </>
+              )}
+            </View>
+          )}
+        />
       </View>
       
       {/* 篩選模態框 */}

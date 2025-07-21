@@ -33,18 +33,12 @@ export const createStyles = (theme: Theme, isTablet: boolean, screenWidth: numbe
   },
   taskListContainer: {
     flexGrow: 1,
-    alignItems: isTablet ? 'center' : 'stretch',
+    padding: theme.spacing.md,
     paddingBottom: isTablet ? theme.spacing.md : 50, // 手機版添加底部 padding 避免被導航列遮住
   },
-  taskList: {
-    padding: theme.spacing.md,
-    width: '100%',
-    maxWidth: isTablet ? 1200 : undefined, // 電腦版放寬最大寬度
-    flexDirection: 'row', // 橫向排列
-    flexWrap: 'wrap', // 允許換行
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start',
-    gap: theme.spacing.md,
+  taskRow: {
+    justifyContent: 'space-between',
+    paddingHorizontal: theme.spacing.md,
   },
   emptyState: {
     flex: 1,
@@ -66,6 +60,7 @@ export const createStyles = (theme: Theme, isTablet: boolean, screenWidth: numbe
     opacity: 0.7,
   },
   taskCardHorizontal: {
-    width: screenWidth > 600 ? '48%' : '100%', // 寬螢幕每行顯示兩個卡片，窄螢幕每行一個
+    flex: screenWidth > 600 ? 0.48 : 1, // FlatList 用 flex 比例
+    marginBottom: theme.spacing.md,
   },
 })
