@@ -42,7 +42,9 @@
       "Bash(touch:*)",
       "Bash(pnpm build:*)",
       "Bash(npx eslint:*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(pnpm list:*)",
+      "Bash(pnpm expo start:*)"
     ],
     "deny": []
   }
