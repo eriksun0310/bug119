@@ -30,7 +30,7 @@ type AuthStackParamList = {
 type RegisterScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'Register'>
 
 export const RegisterScreen = () => {
-  const { theme } = useTheme()
+  const { theme, themeMode } = useTheme()
   const { isTablet } = useResponsive()
   const navigation = useNavigation<RegisterScreenNavigationProp>()
 
@@ -127,7 +127,16 @@ export const RegisterScreen = () => {
             style={styles.logo}
             resizeMode="contain"
           />
-          <Text style={styles.title}>加入 Bug 119</Text>
+          <Image 
+            key={themeMode}
+            source={themeMode === 'light' 
+              ? require('../../../assets/images/textLogo-dark.png')
+              : require('../../../assets/images/textLogo-light.png')
+            }
+            style={styles.textLogo}
+            resizeMode="contain"
+          />
+          <Text style={styles.subtitle}>加入我們的行列</Text>
 
           <View style={styles.form}>
             {/* 頭像區塊 */}

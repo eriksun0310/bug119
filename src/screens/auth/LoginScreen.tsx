@@ -12,7 +12,7 @@ import { Image, ScrollView, Text, View } from 'react-native'
 import { createStyles } from './LoginScreen.styles'
 
 export const LoginScreen = () => {
-  const { theme } = useTheme()
+  const { theme, themeMode } = useTheme()
   const { login } = useAuthRedux()
   const { isTablet } = useResponsive()
   const navigation = useNavigation<any>()
@@ -94,7 +94,15 @@ export const LoginScreen = () => {
               style={styles.logo}
               resizeMode="contain"
             />
-            <Text style={styles.title}>Bug 119</Text>
+            <Image 
+              key={themeMode}
+              source={themeMode === 'light' 
+                ? require('../../../assets/images/textLogo-dark.png')
+                : require('../../../assets/images/textLogo-light.png')
+              }
+              style={styles.textLogo}
+              resizeMode="contain"
+            />
           <Text style={styles.subtitle}>歡迎回來！</Text>
           
           <View style={styles.form}>

@@ -3,7 +3,7 @@
 import { SPLASH_CONFIG } from '@/shared/config/splash.config'
 import { useTheme } from '@/shared/theme'
 import React, { useEffect, useRef } from 'react'
-import { Animated, Easing, Image, Text, View } from 'react-native'
+import { Animated, Easing, Image, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { createStyles } from './SplashScreen.styles'
 
@@ -12,7 +12,7 @@ interface SplashScreenProps {
 }
 
 export const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationComplete }) => {
-  const { theme } = useTheme()
+  const { theme, themeMode } = useTheme()
   const insets = useSafeAreaInsets()
   const styles = createStyles(theme, insets)
 
@@ -92,7 +92,16 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationComplete 
           },
         ]}
       >
-        <Text style={styles.title}>Bug 119</Text>
+        <Image
+          key={themeMode}
+          source={
+            themeMode === 'dark'
+              ? require('../../../assets/images/textLogo-light.png')
+              : require('../../../assets/images/textLogo-dark.png')
+          }
+          style={styles.textLogo}
+          resizeMode="contain"
+        />
       </Animated.View>
 
       <Animated.Text style={[styles.subtitle, { opacity: subtitleOpacity }]}>

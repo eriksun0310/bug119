@@ -9,6 +9,16 @@ export const createStyles = (theme: Theme) =>
       alignItems: 'center',
       backgroundColor: theme.colors.background,
     },
+    logo: {
+      width: 120,
+      height: 120,
+      marginBottom: theme.spacing.sm,
+    },
+    textLogo: {
+      width: 200,
+      height: 50,
+      marginBottom: theme.spacing.md,
+    },
     title: {
       fontSize: theme.fontSize.xxl,
       fontWeight: 'bold',

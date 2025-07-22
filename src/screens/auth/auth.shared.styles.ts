@@ -30,6 +30,13 @@ export const createAuthSharedStyles = (theme: Theme, isTablet: boolean) =>
       height: 120,
       alignSelf: 'center',
     },
+    textLogo: {
+      width: 200,
+      height: 50,
+      alignSelf: 'center',
+      marginTop: theme.spacing.sm,
+      marginBottom: theme.spacing.md,
+    },
     title: {
       fontSize: theme.fontSize.xxl,
       fontWeight: 'bold',

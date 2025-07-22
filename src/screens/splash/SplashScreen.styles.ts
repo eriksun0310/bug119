@@ -22,6 +22,10 @@ export const createStyles = (theme: Theme, insets: EdgeInsets) =>
       alignItems: 'center',
       marginBottom: theme.spacing.md,
     },
+    textLogo: {
+      width: 200,
+      height: 60,
+    },
     title: {
       fontSize: SPLASH_CONFIG.TYPOGRAPHY.TITLE_SIZE,
       fontWeight: 'bold',

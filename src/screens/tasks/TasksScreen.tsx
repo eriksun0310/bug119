@@ -4,13 +4,13 @@ import { TASK_TAB_OPTIONS, getTaskTabTitle } from '@/shared/config/options.confi
 import { useAuthRedux, useResponsive, useTasksRedux } from '@/shared/hooks'
 import { useTheme } from '@/shared/theme'
 import { RootStackParamList, Task, TaskStatus, UserRole } from '@/shared/types'
-import { TaskCard, Tabs, TabOption, EmptyState } from '@/shared/ui'
+import { EmptyState, TabOption, Tabs, TaskCard } from '@/shared/ui'
 import { ScreenHeader } from '@/shared/ui/screen-header'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { AlertCircle, Bell, CheckCircle, Clock, Timer } from 'lucide-react-native'
 import React, { useEffect, useRef, useState } from 'react'
-import { FlatList, Image, RefreshControl, Text, TouchableOpacity, View, Dimensions } from 'react-native'
+import { Dimensions, FlatList, Image, RefreshControl, TouchableOpacity, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { createStyles } from './TasksScreen.styles'
 
@@ -20,7 +20,7 @@ type TasksRouteProp = RouteProp<{ Tasks: { initialTab?: TaskTab } }, 'Tasks'>
 type TaskTab = 'pending_confirmation' | 'in_progress' | 'pending_completion' | 'completed'
 
 export const TasksScreen = () => {
-  const { theme } = useTheme()
+  const { theme, themeMode } = useTheme()
   const { user } = useAuthRedux()
   const { tasks, tasksLoading, tasksError, loadTasks } = useTasksRedux()
   const { isTablet } = useResponsive()
@@ -254,8 +254,13 @@ export const TasksScreen = () => {
         showBackButton={false}
         leftActions={
           <Image
-            source={require('../../../assets/images/logo.png')}
-            style={{ width: 32, height: 32, marginRight: 8 }}
+            key={themeMode}
+            source={
+              themeMode === 'dark'
+                ? require('../../../assets/images/textLogo-light.png')
+                : require('../../../assets/images/textLogo-dark.png')
+            }
+            style={{ width: 50, height: 50, marginRight: 8 }}
             resizeMode="contain"
           />
         }
