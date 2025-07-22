@@ -73,16 +73,4 @@ export const createStyles = (theme: Theme, insets: { top: number }) =>
       borderRadius: 4,
       backgroundColor: theme.colors.error,
     },
-    emptyState: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: theme.spacing.xl,
-    },
-    emptyStateText: {
-      fontSize: theme.fontSize.lg,
-      color: theme.colors.textSecondary,
-      textAlign: 'center',
-      marginTop: theme.spacing.md,
-    },
   })

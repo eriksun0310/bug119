@@ -83,7 +83,7 @@ export const Tabs: FC<TabsProps> = ({
         ]}>
           {option.title}
         </Text>
-        {showCount && option.count !== undefined && (
+        {showCount && option.count !== undefined && option.count > 0 && (
           <Text style={[
             styles.tabCount,
             isActive && styles.tabCountActive,

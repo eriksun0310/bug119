@@ -3,6 +3,7 @@
 import { useTheme } from '@/shared/theme'
 import { RootStackParamList } from '@/shared/types'
 import { ScreenHeader } from '@/shared/ui/screen-header'
+import { EmptyState } from '@/shared/ui'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { AlertTriangle, CheckCircle, Clock, User } from 'lucide-react-native'
@@ -189,10 +190,10 @@ export const NotificationsScreen: React.FC = () => {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
       >
         {notifications.length === 0 ? (
-          <View style={styles.emptyState}>
-            <CheckCircle size={48} color={theme.colors.textSecondary} />
-            <Text style={styles.emptyStateText}>暫無通知</Text>
-          </View>
+          <EmptyState
+            icon={<CheckCircle size={48} color={theme.colors.textSecondary} />}
+            title="暫無通知"
+          />
         ) : (
           notifications.map(notification => (
             <TouchableOpacity

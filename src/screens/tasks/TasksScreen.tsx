@@ -4,7 +4,7 @@ import { TASK_TAB_OPTIONS, getTaskTabTitle } from '@/shared/config/options.confi
 import { useAuthRedux, useResponsive, useTasksRedux } from '@/shared/hooks'
 import { useTheme } from '@/shared/theme'
 import { RootStackParamList, Task, TaskStatus, UserRole } from '@/shared/types'
-import { TaskCard, Tabs, TabOption } from '@/shared/ui'
+import { TaskCard, Tabs, TabOption, EmptyState } from '@/shared/ui'
 import { ScreenHeader } from '@/shared/ui/screen-header'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
@@ -192,44 +192,55 @@ export const TasksScreen = () => {
               tintColor={theme.colors.secondary}
             />
           }
-          ListEmptyComponent={() => (
-            <View style={styles.emptyState}>
-              {tasksError ? (
-                <>
-                  <AlertCircle size={48} color={theme.colors.error} />
-                  <Text style={styles.emptyStateText}>載入任務失敗</Text>
-                  <Text style={styles.emptyStateSubtext}>{tasksError}</Text>
-                </>
-              ) : (
-                <>
-                  {tabKey === 'pending_confirmation' && (
-                    <AlertCircle size={48} color={theme.colors.textSecondary} />
-                  )}
-                  {tabKey === 'in_progress' && (
-                    <Clock size={48} color={theme.colors.textSecondary} />
-                  )}
-                  {tabKey === 'pending_completion' && (
-                    <Timer size={48} color={theme.colors.textSecondary} />
-                  )}
-                  {tabKey === 'completed' && (
-                    <CheckCircle size={48} color={theme.colors.textSecondary} />
-                  )}
-                  <Text style={styles.emptyStateText}>
-                    {tabKey === 'pending_confirmation' &&
-                      (user?.role === UserRole.FEAR_STAR
-                        ? '沒有需要選擇終結者的任務'
-                        : '沒有等待確認的任務')}
-                    {tabKey === 'in_progress' && '目前沒有進行中的任務'}
-                    {tabKey === 'pending_completion' &&
-                      (user?.role === UserRole.FEAR_STAR
-                        ? '沒有需要驗收的任務'
-                        : '沒有等待完成確認的任務')}
-                    {tabKey === 'completed' && '還沒有完成的任務'}
-                  </Text>
-                </>
-              )}
-            </View>
-          )}
+          ListEmptyComponent={() => {
+            if (tasksError) {
+              return (
+                <EmptyState
+                  icon={<AlertCircle size={48} color={theme.colors.error} />}
+                  title="載入任務失敗"
+                  subtitle={tasksError}
+                />
+              )
+            }
+
+            // 根據 tab 類型決定圖示和文字
+            const getEmptyStateProps = () => {
+              switch (tabKey) {
+                case 'pending_confirmation':
+                  return {
+                    icon: <AlertCircle size={48} color={theme.colors.textSecondary} />,
+                    title: user?.role === UserRole.FEAR_STAR
+                      ? '沒有需要選擇終結者的任務'
+                      : '沒有等待確認的任務'
+                  }
+                case 'in_progress':
+                  return {
+                    icon: <Clock size={48} color={theme.colors.textSecondary} />,
+                    title: '目前沒有進行中的任務'
+                  }
+                case 'pending_completion':
+                  return {
+                    icon: <Timer size={48} color={theme.colors.textSecondary} />,
+                    title: user?.role === UserRole.FEAR_STAR
+                      ? '沒有需要驗收的任務'
+                      : '沒有等待完成確認的任務'
+                  }
+                case 'completed':
+                  return {
+                    icon: <CheckCircle size={48} color={theme.colors.textSecondary} />,
+                    title: '還沒有完成的任務'
+                  }
+                default:
+                  return {
+                    icon: <AlertCircle size={48} color={theme.colors.textSecondary} />,
+                    title: '沒有任務'
+                  }
+              }
+            }
+
+            const emptyStateProps = getEmptyStateProps()
+            return <EmptyState {...emptyStateProps} />
+          }}
         />
       </View>
     )

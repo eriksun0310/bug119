@@ -40,25 +40,6 @@ export const createStyles = (theme: Theme, isTablet: boolean, screenWidth: numbe
     justifyContent: 'space-between',
     paddingHorizontal: theme.spacing.md,
   },
-  emptyState: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: theme.spacing.xl,
-  },
-  emptyStateText: {
-    fontSize: theme.fontSize.lg,
-    color: theme.colors.textSecondary,
-    textAlign: 'center',
-    marginTop: theme.spacing.md,
-  },
-  emptyStateSubtext: {
-    fontSize: theme.fontSize.sm,
-    color: theme.colors.textSecondary,
-    textAlign: 'center',
-    marginTop: theme.spacing.xs,
-    opacity: 0.7,
-  },
   taskCardHorizontal: {
     flex: screenWidth > 600 ? 0.48 : 1, // FlatList 用 flex 比例
     marginBottom: theme.spacing.md,

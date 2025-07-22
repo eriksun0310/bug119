@@ -18,7 +18,7 @@ import {
 } from 'lucide-react-native'
 import { useTheme } from '@/shared/theme'
 import { useAuthRedux, useTasksRedux, useResponsive, useTaskActions } from '@/shared/hooks'
-import { TaskCard, Input, FilterModal, LogoLoading } from '@/shared/ui'
+import { TaskCard, Input, FilterModal, LogoLoading, EmptyState } from '@/shared/ui'
 import { ScreenHeader } from '@/shared/ui/screen-header'
 import { 
   getPestTypeDisplayName
@@ -255,27 +255,27 @@ export const TaskWallScreen = () => {
               tintColor={theme.colors.secondary}
             />
           }
-          ListEmptyComponent={() => (
-            <View style={styles.emptyState}>
-              {tasksError ? (
-                <>
-                  <Search size={48} color={theme.colors.error} />
-                  <Text style={styles.emptyStateText}>載入任務失敗</Text>
-                  <Text style={styles.emptyStateSubtext}>{tasksError}</Text>
-                </>
-              ) : (
-                <>
-                  <Search size={48} color={theme.colors.textSecondary} />
-                  <Text style={styles.emptyStateText}>
-                    {formState.searchQuery || Object.values(formState.selectedFilters).some(Boolean)
-                      ? '沒有符合條件的任務'
-                      : '目前沒有可接的任務\n請稍後再查看'
-                    }
-                  </Text>
-                </>
-              )}
-            </View>
-          )}
+          ListEmptyComponent={() => {
+            if (tasksError) {
+              return (
+                <EmptyState
+                  icon={<Search size={48} color={theme.colors.error} />}
+                  title="載入任務失敗"
+                  subtitle={tasksError}
+                />
+              )
+            }
+
+            const hasFilters = formState.searchQuery || Object.values(formState.selectedFilters).some(Boolean)
+            
+            return (
+              <EmptyState
+                icon={<Search size={48} color={theme.colors.textSecondary} />}
+                title={hasFilters ? '沒有符合條件的任務' : '目前沒有可接的任務'}
+                subtitle={hasFilters ? undefined : '請稍後再查看'}
+              />
+            )
+          }}
         />
       </View>
       
