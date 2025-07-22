@@ -1,1 +1,0 @@
-export { LogoRefreshControl } from './LogoRefreshControl'

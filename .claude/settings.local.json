@@ -44,7 +44,8 @@
       "Bash(npx eslint:*)",
       "Bash(node:*)",
       "Bash(pnpm list:*)",
-      "Bash(pnpm expo start:*)"
+      "Bash(pnpm expo start:*)",
+      "Bash(pnpm tsc:*)"
     ],
     "deny": []
   }

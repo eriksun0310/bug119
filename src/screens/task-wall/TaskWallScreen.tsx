@@ -18,7 +18,7 @@ import {
 } from 'lucide-react-native'
 import { useTheme } from '@/shared/theme'
 import { useAuthRedux, useTasksRedux, useResponsive, useTaskActions } from '@/shared/hooks'
-import { TaskCard, Input, FilterModal, LogoLoading, EmptyState } from '@/shared/ui'
+import { TaskCard, Input, FilterModal, EmptyState } from '@/shared/ui'
 import { ScreenHeader } from '@/shared/ui/screen-header'
 import { 
   getPestTypeDisplayName

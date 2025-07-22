@@ -21,6 +21,7 @@
     "@tanstack/react-query": "^5.81.5",
     "axios": "^1.10.0",
     "expo": "~53.0.16",
+    "expo-asset": "^11.1.7",
     "expo-image-picker": "^16.1.4",
     "expo-location": "^18.1.6",
     "expo-status-bar": "~2.2.3",

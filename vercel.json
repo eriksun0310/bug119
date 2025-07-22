@@ -1,5 +1,0 @@
-{
-  "buildCommand": "npx expo export",
-  "outputDirectory": "dist",
-  "framework": "vite"
-}

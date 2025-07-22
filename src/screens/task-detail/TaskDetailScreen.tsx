@@ -50,7 +50,7 @@ export const TaskDetailScreen: React.FC = () => {
       setShowActionResult(true)
     })
     return success
-  }, [handleAcceptTask, task.status])
+  }, [handleAcceptTask, task.status, user?.role])
 
   const wrappedHandleSelectTerminator = React.useCallback(async (application: any) => {
     // 保存操作前的狀態文字
@@ -62,7 +62,7 @@ export const TaskDetailScreen: React.FC = () => {
       setShowActionResult(true)
     })
     return success
-  }, [handleSelectTerminator, task.status])
+  }, [handleSelectTerminator, task.status, user?.role])
 
   const wrappedHandleMarkCompleted = React.useCallback(async (taskId: string) => {
     // 保存操作前的狀態文字
@@ -74,7 +74,7 @@ export const TaskDetailScreen: React.FC = () => {
       setShowActionResult(true)
     })
     return success
-  }, [handleMarkCompleted, task.status])
+  }, [handleMarkCompleted, task.status, user?.role])
 
   // 處理查看任務按鈕
   const handleViewTask = React.useCallback(() => {

@@ -128,7 +128,6 @@ export const RegisterScreen = () => {
             resizeMode="contain"
           />
           <Text style={styles.title}>加入 Bug 119</Text>
-          {/* <Text style={styles.subtitle}>建立您的帳號</Text> */}
 
           <View style={styles.form}>
             {/* 頭像區塊 */}
