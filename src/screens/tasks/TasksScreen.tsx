@@ -4,13 +4,13 @@ import { TASK_TAB_OPTIONS, getTaskTabTitle } from '@/shared/config/options.confi
 import { useAuthRedux, useResponsive, useTasksRedux } from '@/shared/hooks'
 import { useTheme } from '@/shared/theme'
 import { RootStackParamList, Task, TaskStatus, UserRole } from '@/shared/types'
-import { TaskCard } from '@/shared/ui'
+import { TaskCard, Tabs, TabOption } from '@/shared/ui'
 import { ScreenHeader } from '@/shared/ui/screen-header'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { AlertCircle, Bell, CheckCircle, Clock, Timer } from 'lucide-react-native'
 import React, { useEffect, useRef, useState } from 'react'
-import { FlatList, Image, RefreshControl, Text, TouchableOpacity, View } from 'react-native'
+import { FlatList, Image, RefreshControl, Text, TouchableOpacity, View, Dimensions } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { createStyles } from './TasksScreen.styles'
 
@@ -130,70 +130,51 @@ export const TasksScreen = () => {
     navigation.navigate('Notifications')
   }
 
-  const tabs = TASK_TAB_OPTIONS.map(tab => ({
-    ...tab,
-    key: tab.key as TaskTab,
+  const tabOptions: TabOption[] = TASK_TAB_OPTIONS.map(tab => ({
+    key: tab.key,
     title: getTaskTabTitle(tab, user?.role), // 根據角色獲取對應的標題
     count: getTasksByTab(tab.key as TaskTab).length,
   }))
 
   const styles = createStyles(theme, isTablet, insets)
+  const screenWidth = Dimensions.get('window').width
+  const flatListRef = useRef<FlatList>(null)
 
-  return (
-    <View style={styles.container}>
-      {/* 標題和標籤頁 */}
-      <ScreenHeader
-        title="任務"
-        showBackButton={false}
-        leftActions={
-          <Image
-            source={require('../../../assets/images/logo.png')}
-            style={{ width: 32, height: 32, marginRight: 8 }}
-            resizeMode="contain"
-          />
-        }
-        rightActions={
-          <TouchableOpacity onPress={handleNotificationPress}>
-            <Bell size={24} color={theme.colors.text} />
-          </TouchableOpacity>
-        }
-      />
+  // 當 activeTab 改變時，滾動到對應的頁面
+  useEffect(() => {
+    const tabIndex = TASK_TAB_OPTIONS.findIndex(tab => tab.key === activeTab)
+    if (tabIndex >= 0 && flatListRef.current) {
+      flatListRef.current.scrollToIndex({ index: tabIndex, animated: true })
+    }
+  }, [activeTab])
 
-      {/* 標籤頁區域 */}
-      <View style={styles.tabsHeader}>
-        <View style={styles.tabsContainer}>
-          {tabs.map(tab => {
-            const isActive = activeTab === tab.key
+  // 處理滑動結束事件
+  const handleMomentumScrollEnd = (event: any) => {
+    const newIndex = Math.round(event.nativeEvent.contentOffset.x / screenWidth)
+    const newTab = TASK_TAB_OPTIONS[newIndex]?.key as TaskTab
+    if (newTab && newTab !== activeTab) {
+      setActiveTab(newTab)
+    }
+  }
 
-            return (
-              <TouchableOpacity
-                key={tab.key}
-                style={[styles.tab, isActive && styles.activeTab]}
-                onPress={() => setActiveTab(tab.key)}
-              >
-                <Text style={[styles.tabText, isActive && styles.activeTabText]}>{tab.title}</Text>
-                <Text style={[styles.tabCount, isActive && styles.activeTabCount]}>
-                  {tab.count}
-                </Text>
-              </TouchableOpacity>
-            )
-          })}
-        </View>
-      </View>
+  // 渲染每個 tab 的內容
+  const renderTabContent = ({ item }: { item: typeof TASK_TAB_OPTIONS[0] }) => {
+    const tabKey = item.key as TaskTab
+    const tabTasks = getTasksByTab(tabKey)
 
-      {/* 任務列表 */}
-      <View style={styles.content}>
+    return (
+      <View style={{ width: screenWidth, flex: 1 }}>
         <FlatList
           style={styles.scrollContainer}
           contentContainerStyle={[
             styles.taskListContainer,
-            currentTasks.length === 0 && styles.emptyListContainer,
+            tabTasks.length === 0 && styles.emptyListContainer,
           ]}
-          data={currentTasks}
-          keyExtractor={item => item.id}
-          renderItem={({ item }) => (
+          data={tabTasks}
+          keyExtractor={task => task.id}
+          renderItem={({ item: task }) => (
             <TaskCard
-              task={item}
+              task={task}
               onPress={handleTaskPress}
               variant="default"
               showContactInfo={user?.role === UserRole.TERMINATOR}
@@ -221,34 +202,85 @@ export const TasksScreen = () => {
                 </>
               ) : (
                 <>
-                  {activeTab === 'pending_confirmation' && (
+                  {tabKey === 'pending_confirmation' && (
                     <AlertCircle size={48} color={theme.colors.textSecondary} />
                   )}
-                  {activeTab === 'in_progress' && (
+                  {tabKey === 'in_progress' && (
                     <Clock size={48} color={theme.colors.textSecondary} />
                   )}
-                  {activeTab === 'pending_completion' && (
+                  {tabKey === 'pending_completion' && (
                     <Timer size={48} color={theme.colors.textSecondary} />
                   )}
-                  {activeTab === 'completed' && (
+                  {tabKey === 'completed' && (
                     <CheckCircle size={48} color={theme.colors.textSecondary} />
                   )}
                   <Text style={styles.emptyStateText}>
-                    {activeTab === 'pending_confirmation' &&
+                    {tabKey === 'pending_confirmation' &&
                       (user?.role === UserRole.FEAR_STAR
                         ? '沒有需要選擇終結者的任務'
                         : '沒有等待確認的任務')}
-                    {activeTab === 'in_progress' && '目前沒有進行中的任務'}
-                    {activeTab === 'pending_completion' &&
+                    {tabKey === 'in_progress' && '目前沒有進行中的任務'}
+                    {tabKey === 'pending_completion' &&
                       (user?.role === UserRole.FEAR_STAR
                         ? '沒有需要驗收的任務'
                         : '沒有等待完成確認的任務')}
-                    {activeTab === 'completed' && '還沒有完成的任務'}
+                    {tabKey === 'completed' && '還沒有完成的任務'}
                   </Text>
                 </>
               )}
             </View>
           )}
+        />
+      </View>
+    )
+  }
+
+  return (
+    <View style={styles.container}>
+      {/* 標題和標籤頁 */}
+      <ScreenHeader
+        title="任務"
+        showBackButton={false}
+        leftActions={
+          <Image
+            source={require('../../../assets/images/logo.png')}
+            style={{ width: 32, height: 32, marginRight: 8 }}
+            resizeMode="contain"
+          />
+        }
+        rightActions={
+          <TouchableOpacity onPress={handleNotificationPress}>
+            <Bell size={24} color={theme.colors.text} />
+          </TouchableOpacity>
+        }
+      />
+
+      {/* 標籤頁區域 */}
+      <Tabs
+        options={tabOptions}
+        value={activeTab}
+        onChange={(value) => setActiveTab(value as TaskTab)}
+        showCount
+        scrollable
+      />
+
+      {/* 可滑動的任務列表容器 */}
+      <View style={styles.content}>
+        <FlatList
+          ref={flatListRef}
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+          data={TASK_TAB_OPTIONS}
+          keyExtractor={item => item.key}
+          renderItem={renderTabContent}
+          onMomentumScrollEnd={handleMomentumScrollEnd}
+          initialScrollIndex={TASK_TAB_OPTIONS.findIndex(tab => tab.key === activeTab)}
+          getItemLayout={(data, index) => ({
+            length: screenWidth,
+            offset: screenWidth * index,
+            index,
+          })}
         />
       </View>
     </View>

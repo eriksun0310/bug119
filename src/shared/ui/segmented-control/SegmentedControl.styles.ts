@@ -21,9 +21,10 @@ export const createStyles = (theme: Theme) => StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: theme.spacing.md,
-    paddingHorizontal: theme.spacing.sm,
+    paddingHorizontal: theme.spacing.xs,
     backgroundColor: 'transparent',
     minHeight: 44,
+    minWidth: 80, // 確保四個字的標籤有足夠寬度
   },
   segmentWithBorder: {
     borderRightWidth: 0.5,
