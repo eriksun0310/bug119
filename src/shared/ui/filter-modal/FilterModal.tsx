@@ -72,6 +72,9 @@ export const FilterModal: React.FC<FilterModalProps> = ({
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={onClose}>
         <TouchableOpacity style={styles.modalContent} activeOpacity={1} onPress={() => {}}>
+          {/* 拖曳條 */}
+          <View style={styles.dragHandle} />
+          
           {/* 標題列 */}
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>篩選條件</Text>
@@ -80,11 +83,14 @@ export const FilterModal: React.FC<FilterModalProps> = ({
             </TouchableOpacity>
           </View>
 
-          <ScrollView>
+          <ScrollView contentContainerStyle={styles.scrollContent}>
             {/* 地址篩選 */}
             <View style={styles.filterSection}>
               <View style={styles.filterSectionHeader}>
-                <Text style={styles.filterSectionTitle}>地點篩選（可只選縣市接整個縣市的案子）</Text>
+                <Text style={styles.filterSectionTitle}>
+                  地點篩選
+                  <Text style={styles.filterSectionSubtitle}> （可只選縣市接整個縣市的案子）</Text>
+                </Text>
                 {(tempFilters.location.city || tempFilters.location.district) && (
                   <TouchableOpacity onPress={handleClearLocation} style={styles.clearLocationButton}>
                     <Text style={styles.clearLocationText}>清除地址</Text>

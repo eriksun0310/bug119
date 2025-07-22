@@ -12,8 +12,16 @@ export const createStyles = (theme: Theme) =>
       backgroundColor: theme.colors.surface,
       borderTopLeftRadius: theme.borderRadius.xl,
       borderTopRightRadius: theme.borderRadius.xl,
-      paddingTop: theme.spacing.md,
+      paddingTop: theme.spacing.sm,
       maxHeight: '80%',
+    },
+    dragHandle: {
+      width: 48,
+      height: 4,
+      backgroundColor: theme.colors.border,
+      borderRadius: 2,
+      alignSelf: 'center',
+      marginBottom: theme.spacing.md,
     },
     modalHeader: {
       flexDirection: 'row',
@@ -21,8 +29,8 @@ export const createStyles = (theme: Theme) =>
       alignItems: 'center',
       paddingHorizontal: theme.spacing.lg,
       paddingBottom: theme.spacing.md,
-      // borderBottomWidth: 1,
-      // borderBottomColor: theme.colors.border,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.colors.border,
     },
     modalTitle: {
       fontSize: theme.fontSize.lg,
@@ -32,21 +40,29 @@ export const createStyles = (theme: Theme) =>
     closeButton: {
       padding: theme.spacing.xs,
     },
+    scrollContent: {
+      paddingBottom: theme.spacing.lg,
+    },
     filterSection: {
       paddingHorizontal: theme.spacing.lg,
-      paddingVertical: theme.spacing.sm,
+      paddingVertical: theme.spacing.md,
     },
     filterSectionHeader: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginBottom: theme.spacing.md,
+      marginBottom: theme.spacing.sm,
     },
     filterSectionTitle: {
       fontSize: theme.fontSize.md,
       fontWeight: '600',
       color: theme.colors.text,
       flex: 1,
+    },
+    filterSectionSubtitle: {
+      fontSize: theme.fontSize.sm,
+      fontWeight: '400',
+      color: theme.colors.textSecondary,
     },
     clearLocationButton: {
       paddingVertical: theme.spacing.xs,
@@ -67,6 +83,7 @@ export const createStyles = (theme: Theme) =>
       flexDirection: 'row',
       justifyContent: 'space-between',
       gap: theme.spacing.sm,
+      marginTop: theme.spacing.xs,
     },
     filterOption: {
       flexDirection: 'row',
@@ -84,8 +101,8 @@ export const createStyles = (theme: Theme) =>
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
-      paddingVertical: theme.spacing.sm,
-      paddingHorizontal: theme.spacing.xs,
+      paddingVertical: theme.spacing.sm + 2,
+      paddingHorizontal: theme.spacing.sm,
       backgroundColor: theme.colors.background,
       borderRadius: theme.borderRadius.md,
       borderWidth: 1,
@@ -107,8 +124,9 @@ export const createStyles = (theme: Theme) =>
       flexDirection: 'row',
       gap: theme.spacing.md,
       padding: theme.spacing.lg,
-      // borderTopWidth: 1,
-      // borderTopColor: theme.colors.border,
+      paddingTop: theme.spacing.lg,
+      borderTopWidth: 1,
+      borderTopColor: theme.colors.border,
     },
     actionButton: {
       flex: 1,
