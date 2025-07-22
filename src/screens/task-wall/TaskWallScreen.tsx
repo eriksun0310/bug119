@@ -5,7 +5,8 @@ import {
   View, 
   Text, 
   FlatList, 
-  TouchableOpacity
+  TouchableOpacity,
+  RefreshControl
 } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
@@ -246,6 +247,14 @@ export const TaskWallScreen = () => {
           keyExtractor={(item) => item.id}
           numColumns={screenWidth > 600 ? 2 : 1}
           columnWrapperStyle={screenWidth > 600 ? styles.taskRow : undefined}
+          refreshControl={
+            <RefreshControl
+              refreshing={tasksLoading === 'loading'}
+              onRefresh={loadTasks}
+              colors={[theme.colors.secondary]}
+              tintColor={theme.colors.secondary}
+            />
+          }
           ListEmptyComponent={() => (
             <View style={styles.emptyState}>
               {tasksError ? (

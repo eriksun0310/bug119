@@ -72,15 +72,15 @@ export const createStyles = (theme: Theme, isTablet: boolean, insets: { top: num
   },
   taskListContainer: {
     flexGrow: 1,
-    alignItems: isTablet ? 'center' : 'stretch',
+    padding: theme.spacing.md,
     paddingBottom: isTablet ? theme.spacing.md : 50, // 手機版添加底部 padding 避免被導航列遮住
   },
-  taskList: {
-    padding: theme.spacing.md,
-    width: '100%',
-    maxWidth: isTablet ? 1200 : undefined, // 電腦版放寬最大寬度
-    flexDirection: isTablet ? 'row' : 'column', // 電腦版使用橫向排列
-    flexWrap: isTablet ? 'wrap' : 'nowrap', // 電腦版允許換行
+  emptyListContainer: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  taskRow: {
+    justifyContent: 'space-between',
     gap: theme.spacing.md,
   },
   emptyState: {

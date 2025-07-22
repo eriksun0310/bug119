@@ -13,6 +13,7 @@ import { LoadingScreen } from './src/screens/loading/LoadingScreen'
 import { SplashScreen } from './src/screens/splash'
 import { SPLASH_CONFIG } from './src/shared/config/splash.config'
 import { store } from './src/shared/store'
+import { preloadImages } from './src/shared/utils'
 
 const AppContent = () => {
   const { isLoading } = useAuthRedux()
@@ -23,8 +24,10 @@ const AppContent = () => {
     // 準備應用程式（載入字體、初始化資料等）
     const prepareApp = async () => {
       try {
-        // 這裡可以加入預載資源的邏輯
-        // 例如：載入字體、初始化資料等
+        // 預載重要圖片資源
+        await preloadImages()
+        
+        // 其他初始化邏輯
         await new Promise(resolve => setTimeout(resolve, SPLASH_CONFIG.PREPARATION.MOCK_LOADING_TIME))
       } catch (error) {
         console.warn('準備應用程式時發生錯誤:', error)

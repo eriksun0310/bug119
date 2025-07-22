@@ -1,8 +1,15 @@
-import React, { FC, useEffect, useRef } from 'react'
-import { View, Text, Image, Animated } from 'react-native'
 import { useTheme } from '@/shared/theme'
-import { LogoLoadingProps } from './LogoLoading.types'
+import React, { FC, useEffect, useRef } from 'react'
+import { Animated, Image, Text, View, Platform } from 'react-native'
 import { createStyles } from './LogoLoading.styles'
+import { LogoLoadingProps } from './LogoLoading.types'
+
+// 預載 logo 圖片
+const logoSource = require('../../../../assets/images/logo.png')
+// 只在原生平台上使用 resolveAssetSource
+if (Platform.OS !== 'web' && Image.resolveAssetSource) {
+  Image.resolveAssetSource(logoSource)
+}
 
 /**
  * Logo 載入元件
@@ -16,7 +23,7 @@ export const LogoLoading: FC<LogoLoadingProps> = ({
 }) => {
   const { theme } = useTheme()
   const styles = createStyles(theme)
-  
+
   // 動畫值
   const spinValue = useRef(new Animated.Value(0)).current
   const pulseValue = useRef(new Animated.Value(1)).current
@@ -34,7 +41,7 @@ export const LogoLoading: FC<LogoLoadingProps> = ({
           })
         )
         break
-      
+
       case 'pulse':
         animation = Animated.loop(
           Animated.sequence([
@@ -51,7 +58,6 @@ export const LogoLoading: FC<LogoLoadingProps> = ({
           ])
         )
         break
-      
     }
 
     animation.start()
@@ -72,13 +78,12 @@ export const LogoLoading: FC<LogoLoadingProps> = ({
         return {
           transform: [{ rotate: spin }],
         }
-      
+
       case 'pulse':
         return {
           transform: [{ scale: pulseValue }],
         }
-      
-      
+
       default:
         return {}
     }
@@ -89,13 +94,15 @@ export const LogoLoading: FC<LogoLoadingProps> = ({
       <View style={styles.logoContainer}>
         <Animated.View style={getAnimatedStyle()}>
           <Image
-            source={require('../../../../assets/images/logo.png')}
+            source={logoSource}
             style={[styles.logo, styles[size]]}
             resizeMode="contain"
+            fadeDuration={0} // 立即顯示，不要淡入效果
           />
         </Animated.View>
       </View>
-      {showText && <Text style={styles.text}>loading</Text>}
+
+      {showText && <Text style={styles.loadingText}>loading</Text>}
     </View>
   )
 }

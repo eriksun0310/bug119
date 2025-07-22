@@ -31,7 +31,7 @@ export const createStyles = (theme: Theme) => StyleSheet.create({
     width: 96,
     height: 96,
   },
-  text: {
+  loadingText: {
     fontSize: theme.fontSize.sm,
     color: theme.colors.textSecondary,
     textAlign: 'center',

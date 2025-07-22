@@ -3,3 +3,4 @@
 export * from './geocoding'
 export * from './alert'
 export * from './taskStatusValidator'
+export * from './preloadAssets'

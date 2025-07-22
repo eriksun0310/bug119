@@ -10,7 +10,7 @@ import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { AlertCircle, Bell, CheckCircle, Clock, Timer } from 'lucide-react-native'
 import React, { useEffect, useRef, useState } from 'react'
-import { Image, RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native'
+import { FlatList, Image, RefreshControl, Text, TouchableOpacity, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { createStyles } from './TasksScreen.styles'
 
@@ -133,38 +133,11 @@ export const TasksScreen = () => {
   const tabs = TASK_TAB_OPTIONS.map(tab => ({
     ...tab,
     key: tab.key as TaskTab,
-    title: getTaskTabTitle(tab, user?.role),  // 根據角色獲取對應的標題
+    title: getTaskTabTitle(tab, user?.role), // 根據角色獲取對應的標題
     count: getTasksByTab(tab.key as TaskTab).length,
   }))
 
   const styles = createStyles(theme, isTablet, insets)
-
-  // 如果是初始載入（不是下拉刷新），顯示 LogoLoading
-  // if (tasksLoading === 'loading' && !tasks) {
-  //   return (
-  //     <View style={styles.container}>
-  //       <ScreenHeader
-  //         title="任務"
-  //         showBackButton={false}
-  //         leftActions={
-  //           <Image
-  //             source={require('@/assets/images/logo.png')}
-  //             style={{ width: 32, height: 32, marginRight: 8 }}
-  //             resizeMode="contain"
-  //           />
-  //         }
-  //         rightActions={
-  //           <TouchableOpacity onPress={handleNotificationPress}>
-  //             <Bell size={24} color={theme.colors.text} />
-  //           </TouchableOpacity>
-  //         }
-  //       />
-  //       <View style={styles.loadingContainer}>
-  //         <LogoLoading size="md" animationType="spin" />
-  //       </View>
-  //     </View>
-  //   )
-  // }
 
   return (
     <View style={styles.container}>
@@ -210,9 +183,26 @@ export const TasksScreen = () => {
 
       {/* 任務列表 */}
       <View style={styles.content}>
-        <ScrollView
+        <FlatList
           style={styles.scrollContainer}
-          contentContainerStyle={styles.taskListContainer}
+          contentContainerStyle={[
+            styles.taskListContainer,
+            currentTasks.length === 0 && styles.emptyListContainer,
+          ]}
+          data={currentTasks}
+          keyExtractor={item => item.id}
+          renderItem={({ item }) => (
+            <TaskCard
+              task={item}
+              onPress={handleTaskPress}
+              variant="default"
+              showContactInfo={user?.role === UserRole.TERMINATOR}
+              currentUserRole={user?.role}
+              style={isTablet ? styles.taskCardTablet : undefined}
+            />
+          )}
+          numColumns={isTablet ? 2 : 1}
+          columnWrapperStyle={isTablet ? styles.taskRow : undefined}
           refreshControl={
             <RefreshControl
               refreshing={tasksLoading === 'loading'}
@@ -221,52 +211,45 @@ export const TasksScreen = () => {
               tintColor={theme.colors.secondary}
             />
           }
-        >
-          <View style={styles.taskList}>
-            {tasksError ? (
-              <View style={styles.emptyState}>
-                <AlertCircle size={48} color={theme.colors.error} />
-                <Text style={styles.emptyStateText}>載入任務失敗</Text>
-                <Text style={styles.emptyStateSubtext}>{tasksError}</Text>
-              </View>
-            ) : currentTasks.length > 0 ? (
-              currentTasks.map(task => (
-                <TaskCard
-                  key={task.id}
-                  task={task}
-                  onPress={handleTaskPress}
-                  variant="default"
-                  showContactInfo={user?.role === UserRole.TERMINATOR}
-                  currentUserRole={user?.role}
-                  style={isTablet ? styles.taskCardTablet : undefined}
-                />
-              ))
-            ) : (
-              <View style={styles.emptyState}>
-                {activeTab === 'pending_confirmation' && (
-                  <AlertCircle size={48} color={theme.colors.textSecondary} />
-                )}
-                {activeTab === 'in_progress' && (
-                  <Clock size={48} color={theme.colors.textSecondary} />
-                )}
-                {activeTab === 'pending_completion' && (
-                  <Timer size={48} color={theme.colors.textSecondary} />
-                )}
-                {activeTab === 'completed' && (
-                  <CheckCircle size={48} color={theme.colors.textSecondary} />
-                )}
-                <Text style={styles.emptyStateText}>
-                  {activeTab === 'pending_confirmation' &&
-                    (user?.role === UserRole.FEAR_STAR ? '沒有需要選擇終結者的任務' : '沒有等待確認的任務')}
-                  {activeTab === 'in_progress' && '目前沒有進行中的任務'}
-                  {activeTab === 'pending_completion' &&
-                    (user?.role === UserRole.FEAR_STAR ? '沒有需要驗收的任務' : '沒有等待完成確認的任務')}
-                  {activeTab === 'completed' && '還沒有完成的任務'}
-                </Text>
-              </View>
-            )}
-          </View>
-        </ScrollView>
+          ListEmptyComponent={() => (
+            <View style={styles.emptyState}>
+              {tasksError ? (
+                <>
+                  <AlertCircle size={48} color={theme.colors.error} />
+                  <Text style={styles.emptyStateText}>載入任務失敗</Text>
+                  <Text style={styles.emptyStateSubtext}>{tasksError}</Text>
+                </>
+              ) : (
+                <>
+                  {activeTab === 'pending_confirmation' && (
+                    <AlertCircle size={48} color={theme.colors.textSecondary} />
+                  )}
+                  {activeTab === 'in_progress' && (
+                    <Clock size={48} color={theme.colors.textSecondary} />
+                  )}
+                  {activeTab === 'pending_completion' && (
+                    <Timer size={48} color={theme.colors.textSecondary} />
+                  )}
+                  {activeTab === 'completed' && (
+                    <CheckCircle size={48} color={theme.colors.textSecondary} />
+                  )}
+                  <Text style={styles.emptyStateText}>
+                    {activeTab === 'pending_confirmation' &&
+                      (user?.role === UserRole.FEAR_STAR
+                        ? '沒有需要選擇終結者的任務'
+                        : '沒有等待確認的任務')}
+                    {activeTab === 'in_progress' && '目前沒有進行中的任務'}
+                    {activeTab === 'pending_completion' &&
+                      (user?.role === UserRole.FEAR_STAR
+                        ? '沒有需要驗收的任務'
+                        : '沒有等待完成確認的任務')}
+                    {activeTab === 'completed' && '還沒有完成的任務'}
+                  </Text>
+                </>
+              )}
+            </View>
+          )}
+        />
       </View>
     </View>
   )
