@@ -11,10 +11,12 @@ import { ScreenHeader } from '@/shared/ui/screen-header'
 import { showAlert } from '@/shared/utils'
 import { useNavigation } from '@react-navigation/native'
 import {
+  Bug,
   Mail,
   MessageCircle,
   Phone,
   Save,
+  Star,
   User
 } from 'lucide-react-native'
 import React, { useRef, useState } from 'react'
